@@ -13,10 +13,17 @@ import javax.swing.UIManager;
 import javax.swing.UIManager.LookAndFeelInfo;
 
 import com.google.gson.*;
+import com.jack.wow.data.PetAbility;
+import com.jack.wow.data.PetOwnedAbility;
 import com.jack.wow.data.PetSpec;
 import com.jack.wow.files.IconDownloader;
+import com.jack.wow.files.api.ApiAbility;
+import com.jack.wow.files.api.ApiFetcher;
+import com.jack.wow.files.api.ApiSpecie;
 import com.jack.wow.json.ImplicitContextedAdapter;
 import com.jack.wow.ui.PetListPanel;
+import com.jack.wow.ui.UI;
+import com.jack.wow.ui.misc.UIUtils;
 
 public class Main
 {
@@ -43,39 +50,54 @@ public class Main
     builder.registerTypeAdapter(PetSpec.class, new ImplicitContextedAdapter<PetSpec>(PetSpec.class));
     Gson gson = builder.create();
     
-    PetSpec[] pets;
-    
     try
     {
-      pets = gson.fromJson(new BufferedReader(new FileReader("./data/pets.json")), PetSpec[].class);
-      System.out.printf("Loaded %s pets.", pets.length);
+      //ApiSpecie specie = ApiFetcher.fetchSpecie(258);
       
-      Set<String> icons = Arrays.stream(pets).map(p -> p.icon).collect(Collectors.toSet());
+      PetSpec.data = gson.fromJson(new BufferedReader(new FileReader("./data/pets.json")), PetSpec[].class);
+      System.out.printf("Loaded %s pets.", PetSpec.data.length);
+      
+      Set<String> icons = Arrays.stream(PetSpec.data).map(p -> p.icon).collect(Collectors.toSet());
       
       
       IconDownloader downloader = new IconDownloader(null, icons);
       
       downloader.start();
       
-      PetListPanel petListPanel = new PetListPanel(300, 800);
+      UI.init();
+      UI.petListFrame.panel().populate(Arrays.asList(PetSpec.data), p -> true);
       
-      petListPanel.populate(Arrays.asList(pets), p -> true);
-      
-      JFrame frame = new JFrame();
-      frame.setTitle("Pet List");
-      frame.getContentPane().setLayout(new BorderLayout());
-      frame.getContentPane().add(petListPanel, BorderLayout.CENTER);
-      frame.pack();
-      frame.setVisible(true);
-      frame.setLocationRelativeTo(null);
-      frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+      UI.petListFrame.setLocationRelativeTo(null);
+      UI.petListFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
       
     }
     catch (Exception e)
     {
       e.printStackTrace();
     }
-    
-    
+  }
+  
+  void fetchAbilitiesFromAPI(PetSpec[] pets)
+  {
+    for (PetSpec pet : pets)
+    {
+      if (!pet.areAbilitiesPresent())
+      {
+        ApiSpecie specie = ApiFetcher.fetchSpecie(pet.id);
+        
+        pet.source = specie.source;
+        pet.description = specie.description;
+        
+        for (ApiAbility a : specie.abilities)
+        {
+          PetAbility ability = PetAbility.get(a.id);
+          
+          if (ability == null)
+            ability = PetAbility.generate(a);
+          
+          pet.abilities[a.order] = new PetOwnedAbility(ability, a.order, a.slot, a.requiredLevel);
+        }
+      }
+    }
   }
 }

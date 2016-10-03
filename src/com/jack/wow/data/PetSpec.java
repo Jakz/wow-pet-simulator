@@ -1,5 +1,7 @@
 package com.jack.wow.data;
 
+import java.util.Arrays;
+
 import com.google.gson.JsonArray;
 import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonElement;
@@ -9,13 +11,25 @@ import com.jack.wow.json.JsonnableContext;
 
 public class PetSpec implements JsonnableContext
 {
+  public static PetSpec[] data;
+  
   public String name;
   public PetFamily family;
+  public int id;
   
   public boolean canBattle;
   public int creatureId;
   
+  public final PetOwnedAbility[] abilities = new PetOwnedAbility[6];
+  
   public String icon;
+  public String description;
+  public String source;
+  
+  public boolean areAbilitiesPresent()
+  {
+    return Arrays.stream(abilities).allMatch(oa -> oa != null);
+  }
 
   public void unserialize(JsonElement element, JsonDeserializationContext context) throws IllegalAccessException
   {
@@ -27,6 +41,7 @@ public class PetSpec implements JsonnableContext
     this.canBattle = o.get("canBattle").getAsBoolean();
     
     this.icon = o.get("icon").getAsString();
+    this.id = o.get("stats").getAsJsonObject().get("speciesId").getAsInt();
     
     /* parsing family */
     PetFamily family = PetFamily.unserialize(o.get("family").getAsString());
@@ -62,8 +77,7 @@ public class PetSpec implements JsonnableContext
     this.family = family;
   }
 
-  @Override
-  public JsonElement serialize(JsonSerializationContext context) throws IllegalAccessException
+  @Override public JsonElement serialize(JsonSerializationContext context) throws IllegalAccessException
   {
     throw new IllegalStateException("PetSpec is not serializable");
   }

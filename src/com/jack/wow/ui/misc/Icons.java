@@ -1,4 +1,4 @@
-package com.jack.wow.ui;
+package com.jack.wow.ui.misc;
 
 import java.awt.Image;
 import java.awt.image.BufferedImage;

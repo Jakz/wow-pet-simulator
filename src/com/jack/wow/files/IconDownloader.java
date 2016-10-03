@@ -19,7 +19,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
-import com.jack.wow.ui.ProgressDialog;
+import com.jack.wow.ui.misc.ProgressDialog;
 
 
 public class IconDownloader

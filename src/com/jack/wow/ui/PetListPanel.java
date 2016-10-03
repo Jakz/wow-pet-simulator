@@ -26,6 +26,8 @@ import javax.swing.table.DefaultTableCellRenderer;
 
 import com.jack.wow.data.PetFamily;
 import com.jack.wow.data.PetSpec;
+import com.jack.wow.ui.misc.Icons;
+import com.jack.wow.ui.misc.UIUtils;
 
 public class PetListPanel extends JPanel
 {
@@ -112,6 +114,17 @@ public class PetListPanel extends JPanel
     table.setRowHeight(20);
     table.getTableHeader().setFont(this.getFont().deriveFont(this.getFont().getSize()-2.0f));
     table.setAutoCreateRowSorter(true);
+    
+    table.getSelectionModel().addListSelectionListener(e -> {
+      int r = table.getSelectedRow();
+      
+      if (r != -1)
+      {
+        r = table.convertRowIndexToModel(r);
+        UI.infoFrame.panel().update(pets.get(r));
+      }
+      
+    });
     
     JPanel familyFiltersPanel = new JPanel(new GridLayout(1, PetFamily.count()+1));
     ActionListener familyFilterListener = e -> populate(opets, predicate);
