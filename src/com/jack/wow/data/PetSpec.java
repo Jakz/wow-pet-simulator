@@ -58,9 +58,7 @@ public class PetSpec implements JsonnableContext
       if (weakFamily != this.family.getWeakFamily())
         throw new IllegalArgumentException("wrong matching for weak family for pet "+this.name+": expected "+this.family.getWeakFamily()+", found "+weakFamily);
     }
-    
-    System.out.println("qualityId: "+o.get("qualityId"));
-    
+        
     this.family = family;
   }
 

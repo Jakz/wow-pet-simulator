@@ -37,7 +37,6 @@ public enum PetFamily
   public static PetFamily unserialize(String name)
   {
     return Arrays.stream(values()).filter(c -> c.jsonName.equals(name)).findFirst().orElse(null);
-
   }
   
   public static PetFamily unserialize(int id)
