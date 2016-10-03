@@ -1,19 +1,23 @@
 package com.jack.wow.data;
 
+import java.net.URL;
 import java.util.Arrays;
+
+import javax.imageio.ImageIO;
+import javax.swing.ImageIcon;
 
 public enum PetFamily
 {
-  HUMANOID("Humanoid", "humanoid", 0),
-  DRAGONKIN("Dragonkin", "dragonkin", 1),
-  FLYING("Flying", "flying", 2),
-  UNDEAD("Undead", "undead", 3),
-  CRITTER("Critter", "critter", 4),
-  MAGICAL("Magical", "magical", 5),
-  ELEMENTAL("Elemental", "elemental", 6),
   BEAST("Beast", "beast", 7),
+  CRITTER("Critter", "critter", 4),
+  DRAGONKIN("Dragonkin", "dragonkin", 1),
+  ELEMENTAL("Elemental", "elemental", 6),
+  FLYING("Flying", "flying", 2),
+  MAGICAL("Magical", "magical", 5),
+  MECHANICAL("Mechanical", "mechanical", 9),
+  HUMANOID("Humanoid", "humanoid", 0),
+  UNDEAD("Undead", "undead", 3),
   WATER("Water", "water", 8),
-  MECHANICAL("Mechanical", "mechanical", 9)
   ;
   
   private PetFamily(String description, String jsonName, int id)
@@ -30,8 +34,32 @@ public enum PetFamily
   private PetFamily strongVS;
   private PetFamily weakVS;
   
+  private ImageIcon tinyIcon;
+  
   public PetFamily getStrongFamily() { return strongVS; }
   public PetFamily getWeakFamily() { return weakVS; }
+  
+  public ImageIcon getTinyIcon()
+  {
+    try
+    {
+      if (tinyIcon == null)
+      {
+        URL file = this.getClass().getClassLoader().getResource("com/jack/wow/ui/resources/family-"+jsonName+"-tiny.png");
+        tinyIcon = new ImageIcon(ImageIO.read(file));
+        return tinyIcon;
+      }
+      else
+        return tinyIcon;
+    }
+    catch (Exception e)
+    {
+      e.printStackTrace();
+    }
+    
+    return new ImageIcon();
+
+  }
   
   
   public static PetFamily unserialize(String name)
@@ -43,6 +71,8 @@ public enum PetFamily
   {
     return Arrays.stream(values()).filter(c -> c.id == id).findFirst().orElse(null);
   }
+  
+  public static int count() { return values().length; }
   
   static
   {
@@ -79,6 +109,5 @@ public enum PetFamily
     for (PetFamily family : values())
       if (family.getStrongFamily() == null || family.getWeakFamily() == null)
         throw new IllegalArgumentException("Strong or weak family is null for "+family.description);
-    
   }
 }

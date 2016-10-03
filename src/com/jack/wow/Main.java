@@ -57,7 +57,7 @@ public class Main
       
       downloader.start();
       
-      PetListPanel petListPanel = new PetListPanel(300, 1024);
+      PetListPanel petListPanel = new PetListPanel(300, 800);
       
       petListPanel.populate(Arrays.asList(pets), p -> true);
       
@@ -68,6 +68,7 @@ public class Main
       frame.pack();
       frame.setVisible(true);
       frame.setLocationRelativeTo(null);
+      frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
       
     }
     catch (Exception e)
