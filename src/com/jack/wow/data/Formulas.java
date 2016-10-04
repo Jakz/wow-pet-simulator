@@ -6,6 +6,9 @@ public class Formulas
   public static int MIN_LEVEL = 1;
   public static int LEVELS = MAX_LEVEL - MIN_LEVEL + 1;
   
+  public static float FAMILY_BONUS_MULTIPLIER = 1.5f;
+  public static float FAMILY_MALUS_MULTIPLIER = 1.0f/3.0f;
+  
   /* ((baseHealth + breedHealth) * 5 * level * quality) + 100 */
   public static int hitPoints(PetStats stats, PetBreed breed, int level, PetQuality quality)
   {
@@ -22,6 +25,11 @@ public class Formulas
   public static int speed(PetStats stats, PetBreed breed, int level, PetQuality quality)
   {
     return Math.round((stats.speed() + breed.speed) * level * quality.coefficient);
+  }
+  
+  public static int damageWithRange(int minDamage, int maxDamage, float hitChance)
+  {
+    return 0;
   }
   
   public static PetStats adjustedStats(PetStats stats, PetBreed breed, int level, PetQuality quality)
