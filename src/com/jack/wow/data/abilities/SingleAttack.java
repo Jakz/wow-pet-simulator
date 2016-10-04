@@ -1,10 +1,10 @@
 package com.jack.wow.data.abilities;
 
-public class SingleEffect implements ActiveEffect
+public class SingleAttack implements ActiveEffect
 {
   private EffectPower power;
   
-  public SingleEffect(EffectPower power)
+  public SingleAttack(EffectPower power)
   {
     this.power = power;
   }
