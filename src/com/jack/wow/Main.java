@@ -2,6 +2,7 @@ package com.jack.wow;
 
 import java.awt.BorderLayout;
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.FileReader;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -18,15 +19,20 @@ import javax.swing.UIManager.LookAndFeelInfo;
 
 import com.google.gson.*;
 import com.jack.wow.data.Database;
+import com.jack.wow.data.Formulas;
 import com.jack.wow.data.PetAbility;
+import com.jack.wow.data.PetBreed;
 import com.jack.wow.data.PetOwnedAbility;
+import com.jack.wow.data.PetQuality;
 import com.jack.wow.data.PetSpec;
+import com.jack.wow.data.PetStats;
 import com.jack.wow.files.IconDownloader;
 import com.jack.wow.files.Json;
 import com.jack.wow.files.api.ApiAbility;
 import com.jack.wow.files.api.ApiFetcher;
 import com.jack.wow.files.api.ApiPet;
 import com.jack.wow.files.api.ApiSpecie;
+import com.jack.wow.files.api.ApiStats;
 import com.jack.wow.json.ImplicitContextedAdapter;
 import com.jack.wow.ui.PetListPanel;
 import com.jack.wow.ui.UI;
@@ -91,9 +97,52 @@ public class Main
     return false;
   }
   
+  
   public static void main(String[] args)
   {
     setLNF();
+    
+    /*for (PetBreed breed : PetBreed.values())
+      System.out.println(breed+": "+ApiFetcher.calculateBaseStats(838, breed));*/
+    
+    System.out.println(ApiFetcher.verifyBaseStatsConsistency(1155));
+
+    if (true)
+      return;
+    
+    PetStats[][] table = new PetStats[PetBreed.count()][25];
+
+    for (PetBreed breed : PetBreed.values())
+    {
+      System.out.println("Fetching "+breed.description);
+      
+      for (int i = 0; i < 25; ++i)
+      {
+        ApiStats stats = ApiFetcher.fetchStats(1155, i+1, breed, PetQuality.POOR);
+        table[breed.ordinal()][i] = new PetStats(stats);
+      }
+    }
+    
+    try (BufferedWriter wrt = Files.newBufferedWriter(Paths.get("data/test.csv")))
+    {
+      for (int i = 0; i < 25; ++i)
+        for (PetBreed breed : PetBreed.values())
+        {
+          PetStats s = table[breed.ordinal()][i];
+          wrt.write(String.format("\"%s\",%d,%d,%d,%d\n", breed.description, i+1, s.health(), s.power(), s.speed()));
+        }
+    }
+    catch (Exception e)
+    {
+      e.printStackTrace();
+    }
+    
+    
+    
+    
+    
+    if (true)
+      return;
 
     try
     {
