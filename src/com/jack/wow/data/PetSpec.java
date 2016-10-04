@@ -6,7 +6,11 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import com.google.gson.JsonPrimitive;
 import com.google.gson.JsonSerializationContext;
+import com.jack.wow.files.api.ApiAbility;
+import com.jack.wow.files.api.ApiPet;
+import com.jack.wow.files.api.ApiSpecie;
 import com.jack.wow.json.JsonnableContext;
 
 public class PetSpec implements JsonnableContext
@@ -30,6 +34,37 @@ public class PetSpec implements JsonnableContext
   {
     return Arrays.stream(abilities).allMatch(oa -> oa != null);
   }
+  
+  public PetSpec() { }
+  
+  public PetSpec(ApiPet a)
+  {
+    this.name = a.name;
+    this.creatureId = a.creatureId;
+    this.canBattle = a.canBattle;
+    
+    this.icon = a.icon;
+    
+    this.id = a.stats.speciesId;
+    this.family = PetFamily.unserialize(a.family);
+  }
+  
+  public void fillData(ApiSpecie s)
+  {
+    this.description = s.description;
+    this.source = s.source;
+    
+    for (ApiAbility a : s.abilities)
+    {
+      PetAbility ability = PetAbility.get(a.id);
+      
+      if (ability == null)
+        ability = PetAbility.generate(a);
+      
+      if (a.order < abilities.length) /* required for Enchanted Pen which returns 9?! abilities */
+        abilities[a.order] = new PetOwnedAbility(ability, a.order, a.slot, a.requiredLevel);
+    }
+  }
 
   public void unserialize(JsonElement element, JsonDeserializationContext context) throws IllegalAccessException
   {
@@ -37,49 +72,40 @@ public class PetSpec implements JsonnableContext
     
     /* parsing general data */
     this.name = o.get("name").getAsString();
-    this.creatureId = o.get("creatureId").getAsInt();
+    //this.creatureId = o.get("creatureId").getAsInt();
     this.canBattle = o.get("canBattle").getAsBoolean();
     
     this.icon = o.get("icon").getAsString();
-    this.id = o.get("stats").getAsJsonObject().get("speciesId").getAsInt();
+    this.id = o.get("id").getAsInt();
     
-    /* parsing family */
-    PetFamily family = PetFamily.unserialize(o.get("family").getAsString());
-    
-    if (family == null)
-      throw new IllegalArgumentException("Unknown family name: "+o.get("family"));
-    else if (family.id != o.get("typeId").getAsInt())
-      throw new IllegalArgumentException("Mismatching family with typeId: "+family.id+" != "+o.get("typeId"));
-    
-    this.family = family;
-    
-    /* verifying strongAgainst and weakAgainst */
-    {
-      JsonElement e1 = o.get("strongAgainst"), e2 = o.get("weakAgainst");
-      
-      if (!e1.isJsonArray() || !e2.isJsonArray())
-        throw new IllegalArgumentException("strongAgainst and weakAgainst are not present or are not arrays for pet "+this.name);
-      
-      JsonArray strong = e1.getAsJsonArray(), weak = e2.getAsJsonArray();
-      
-      if (strong.size() != 1 || weak.size() != 1)
-        throw new IllegalArgumentException("strongAgainst and weakAgainst must be of size 1 for pet "+this.name);
+    this.family = PetFamily.unserialize(o.get("family").getAsString());
 
-      PetFamily strongFamily = PetFamily.unserialize(strong.get(0).getAsString());
-      PetFamily weakFamily = PetFamily.unserialize(weak.get(0).getAsString());
-      
-      if (strongFamily != this.family.getStrongFamily())
-        throw new IllegalArgumentException("wrong matching for strong family for pet "+this.name+": expected "+this.family.getStrongFamily()+", found "+strongFamily);
-      if (weakFamily != this.family.getWeakFamily())
-        throw new IllegalArgumentException("wrong matching for weak family for pet "+this.name+": expected "+this.family.getWeakFamily()+", found "+weakFamily);
-    }
-        
-    this.family = family;
+    this.source = o.get("source").getAsString();
+    this.description = o.get("description").getAsString();
+    
+    JsonArray pa = o.get("abilities").getAsJsonArray();
+    
+    for (int i = 0; i < abilities.length; ++i)
+      abilities[i] = context.deserialize(pa.get(i), PetOwnedAbility.class);
   }
 
   @Override public JsonElement serialize(JsonSerializationContext context) throws IllegalAccessException
   {
-    throw new IllegalStateException("PetSpec is not serializable");
+    JsonObject object = new JsonObject();
+    
+    object.add("name", new JsonPrimitive(name));
+    object.add("family", new JsonPrimitive(family.jsonName));
+    object.add("id", new JsonPrimitive(id));
+    object.add("canBattle", new JsonPrimitive(canBattle));
+    object.add("icon", new JsonPrimitive(icon));
+    
+    object.add("description", new JsonPrimitive(description));
+    object.add("source", new JsonPrimitive(source));
+
+    object.add("abilities", context.serialize(abilities));
+    
+    
+    return object;
   }
   
   

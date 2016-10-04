@@ -8,16 +8,18 @@ import com.jack.wow.files.api.ApiAbility;
 
 public class PetAbility
 {  
-  int id;
-  String name;
+  public int id;
+  public String name;
 
-  PetFamily family;
-  int cooldown;
-  int rounds;
-  boolean isPassive;
+  public PetFamily family;
+  public int cooldown;
+  public int rounds;
+  public boolean isPassive;
   
-  String description;
-  String icon;
+  public String description;
+  public String icon;
+  
+  public PetAbility() { }
   
   private PetAbility(int id, String name, PetFamily family, int cooldown, int rounds, boolean isPassive, String icon)
   {

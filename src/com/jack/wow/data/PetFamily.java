@@ -8,16 +8,16 @@ import javax.swing.ImageIcon;
 
 public enum PetFamily
 {
-  BEAST("Beast", "beast", 7),
-  CRITTER("Critter", "critter", 4),
-  DRAGONKIN("Dragonkin", "dragonkin", 1),
-  ELEMENTAL("Elemental", "elemental", 6),
-  FLYING("Flying", "flying", 2),
-  MAGICAL("Magical", "magical", 5),
-  MECHANICAL("Mechanical", "mechanical", 9),
-  HUMANOID("Humanoid", "humanoid", 0),
-  UNDEAD("Undead", "undead", 3),
-  WATER("Water", "water", 8),
+  beast("Beast", "beast", 7),
+  critter("Critter", "critter", 4),
+  dragonkin("Dragonkin", "dragonkin", 1),
+  elemental("Elemental", "elemental", 6),
+  flying("Flying", "flying", 2),
+  magical("Magical", "magical", 5),
+  mechanical("Mechanical", "mechanical", 9),
+  humanoid("Humanoid", "humanoid", 0),
+  undead("Undead", "undead", 3),
+  water("Water", "water", 8),
   ;
   
   private PetFamily(String description, String jsonName, int id)
@@ -76,35 +76,35 @@ public enum PetFamily
   
   static
   {
-    PetFamily.HUMANOID.strongVS = PetFamily.DRAGONKIN;
-    PetFamily.HUMANOID.weakVS = PetFamily.BEAST;
+    PetFamily.humanoid.strongVS = PetFamily.dragonkin;
+    PetFamily.humanoid.weakVS = PetFamily.beast;
     
-    PetFamily.DRAGONKIN.strongVS = PetFamily.MAGICAL;
-    PetFamily.DRAGONKIN.weakVS = PetFamily.UNDEAD;
+    PetFamily.dragonkin.strongVS = PetFamily.magical;
+    PetFamily.dragonkin.weakVS = PetFamily.undead;
     
-    PetFamily.FLYING.strongVS = PetFamily.WATER;
-    PetFamily.FLYING.weakVS = PetFamily.DRAGONKIN;
+    PetFamily.flying.strongVS = PetFamily.water;
+    PetFamily.flying.weakVS = PetFamily.dragonkin;
     
-    PetFamily.UNDEAD.strongVS = PetFamily.HUMANOID;
-    PetFamily.UNDEAD.weakVS = PetFamily.WATER;
+    PetFamily.undead.strongVS = PetFamily.humanoid;
+    PetFamily.undead.weakVS = PetFamily.water;
     
-    PetFamily.CRITTER.strongVS = PetFamily.UNDEAD;
-    PetFamily.CRITTER.weakVS = PetFamily.HUMANOID;
+    PetFamily.critter.strongVS = PetFamily.undead;
+    PetFamily.critter.weakVS = PetFamily.humanoid;
     
-    PetFamily.MAGICAL.strongVS = PetFamily.FLYING;
-    PetFamily.MAGICAL.weakVS = PetFamily.MECHANICAL;
+    PetFamily.magical.strongVS = PetFamily.flying;
+    PetFamily.magical.weakVS = PetFamily.mechanical;
     
-    PetFamily.ELEMENTAL.strongVS = PetFamily.MECHANICAL;
-    PetFamily.ELEMENTAL.weakVS = PetFamily.CRITTER;
+    PetFamily.elemental.strongVS = PetFamily.mechanical;
+    PetFamily.elemental.weakVS = PetFamily.critter;
     
-    PetFamily.BEAST.strongVS = PetFamily.CRITTER;
-    PetFamily.BEAST.weakVS = PetFamily.FLYING;
+    PetFamily.beast.strongVS = PetFamily.critter;
+    PetFamily.beast.weakVS = PetFamily.flying;
     
-    PetFamily.WATER.strongVS = PetFamily.ELEMENTAL;
-    PetFamily.WATER.weakVS = PetFamily.MAGICAL;
+    PetFamily.water.strongVS = PetFamily.elemental;
+    PetFamily.water.weakVS = PetFamily.magical;
     
-    PetFamily.MECHANICAL.strongVS = PetFamily.BEAST;
-    PetFamily.MECHANICAL.weakVS = PetFamily.ELEMENTAL;
+    PetFamily.mechanical.strongVS = PetFamily.beast;
+    PetFamily.mechanical.weakVS = PetFamily.elemental;
     
     for (PetFamily family : values())
       if (family.getStrongFamily() == null || family.getWeakFamily() == null)
