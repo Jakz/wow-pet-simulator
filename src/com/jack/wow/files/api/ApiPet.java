@@ -1,7 +1,5 @@
 package com.jack.wow.files.api;
 
-import com.google.gson.JsonArray;
-import com.google.gson.JsonElement;
 import com.jack.wow.data.PetFamily;
 
 public class ApiPet

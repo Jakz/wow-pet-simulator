@@ -1,4 +1,4 @@
-package com.jack.wow.data.abilities;
+package com.jack.wow.battle.abilities;
 
 public class SingleAttack implements ActiveEffect
 {

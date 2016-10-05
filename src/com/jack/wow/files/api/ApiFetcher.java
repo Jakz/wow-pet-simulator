@@ -1,7 +1,6 @@
 package com.jack.wow.files.api;
 
 import java.io.InputStream;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Arrays;
 import java.util.Scanner;
