@@ -25,6 +25,6 @@ public class Pet
   public PetBreed breed() { return breed; }
   public PetQuality quality() { return quality; }
   public int level() { return level; }
-  public PetStats stats() { return stats; }
+  public PetStats stats() { return new PetStats(8,8,8); }
   
 }

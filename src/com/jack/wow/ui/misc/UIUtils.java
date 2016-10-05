@@ -21,7 +21,6 @@ public class UIUtils
     frame.getContentPane().setLayout(new BorderLayout());
     frame.getContentPane().add(panel, BorderLayout.CENTER);
     frame.pack();
-    frame.setVisible(true);
     
     return frame;
   }

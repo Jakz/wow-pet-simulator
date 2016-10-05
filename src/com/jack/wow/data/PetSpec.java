@@ -14,9 +14,7 @@ import com.jack.wow.files.api.ApiSpecie;
 import com.jack.wow.json.JsonnableContext;
 
 public class PetSpec implements JsonnableContext
-{
-  public static PetSpec[] data;
-  
+{  
   public String name;
   public PetFamily family;
   public int id;
@@ -106,6 +104,19 @@ public class PetSpec implements JsonnableContext
     
     
     return object;
+  }
+  
+  
+  public static PetSpec[] data;
+  
+  public static PetSpec forName(String name)
+  {
+    PetSpec spec = Arrays.stream(data).filter(p -> p.name.compareToIgnoreCase(name) == 0).findFirst().orElse(null);
+    
+    if (spec == null)
+      throw new IllegalArgumentException("PetSpec \'"+name+"\' not found.");
+    
+    return spec;
   }
   
   

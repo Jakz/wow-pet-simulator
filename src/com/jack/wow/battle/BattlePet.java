@@ -8,6 +8,7 @@ import com.jack.wow.battle.abilities.PassiveEffect;
 import com.jack.wow.data.Formulas;
 import com.jack.wow.data.Pet;
 import com.jack.wow.data.PetOwnedAbility;
+import com.jack.wow.data.PetStats;
 
 /**
  * This class is used as an instance of a pet inside a battle, it contains all the additional data required to manage a battle,
@@ -38,6 +39,9 @@ public class BattlePet
   private final Pet pet;
   
   private int hitPoints;
+  private int power;
+  private int speed;
+  
   private final AbilityStatus[] abilities;
   private final List<EffectStatus> passiveEffects;
   
@@ -47,14 +51,20 @@ public class BattlePet
     resetHitPoints();
     
     abilities = Arrays.stream(set.indices()).boxed()
-                                .map(i -> new AbilityStatus(pet.spec().abilities[3*i]))
+                                .map(i -> new AbilityStatus(pet.spec().abilities[2*i + set.index(i)]))
                                 .toArray(i -> new AbilityStatus[i]);
     
     passiveEffects = new ArrayList<>();
   }
-  
+
   public void resetHitPoints()
   {
-    this.hitPoints = Formulas.hitPoints(pet.stats(), pet.breed(), pet.level(), pet.quality());
+    PetStats astats = Formulas.adjustedStats(pet.stats(), pet.breed(), pet.level(), pet.quality());
+    this.hitPoints = (int)astats.health();
+    this.power = (int)astats.power();
+    this.speed = (int)astats.speed();
   }
+  
+  public PetOwnedAbility ability(int i) { return abilities[i].ability; }
+  public Pet pet() { return pet; }
 }

@@ -15,9 +15,16 @@ import javax.swing.UIManager;
 import javax.swing.UIManager.LookAndFeelInfo;
 
 import com.google.gson.*;
+import com.jack.wow.battle.AbilitySet;
+import com.jack.wow.battle.Battle;
+import com.jack.wow.battle.BattlePet;
+import com.jack.wow.battle.BattleTeam;
 import com.jack.wow.data.Database;
+import com.jack.wow.data.Pet;
 import com.jack.wow.data.PetAbility;
+import com.jack.wow.data.PetBreed;
 import com.jack.wow.data.PetOwnedAbility;
+import com.jack.wow.data.PetQuality;
 import com.jack.wow.data.PetSpec;
 import com.jack.wow.files.IconDownloader;
 import com.jack.wow.files.Json;
@@ -140,6 +147,42 @@ public class Main
       
       UI.petListFrame.setLocationRelativeTo(null);
       UI.petListFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+      
+      
+      UI.battleFrame.setLocationRelativeTo(null);
+      
+      BattlePet pet1 = new BattlePet(
+          new Pet(PetSpec.forName("anubisath idol"), PetBreed.HH, PetQuality.RARE, 25),
+          new AbilitySet(1,1,2)
+      );
+      BattlePet pet2 = new BattlePet(
+          new Pet(PetSpec.forName("darkmoon zeppelin"), PetBreed.HH, PetQuality.RARE, 25),
+          new AbilitySet(1,1,2)
+      );
+      BattlePet pet3 = new BattlePet(
+          new Pet(PetSpec.forName("chrominius"), PetBreed.HH, PetQuality.RARE, 25),
+          new AbilitySet(1,1,2)
+      );
+      
+      BattlePet pet4 = new BattlePet(
+          new Pet(PetSpec.forName("pandaren water spirit"), PetBreed.HH, PetQuality.RARE, 25),
+          new AbilitySet(1,1,2)
+      );
+      BattlePet pet5 = new BattlePet(
+          new Pet(PetSpec.forName("murky"), PetBreed.HH, PetQuality.RARE, 25),
+          new AbilitySet(1,1,2)
+      );
+      BattlePet pet6 = new BattlePet(
+          new Pet(PetSpec.forName("son of sethe"), PetBreed.HH, PetQuality.RARE, 25),
+          new AbilitySet(1,1,2)
+      );
+      
+      BattleTeam team1 = new BattleTeam(pet1, pet2, pet3);
+      BattleTeam team2 = new BattleTeam(pet3, pet5, pet6);
+      
+      Battle battle = new Battle(team1, team2);
+      
+      UI.battleFrame.panel().setBattle(battle);
       
     }
     catch (Exception e)
