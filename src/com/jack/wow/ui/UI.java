@@ -18,8 +18,8 @@ public class UI
   
   public static void init()
   {
-    //petListFrame.setVisible(true);
-    //infoFrame.setVisible(true);
-    battleFrame.setVisible(true);
+    petListFrame.setVisible(true);
+    infoFrame.setVisible(true);
+    //battleFrame.setVisible(true);
   }
 }

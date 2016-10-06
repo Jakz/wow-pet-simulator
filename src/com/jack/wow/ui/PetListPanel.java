@@ -1,6 +1,7 @@
 package com.jack.wow.ui;
 
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.GridLayout;
@@ -20,10 +21,12 @@ import javax.swing.JTextField;
 import javax.swing.JToggleButton;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.DefaultTableCellRenderer;
+import javax.swing.table.TableCellRenderer;
 
 import com.jack.wow.data.PetFamily;
 import com.jack.wow.data.PetSpec;
 import com.jack.wow.ui.misc.Icons;
+import com.jack.wow.ui.misc.TableModelColumn;
 import com.jack.wow.ui.misc.UIUtils;
 
 public class PetListPanel extends JPanel
@@ -49,25 +52,46 @@ public class PetListPanel extends JPanel
   
   private class PetListModel extends AbstractTableModel
   {
-    private final String[] columnNames = { "", "", "Name" };
-    private final Class<?>[] columnClasses = { ImageIcon.class, ImageIcon.class, String.class };
-    
-    @Override public int getColumnCount() { return columnClasses.length; }
-    @Override public int getRowCount() { return pets.size(); }
-    @Override public Class<?> getColumnClass(int c) { return columnClasses[c]; }
-    @Override public String getColumnName(int c) { return columnNames[c]; }
+    private final TableModelColumn<?>[] columns = {  
+      new TableModelColumn<PetSpec>(Integer.class, "", p -> p.id),
+      new TableModelColumn<PetSpec>(ImageIcon.class, "", p -> Icons.getIcon(p.icon, true)),
+      new TableModelColumn<PetSpec>(ImageIcon.class, "", p -> p.family.getTinyIcon()),
+      new TableModelColumn<PetSpec>(String.class, "Name", p -> p.name),
+      new TableModelColumn<PetSpec>(Boolean.class, "", p -> p.canBattle)
+    };
 
+    @Override public int getColumnCount() { return columns.length; }
+    @Override public int getRowCount() { return pets.size(); }
+    @Override public Class<?> getColumnClass(int c) { return columns[c].clazz; }
+    @Override public String getColumnName(int c) { return columns[c].name; }
+
+    @SuppressWarnings("unchecked")
     @Override public Object getValueAt(int r, int c)
     {
       PetSpec pet = pets.get(r);
+      return ((TableModelColumn<PetSpec>)columns[c]).lambda.apply(pet);
+    }
+  }
+  
+  private class BooleanCellRenderer extends DefaultTableCellRenderer
+  {
+    public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column)
+    {
+      Component c = super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
+      JLabel l = (JLabel)c;
       
-      switch (c)
+      if ((boolean)value)
       {
-        case 0: return Icons.getIcon(pet.icon, true);
-        case 1: return pet.family.getTinyIcon();
-        case 2: return pet.name;
-        default: return null;
+        l.setForeground(new Color(0,180,0));
+        l.setText("\u2713");
       }
+      else
+      {
+         l.setForeground(new Color(180,0,0));
+         l.setText("\u2717");
+      }
+      
+      return c;
     }
   }
   
@@ -104,13 +128,19 @@ public class PetListPanel extends JPanel
     model = new PetListModel();
     table = new JTable(model);
     
-    table.setAutoResizeMode(JTable.AUTO_RESIZE_LAST_COLUMN);
-    UIUtils.resizeColumn(table.getColumnModel().getColumn(0), 20);
+    table.setAutoResizeMode(JTable.AUTO_RESIZE_SUBSEQUENT_COLUMNS);
     UIUtils.resizeColumn(table.getColumnModel().getColumn(1), 20);
+    UIUtils.resizeColumn(table.getColumnModel().getColumn(2), 20);
+    //UIUtils.resizeColumn(table.getColumnModel().getColumn(2), 200);
+    UIUtils.resizeColumn(table.getColumnModel().getColumn(4), 20);
 
+    
     table.setRowHeight(20);
     table.getTableHeader().setFont(this.getFont().deriveFont(this.getFont().getSize()-2.0f));
+    //table.getColumnModel().getColumn(0).setHeaderRenderer(..);
     table.setAutoCreateRowSorter(true);
+    
+    table.setDefaultRenderer(Boolean.class, new BooleanCellRenderer());
     
     table.getSelectionModel().addListSelectionListener(e -> {
       int r = table.getSelectedRow();

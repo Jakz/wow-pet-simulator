@@ -1,13 +1,23 @@
 package com.jack.wow;
 
+import java.util.List;
+import java.util.Objects;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Set;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 import javax.swing.JFrame;
@@ -28,8 +38,10 @@ import com.jack.wow.data.PetQuality;
 import com.jack.wow.data.PetSpec;
 import com.jack.wow.files.IconDownloader;
 import com.jack.wow.files.Json;
+import com.jack.wow.files.StreamException;
 import com.jack.wow.files.api.ApiAbility;
 import com.jack.wow.files.api.ApiFetcher;
+import com.jack.wow.files.api.ApiMasterList;
 import com.jack.wow.files.api.ApiPet;
 import com.jack.wow.files.api.ApiSpecie;
 import com.jack.wow.ui.UI;
@@ -51,24 +63,67 @@ public class Main
     }
   }
   
-  public static void buildDatabase() throws IOException
+  public static void buildDatabase() throws IOException, InterruptedException
   {
     Gson gson = Json.build();
 
-    ApiPet[] apets = gson.fromJson(new BufferedReader(new FileReader("./data/pets.json")), ApiPet[].class);
-    Arrays.stream(apets).forEach(a -> a.isConsistent());
-    PetSpec.data = Arrays.stream(apets).map(a -> new PetSpec(a)).toArray(i -> new PetSpec[i]);
+    final int MAX_ABILITY_ID = 2000;
+    final int MAX_PET_ID = 2000;
     
-    /* fetch abilities from WoW API */
-    for (PetSpec pet : PetSpec.data)
     {
-      ApiSpecie specie = ApiFetcher.fetchSpecie(pet.id);
-      System.out.println("Fetched "+specie.name);
-      pet.fillData(specie);
+      ExecutorService executor = Executors.newFixedThreadPool(10);
+      List<Future<ApiAbility>> abilities = Collections.synchronizedList(new ArrayList<>());
+      
+      /* fetch abilities */
+      for (int i = 0; i < MAX_ABILITY_ID; ++i)
+      {
+        final int j = i;
+        Callable<ApiAbility> task = () -> { 
+          ApiAbility a = ApiFetcher.fetchAbility(j); 
+          System.out.println("Fetched "+j); return a;
+        };
+        executor.submit(task);
+      }
+      
+      executor.shutdown();
+      executor.awaitTermination(Long.MAX_VALUE, TimeUnit.SECONDS);
+      abilities.stream()
+        .filter(Objects::nonNull)
+        .map(StreamException.rethrowFunction(f -> f.get()))
+        .forEach(PetAbility::generate);
+      
+      System.out.println("Fetched "+PetAbility.data.size()+" abilities");
     }
     
+    {
+      ExecutorService executor = Executors.newFixedThreadPool(10);
+      List<Future<ApiSpecie>> pets = Collections.synchronizedList(new ArrayList<>());
+      
+      /* fetch pets */
+      for (int i = 0; i < MAX_PET_ID; ++i)
+      {
+        int j = i;
+        Callable<ApiSpecie> task = () -> ApiFetcher.fetchSpecie(j);
+        executor.submit(task);
+      }
+      
+      executor.shutdown();
+      executor.awaitTermination(Long.MAX_VALUE, TimeUnit.SECONDS);
+      PetSpec.data = pets.stream()
+        .filter(Objects::nonNull)
+        .map(StreamException.rethrowFunction(f -> f.get()))
+        .map(p -> new PetSpec(p))
+        .sorted((p1, p2) -> Integer.compare(p1.id, p2.id))
+        .toArray(i -> new PetSpec[i]);
+    }
+
+    /* mark all usable pets */
+    ApiMasterList master = ApiFetcher.fetchMasterList();
+    for (ApiPet pet : master.pets)
+      PetSpec.forId(pet.stats.speciesId).markUsable();
+
     Database db = new Database(PetAbility.data, PetSpec.data);
-    db.save(Paths.get("data/database.json"));
+    db.save(Paths.get("data/database.json"));    
   }
   
   public static boolean loadDatabase()
@@ -148,6 +203,8 @@ public class Main
       UI.petListFrame.setLocationRelativeTo(null);
       UI.petListFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
       
+      if (true)
+        return;
       
       UI.battleFrame.setLocationRelativeTo(null);
       

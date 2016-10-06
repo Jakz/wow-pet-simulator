@@ -18,6 +18,7 @@ public class PetSpec implements JsonnableContext
   public String name;
   public PetFamily family;
   public int id;
+  public boolean usable;
   
   public boolean canBattle;
   public int creatureId;
@@ -33,22 +34,21 @@ public class PetSpec implements JsonnableContext
     return Arrays.stream(abilities).allMatch(oa -> oa != null);
   }
   
+  public void markUsable() { usable = true; }
+  
   public PetSpec() { }
-  
-  public PetSpec(ApiPet a)
+
+  public PetSpec(ApiSpecie s)
   {
-    this.name = a.name;
-    this.creatureId = a.creatureId;
-    this.canBattle = a.canBattle;
+    this.usable = false;
     
-    this.icon = a.icon;
+    this.name = s.name;
+    this.family = PetFamily.unserialize(s.petTypeId);
+    this.id = s.speciesId;
+    this.canBattle = s.canBattle;
+    this.creatureId = s.creatureId;
     
-    this.id = a.stats.speciesId;
-    this.family = PetFamily.unserialize(a.family);
-  }
-  
-  public void fillData(ApiSpecie s)
-  {
+    this.icon = s.icon;
     this.description = s.description;
     this.source = s.source;
     
@@ -57,7 +57,7 @@ public class PetSpec implements JsonnableContext
       PetAbility ability = PetAbility.get(a.id);
       
       if (ability == null)
-        ability = PetAbility.generate(a);
+        throw new IllegalArgumentException("ability "+a.id+" not found");
       
       if (a.order < abilities.length) /* required for Enchanted Pen which returns 9?! abilities */
         abilities[a.order] = new PetOwnedAbility(ability, a.order, a.slot, a.requiredLevel);
@@ -115,6 +115,16 @@ public class PetSpec implements JsonnableContext
     
     if (spec == null)
       throw new IllegalArgumentException("PetSpec \'"+name+"\' not found.");
+    
+    return spec;
+  }
+  
+  public static PetSpec forId(int id)
+  {
+    PetSpec spec = Arrays.stream(data).filter(p -> p.id == id).findFirst().orElse(null);
+    
+    if (spec == null)
+      throw new IllegalArgumentException("PetSpec \'id="+id+"\' not found.");
     
     return spec;
   }

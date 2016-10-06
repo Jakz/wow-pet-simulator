@@ -1,7 +1,11 @@
 package com.jack.wow.files.api;
 
+import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.net.URL;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.Scanner;
 import java.util.stream.Collectors;
@@ -15,22 +19,93 @@ import com.jack.wow.data.PetStats;
 
 public class ApiFetcher
 {
-  private final static String API_KEY = "hbpn3m6kx2ra59rycuxzgh7wch8ew67j";
+  private static String API_KEY = null;
   private final static String LOCALE = "en_GB";
   
   private final static String SPECIE_URL = "https://eu.api.battle.net/wow/pet/species/";
-  private final static String STATS_URL = "https://us.api.battle.net/wow/pet/stats/";
+  private final static String STATS_URL = "https://eu.api.battle.net/wow/pet/stats/";
+  private final static String MASTER_URL = "https://eu.api.battle.net/wow/pet/";
+  private final static String ABILITY_URL = "https://eu.api.battle.net/wow/pet/ability/";
+
+  
+  private static String apiKey()
+  {
+    if (API_KEY == null)
+    {
+      try
+      {
+        Path path = Paths.get("data/api.key");
+        API_KEY = Files.lines(path).findFirst().get();
+      }
+      catch (Exception e)
+      {
+        throw new IllegalArgumentException("missing data/api.key file");
+      }
+    }
+    
+    return API_KEY;
+  }
   
   private static Gson gson()
   {
     return new GsonBuilder().create();
   }
   
+  public static ApiMasterList fetchMasterList()
+  {
+    try
+    {
+      URL url = new URL(MASTER_URL + "?locale=" + LOCALE + "&apikey=" + apiKey());
+      
+      try (InputStream is = url.openStream())
+      {
+        try (Scanner scanner = new Scanner(is, "UTF-8"))
+        {
+          String data = scanner.useDelimiter("\\A").next();
+          return gson().fromJson(data, ApiMasterList.class);
+        }
+      } 
+    } 
+    catch (Exception e)
+    {
+      e.printStackTrace();
+    }
+    
+    return null;
+  }
+  
+  public static ApiAbility fetchAbility(int id)
+  {
+    try
+    {
+      URL url = new URL(ABILITY_URL + id + "?locale=" + LOCALE + "&apikey=" + apiKey());
+            
+      try (InputStream is = url.openStream())
+      {
+        try (Scanner scanner = new Scanner(is, "UTF-8"))
+        {
+          String data = scanner.useDelimiter("\\A").next();
+          return gson().fromJson(data, ApiAbility.class);
+        }
+      } 
+    } 
+    catch (FileNotFoundException e)
+    {
+      return null;
+    }
+    catch (Exception e)
+    {
+      e.printStackTrace();
+    }
+    
+    return null;
+  }
+  
   public static ApiSpecie fetchSpecie(int id)
   {
     try
     {
-      URL url = new URL(SPECIE_URL + id + "?locale=" + LOCALE + "&apikey=" + API_KEY);
+      URL url = new URL(SPECIE_URL + id + "?locale=" + LOCALE + "&apikey=" + apiKey());
       
       try (InputStream is = url.openStream())
       {
@@ -41,6 +116,10 @@ public class ApiFetcher
         }
       } 
     } 
+    catch (FileNotFoundException e)
+    {
+      return null;
+    }
     catch (Exception e)
     {
       e.printStackTrace();
@@ -53,7 +132,7 @@ public class ApiFetcher
   {
     try
     {
-      URL url = new URL(STATS_URL + id + "?level=" + level + "&breedId=" + breed.maleId + "&qualityId=" + rarity.id + "&locale=" + LOCALE + "&apikey=" + API_KEY);
+      URL url = new URL(STATS_URL + id + "?level=" + level + "&breedId=" + breed.maleId + "&qualityId=" + rarity.id + "&locale=" + LOCALE + "&apikey=" + apiKey());
       
       try (InputStream is = url.openStream())
       {
