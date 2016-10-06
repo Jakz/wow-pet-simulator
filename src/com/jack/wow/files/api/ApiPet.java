@@ -33,10 +33,10 @@ public class ApiPet
     PetFamily strongFamily = PetFamily.unserialize(strongAgainst[0]);
     PetFamily weakFamily = PetFamily.unserialize(weakAgainst[0]);
     
-    if (strongFamily != family.getStrongFamily())
-      throw new IllegalArgumentException("wrong matching for strong family for pet "+this.name+": expected "+family.getStrongFamily()+", found "+strongFamily);
-    if (weakFamily != family.getWeakFamily())
-      throw new IllegalArgumentException("wrong matching for weak family for pet "+this.name+": expected "+family.getWeakFamily()+", found "+weakFamily);
+    if (strongFamily != family.getStrongAttacking())
+      throw new IllegalArgumentException("wrong matching for strong family for pet "+this.name+": expected "+family.getStrongAttacking()+", found "+strongFamily);
+    if (weakFamily != family.getWeakAttacking())
+      throw new IllegalArgumentException("wrong matching for weak family for pet "+this.name+": expected "+family.getWeakAttacking()+", found "+weakFamily);
     
     return true;
   }

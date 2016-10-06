@@ -2,13 +2,23 @@ package com.jack.wow.ui;
 
 import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.FontMetrics;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Image;
+import java.awt.Point;
+import java.awt.Rectangle;
+import java.awt.event.MouseEvent;
 
+import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JToolTip;
+import javax.swing.ToolTipManager;
 
 import com.jack.wow.battle.Battle;
+import com.jack.wow.data.PetAbility;
+import com.jack.wow.data.PetOwnedAbility;
+import com.jack.wow.ui.misc.Gfx;
 import com.jack.wow.ui.misc.Icons;
 
 public class BattlePanel extends JPanel
@@ -18,6 +28,11 @@ public class BattlePanel extends JPanel
   BattlePanel()
   {
     setPreferredSize(new Dimension(500,500));
+    ToolTipManager.sharedInstance().registerComponent(this);
+    ToolTipManager.sharedInstance().setEnabled(true);
+    ToolTipManager.sharedInstance().setDismissDelay(Integer.MAX_VALUE);
+    ToolTipManager.sharedInstance().setInitialDelay(0);
+    this.setFocusable(true);
   }
   
   private Graphics2D gfx;
@@ -45,10 +60,14 @@ public class BattlePanel extends JPanel
   {
     setGfx((Graphics2D)gg);
     
+    Gfx gfx = new Gfx(gg, true);
+    
+    gfx.clear(36,36,36);
+    
     float width = this.getWidth();
     float height = this.getHeight();
     
-    fillRect(0, height*0.66f, width, height*0.34f, Color.RED);
+    //fillRect(0, height*0.66f, width, height*0.34f, Color.RED);
     
     if (battle != null)
     {
@@ -56,18 +75,37 @@ public class BattlePanel extends JPanel
       {
         drawImage(10, 10 + i*80, 64, 64, image(battle.team(0).pet(i).pet().spec().icon));
         
-        /*for (int j = 0; j < 3; ++j)
-          drawImage(10 + i*80 + j*20, 10+64+5, 20, 20, image(battle.team(0).pet(i).ability(j).get().icon));*/
+        for (int j = 0; j < 3; ++j)
+          drawImage(10 + 64 + 5 + 25*j, 10 + i*80, 24, 24, image(battle.team(0).pet(i).ability(j).get().icon));
 
-      }
-      
+      } 
     }
-
   }
-  
+    
   public void setBattle(Battle battle)
   {
     this.battle = battle;
     this.repaint();
+  }
+  
+  @Override public JToolTip createToolTip()
+  {
+    CustomToolTip toolTip = new CustomToolTip(this);
+    toolTip.setPetSpec(battle.team(0).pet(0).pet().spec());
+    //toolTip.setAbility(PetAbility.forName("bombing run"));
+
+    return toolTip;
+  }
+  
+  @Override public Point getToolTipLocation(MouseEvent e)
+  {
+    Point p = e.getPoint();
+    p.y += 15;
+    return p;
+  }
+  
+  @Override public String getToolTipText(MouseEvent event)
+  {
+    return "Antani";
   }
 }

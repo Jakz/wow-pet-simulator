@@ -183,6 +183,7 @@ public class Main
       Battle battle = new Battle(team1, team2);
       
       UI.battleFrame.panel().setBattle(battle);
+      UI.battleFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
       
     }
     catch (Exception e)

@@ -50,9 +50,9 @@ public class BattlePet
     this.pet = pet;
     resetHitPoints();
     
-    abilities = Arrays.stream(set.indices()).boxed()
-                                .map(i -> new AbilityStatus(pet.spec().abilities[2*i + set.index(i)]))
-                                .toArray(i -> new AbilityStatus[i]);
+    abilities = new AbilityStatus[3];
+    for (int i = 0; i < abilities.length; ++i)
+      abilities[i] = new AbilityStatus(pet.spec().abilities[2*i + set.index(i)]);
     
     passiveEffects = new ArrayList<>();
   }

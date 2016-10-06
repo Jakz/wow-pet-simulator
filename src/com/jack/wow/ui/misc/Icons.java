@@ -2,6 +2,7 @@ package com.jack.wow.ui.misc;
 
 import java.awt.Image;
 import java.io.File;
+import java.net.URL;
 import java.nio.file.Files;
 import java.util.HashMap;
 import java.util.Map;
@@ -10,7 +11,44 @@ import javax.swing.ImageIcon;
 
 public class Icons
 {
+  public static enum Misc
+  {
+    STRONG("strong"),
+    WEAK("weak")
+    ;
+    
+    private final String path;
+    private Image image;
+    
+    private Misc(String path)
+    {
+      this.path = path;
+    }
+    
+    private Image loadImage()
+    {
+      try
+      {
+        URL file = this.getClass().getClassLoader().getResource("com/jack/wow/ui/resources/"+path+".png");
+        return ImageIO.read(file);
+      }
+      catch (Exception e)
+      {
+        e.printStackTrace();
+        return null;
+      }
+    }
+    
+    public Image image()
+    {
+      if (image == null)
+        image = loadImage();
+      return image;
+    }
+  }
+  
   private static final Map<String, ImageIcon> cache = new HashMap<>();
+  private static final Map<String, ImageIcon> customIcons = new HashMap<>();
   
   public static ImageIcon getIcon(String name, boolean small)
   {
@@ -85,5 +123,7 @@ public class Icons
     
     return null;
   }*/
+  
+  
   
 }

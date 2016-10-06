@@ -36,8 +36,11 @@ public enum PetFamily
   
   private ImageIcon tinyIcon;
   
-  public PetFamily getStrongFamily() { return strongVS; }
-  public PetFamily getWeakFamily() { return weakVS; }
+  public PetFamily getStrongAttacking() { return strongVS; }
+  public PetFamily getWeakAttacking() { return weakVS; }
+  
+  public PetFamily getStrongDefending() { return Arrays.stream(values()).filter(f -> f.getWeakAttacking() == this).findFirst().get(); }
+  public PetFamily getWeakDefending() { return Arrays.stream(values()).filter(f -> f.getStrongAttacking() == this).findFirst().get(); }
   
   public ImageIcon getTinyIcon()
   {
@@ -107,7 +110,7 @@ public enum PetFamily
     PetFamily.mechanical.weakVS = PetFamily.elemental;
     
     for (PetFamily family : values())
-      if (family.getStrongFamily() == null || family.getWeakFamily() == null)
+      if (family.getStrongAttacking() == null || family.getWeakAttacking() == null)
         throw new IllegalArgumentException("Strong or weak family is null for "+family.description);
   }
 }

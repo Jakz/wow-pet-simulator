@@ -49,4 +49,14 @@ public class PetAbility
     return ability;
   }
   
+  public static PetAbility forName(String name)
+  {
+    PetAbility ability = data.values().stream().filter(a -> a.name.compareToIgnoreCase(name) == 0).findAny().orElse(null);
+    
+    if (ability == null)
+      throw new IllegalArgumentException("no ability named "+name+" found.");
+    
+    return ability;
+  }
+  
 }
