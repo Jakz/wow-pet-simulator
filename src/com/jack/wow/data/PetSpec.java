@@ -72,6 +72,7 @@ public class PetSpec implements JsonnableContext
     this.name = o.get("name").getAsString();
     //this.creatureId = o.get("creatureId").getAsInt();
     this.canBattle = o.get("canBattle").getAsBoolean();
+    this.usable = o.get("usable").getAsBoolean();
     
     this.icon = o.get("icon").getAsString();
     this.id = o.get("id").getAsInt();
@@ -95,6 +96,7 @@ public class PetSpec implements JsonnableContext
     object.add("family", new JsonPrimitive(family.jsonName));
     object.add("id", new JsonPrimitive(id));
     object.add("canBattle", new JsonPrimitive(canBattle));
+    object.add("usable", new JsonPrimitive(usable));
     object.add("icon", new JsonPrimitive(icon));
     
     object.add("description", new JsonPrimitive(description));

@@ -19,6 +19,7 @@ import java.util.concurrent.Future;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 import javax.swing.JFrame;
 import javax.swing.UIManager;
@@ -65,56 +66,58 @@ public class Main
   
   public static void buildDatabase() throws IOException, InterruptedException
   {
-    Gson gson = Json.build();
-
     final int MAX_ABILITY_ID = 2000;
     final int MAX_PET_ID = 2000;
     
     {
-      ExecutorService executor = Executors.newFixedThreadPool(10);
-      List<Future<ApiAbility>> abilities = Collections.synchronizedList(new ArrayList<>());
+      final ThreadPoolExecutor executor = (ThreadPoolExecutor)Executors.newFixedThreadPool(10);
       
-      /* fetch abilities */
-      for (int i = 0; i < MAX_ABILITY_ID; ++i)
-      {
-        final int j = i;
-        Callable<ApiAbility> task = () -> { 
-          ApiAbility a = ApiFetcher.fetchAbility(j); 
-          System.out.println("Fetched "+j); return a;
-        };
-        executor.submit(task);
-      }
+      List<Callable<ApiAbility>> tasks = 
+        IntStream.range(0, MAX_ABILITY_ID)
+        .boxed()
+        .map(i -> (Callable<ApiAbility>)( () -> ApiFetcher.fetchAbility(i) ) )
+        .collect(Collectors.toList());
       
-      executor.shutdown();
-      executor.awaitTermination(Long.MAX_VALUE, TimeUnit.SECONDS);
-      abilities.stream()
-        .filter(Objects::nonNull)
+      new Thread(() -> {
+        while (executor.isTerminated())
+        {
+          System.out.println(String.format("Fetching abilities %2.1f%%..", ((executor.getCompletedTaskCount()/(float)MAX_ABILITY_ID)*100)));
+          try { Thread.sleep(1000); } catch (InterruptedException e) { e.printStackTrace(); }
+        }
+      }).start();
+    
+      executor.invokeAll(tasks).stream()
         .map(StreamException.rethrowFunction(f -> f.get()))
+        .filter(Objects::nonNull)
         .forEach(PetAbility::generate);
-      
+
       System.out.println("Fetched "+PetAbility.data.size()+" abilities");
     }
     
     {
-      ExecutorService executor = Executors.newFixedThreadPool(10);
-      List<Future<ApiSpecie>> pets = Collections.synchronizedList(new ArrayList<>());
+      final ThreadPoolExecutor executor = (ThreadPoolExecutor)Executors.newFixedThreadPool(10);
       
-      /* fetch pets */
-      for (int i = 0; i < MAX_PET_ID; ++i)
-      {
-        int j = i;
-        Callable<ApiSpecie> task = () -> ApiFetcher.fetchSpecie(j);
-        executor.submit(task);
-      }
+      List<Callable<ApiSpecie>> tasks = 
+        IntStream.range(0, MAX_PET_ID)
+        .boxed()
+        .map(i -> (Callable<ApiSpecie>)( () -> ApiFetcher.fetchSpecie(i) ) )
+        .collect(Collectors.toList());
       
-      executor.shutdown();
-      executor.awaitTermination(Long.MAX_VALUE, TimeUnit.SECONDS);
-      PetSpec.data = pets.stream()
-        .filter(Objects::nonNull)
+      new Thread(() -> {
+        while (executor.isTerminated())
+        {
+          System.out.println(String.format("Fetching pets %2.1f%%..", ((executor.getCompletedTaskCount()/(float)MAX_PET_ID)*100)));
+          try { Thread.sleep(1000); } catch (InterruptedException e) { e.printStackTrace(); }
+        }
+      }).start();
+    
+      PetSpec.data = executor.invokeAll(tasks).stream()
         .map(StreamException.rethrowFunction(f -> f.get()))
+        .filter(Objects::nonNull)
         .map(p -> new PetSpec(p))
-        .sorted((p1, p2) -> Integer.compare(p1.id, p2.id))
         .toArray(i -> new PetSpec[i]);
+
+      System.out.println("Fetched "+PetSpec.data.length+" pets");
     }
 
     /* mark all usable pets */
