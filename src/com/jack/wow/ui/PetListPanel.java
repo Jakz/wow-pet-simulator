@@ -16,6 +16,7 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.JTextField;
+import javax.swing.ListSelectionModel;
 import javax.swing.table.TableCellRenderer;
 
 import com.jack.wow.data.PetFamily;
@@ -63,6 +64,7 @@ public class PetListPanel extends JPanel
     table.getTableHeader().setFont(smallerFont);
     //table.getColumnModel().getColumn(0).setHeaderRenderer(..);
     table.setAutoCreateRowSorter(true);
+    table.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
     
     table.setDefaultRenderer(Boolean.class, new BooleanCellRenderer());
     

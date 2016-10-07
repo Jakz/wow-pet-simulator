@@ -44,7 +44,7 @@ public class QualityComboBox extends JPanel
     combo.setPreferredSize(new Dimension(width, height));
   }
   
-  public void setLambda(Consumer<PetQuality> lambda)
+  public void setCallback(Consumer<PetQuality> lambda)
   {
     Objects.requireNonNull(lambda);
     this.lambda = lambda;
@@ -55,6 +55,11 @@ public class QualityComboBox extends JPanel
     combo.removeItemListener(listener);
     combo.setSelectedItem(quality);
     combo.addItemListener(listener);
+  }
+  
+  public PetQuality getSelectedValue()
+  {
+    return combo.getItemAt(combo.getSelectedIndex());
   }
   
   private class RarityRenderer extends DefaultListCellRenderer

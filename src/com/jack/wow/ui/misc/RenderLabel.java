@@ -7,6 +7,7 @@ import javax.swing.JLabel;
 public class RenderLabel extends JLabel
 {
   private final StringBuilder buffer;
+  private String lastValue;
   private String htmlPreamble;
   
   public RenderLabel()
@@ -31,8 +32,8 @@ public class RenderLabel extends JLabel
   
   public Dimension finalizeText()
   {
-    buffer.insert(0, htmlPreamble);
-    setText(buffer.toString());
+    lastValue = buffer.toString();
+    setText(htmlPreamble + lastValue);
     setSize(getPreferredSize());
     return getSize();
   }

@@ -12,11 +12,14 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
+import java.util.List;
 import java.util.Set;
 import java.util.concurrent.Callable;
 import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 
 import com.jack.wow.ui.misc.ProgressDialog;
 
@@ -61,35 +64,30 @@ public class IconDownloader
     
     pool = (ThreadPoolExecutor)Executors.newFixedThreadPool(10);
     started = true;
-
-    for (String icon : icons)
+    
+    List<Callable<Boolean>> tasks = icons.stream()
+      .filter(icon -> !Files.exists(fileName(icon, true)))
+      .map(icon -> new DownloaderTask(icon, true))
+      .collect(Collectors.toList());
+    
+    icons.stream()
+    .filter(icon -> !Files.exists(fileName(icon, false)))
+    .map(icon -> new DownloaderTask(icon, false))
+    .forEach(tasks::add);
+    
+    try
     {
-      if (!Files.exists(fileName(icon, true)))
-        pool.submit(new DownloaderTask(icon, true));
-      if (!Files.exists(fileName(icon, false)))
-        pool.submit(new DownloaderTask(icon, false));
+      if (!tasks.isEmpty())
+      {
+        ProgressDialog.init(parent, "Icon Downloader", () -> { pool.shutdownNow(); started = false; });
+        List<Future<Boolean>> results = pool.invokeAll(tasks);
+        ProgressDialog.finished();
+
+      }
     }
-
-    pool.shutdown();
-        
-    if (!pool.getQueue().isEmpty())
+    catch (InterruptedException e)
     {
-      ProgressDialog.init(parent, "Icon Downloader", () -> { pool.shutdownNow(); started = false; });
-      
-      new Thread( () -> {
-        try
-        {
-          pool.awaitTermination(Long.MAX_VALUE, TimeUnit.SECONDS);
-          
-          if (!pool.isShutdown())
-            ProgressDialog.finished();
-        }
-        catch (InterruptedException e)
-        {
-          // cancelled by user
-        }
-        
-      }).start();
+      e.printStackTrace();
     }
   }
   
@@ -108,8 +106,8 @@ public class IconDownloader
       {
         this.url = new URL(baseURL + suffix + "/" + iconName + ".jpg");
         this.path = fileName(iconName, isSmall);
-
-      } catch (MalformedURLException e)
+      } 
+      catch (MalformedURLException e)
       {
         e.printStackTrace();
       }

@@ -5,7 +5,7 @@ package com.jack.wow.data;
  * 
  * @author jack
  */
-public class Pet
+public class Pet implements Abilited, Qualitied
 {
   private PetSpec spec;
   private PetBreed breed;
@@ -27,4 +27,8 @@ public class Pet
   public int level() { return level; }
   public PetStats stats() { return new PetStats(8,8,8); }
   
+  public void setLevel(int level) { this.level = level; }
+  public void setQuality(PetQuality quality) { this.quality = quality; }
+
+  @Override public PetAbility getAbility(int slot, int index) { return spec.getAbility(slot, index); }
 }

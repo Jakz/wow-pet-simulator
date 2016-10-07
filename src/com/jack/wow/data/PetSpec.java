@@ -1,6 +1,9 @@
 package com.jack.wow.data;
 
 import java.util.List;
+
+import javax.swing.Icon;
+
 import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -17,7 +20,7 @@ import com.jack.wow.files.api.ApiPet;
 import com.jack.wow.files.api.ApiSpecie;
 import com.jack.wow.json.JsonnableContext;
 
-public class PetSpec implements JsonnableContext
+public class PetSpec implements JsonnableContext, Abilited
 {  
   public String name;
   public PetFamily family;
@@ -76,7 +79,14 @@ public class PetSpec implements JsonnableContext
     for (int i = 0; i < 3; ++i)
       slot(i).sort((a1, a2) -> Integer.compare(a1.order(), a2.order()));
   }
+  
 
+  @Override public PetAbility getAbility(int slot, int index)
+  {
+    List<PetOwnedAbility> abilities = slot(slot);
+    return index < abilities.size() ? abilities.get(index).get() : null;
+  }
+  
   public void unserialize(JsonElement element, JsonDeserializationContext context) throws IllegalAccessException
   {
     JsonObject o = element.getAsJsonObject();
@@ -145,7 +155,5 @@ public class PetSpec implements JsonnableContext
       throw new IllegalArgumentException("PetSpec \'id="+id+"\' not found.");
     
     return spec;
-  }
-  
-  
+  }  
 }

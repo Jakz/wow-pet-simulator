@@ -12,7 +12,7 @@ public class UI
   
   static
   {
-    infoFrame = UIUtils.buildFrame(new PetInfoPanel(), "Pet Info");
+    infoFrame = UIUtils.buildFrame(new PetInfoPanel(600, 400), "Pet Info");
     petListFrame = UIUtils.buildFrame(new PetListPanel(600, 800), "Pet List");
     battleFrame = UIUtils.buildFrame(new BattlePanel(), "Battle View");
     abilityListFrame = UIUtils.buildFrame(new AbilityListPanel(400, 800), "Battle View");

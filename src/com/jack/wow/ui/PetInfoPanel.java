@@ -1,6 +1,7 @@
 package com.jack.wow.ui;
 
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.GridLayout;
 import java.util.Arrays;
@@ -10,53 +11,63 @@ import javax.swing.BorderFactory;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
+import com.jack.wow.data.Pet;
+import com.jack.wow.data.PetBreed;
 import com.jack.wow.data.PetOwnedAbility;
+import com.jack.wow.data.PetQuality;
 import com.jack.wow.data.PetSpec;
 import com.jack.wow.ui.misc.Icons;
 import com.jack.wow.ui.misc.LevelSliderBar;
 import com.jack.wow.ui.misc.QualityComboBox;
 
 public class PetInfoPanel extends JPanel
-{
-  JLabel petName = new JLabel();
+{  
+  private final CustomToolTip tip;
+  private final LevelSliderBar level;
+  private final QualityComboBox quality;
   
-  JLabel[] abilities = new JLabel[6];
+  private Pet pet;
   
-  PetInfoPanel()
+  private final int TOP_HEIGHT = 40;
+  
+  PetInfoPanel(int width, int height)
   {
-    petName.setPreferredSize(new Dimension(300, 60));
-    petName.setFont(petName.getFont().deriveFont(petName.getFont().getSize()+5.0f));
-        
-    JPanel abilitiesPanel = new JPanel(new GridLayout(2,3));
-    for (int i = 0; i < abilities.length; ++i)
-    {
-      abilities[i] = new JLabel();
-      abilities[i].setPreferredSize(new Dimension(60,60));
-      abilitiesPanel.add(abilities[i]);
-    }    
+    this.setBackground(new Color(36,36,36));
+    //this.setPreferredSize(new Dimension(width, height));
     
+    tip = new CustomToolTip(this);
+    tip.setSize(width, height - TOP_HEIGHT);
+    tip.setMainIconSize(50);
+    
+    level = new LevelSliderBar();
+    level.setOpaque(false);
+
+    quality = new QualityComboBox(false);
+    quality.setOpaque(false);
+    
+    level.setCallback(i -> { if (pet != null) { pet.setLevel(i); tip.repaint(); } });
+    quality.setCallback(q -> { if (pet != null) { pet.setQuality(q); tip.repaint(); } });
+
+
     setLayout(new BorderLayout());
-    add(new QualityComboBox(false), BorderLayout.NORTH);
-    add(petName, BorderLayout.CENTER);
-    add(abilitiesPanel, BorderLayout.SOUTH);
+    
+    JPanel topPanel = new JPanel();
+    topPanel.setBorder(null);
+    topPanel.setOpaque(false);
+    topPanel.setPreferredSize(new Dimension(width, TOP_HEIGHT));
+    topPanel.add(quality);
+    topPanel.add(level);
+    
+    add(topPanel, BorderLayout.SOUTH);
+    add(tip, BorderLayout.CENTER);
     
     setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
   }
   
-  public void update(PetSpec pet)
+  public void update(PetSpec spec)
   {
-    petName.setText(pet.name);
-    petName.setIcon(Icons.getIcon(pet.icon, false));
+    this.pet = new Pet(spec, PetBreed.HH, quality.getSelectedValue(), level.getValue());
     
-    for (int j = 0; j < 2; ++j)
-    {
-      for (int i = 0; i < 3; ++i)
-      {
-        List<PetOwnedAbility> slot = pet.slot(i);
-        
-        if (slot.size() >= j + 1)
-          abilities[j*3 + i].setIcon(j < slot.size() ? Icons.getIcon(slot.get(j).get().icon, false) : null);
-      }
-    }
+    tip.setPet(this.pet);
   }
 }

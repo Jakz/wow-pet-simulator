@@ -51,7 +51,12 @@ public class LevelSliderBar extends JPanel
   
   public LevelSliderBar(int width, int height)
   {
+    this();
     setPreferredSize(new Dimension(width, height));
+  }
+
+  public LevelSliderBar()
+  {
     bar.setMajorTickSpacing(5);
     bar.setMinorTickSpacing(1);
     
@@ -70,6 +75,8 @@ public class LevelSliderBar extends JPanel
     
     update(25);
   }
+  
+  public int getValue() { return bar.getValue(); }
   
   public void update(int level)
   {

@@ -14,7 +14,10 @@ public class Icons
   public static enum Misc
   {
     STRONG("strong"),
-    WEAK("weak")
+    WEAK("weak"),
+    HEALTH("stat-health"),
+    POWER("stat-power"),
+    SPEED("stat-speed")
     ;
     
     private final String path;
@@ -48,7 +51,6 @@ public class Icons
   }
   
   private static final Map<String, ImageIcon> cache = new HashMap<>();
-  private static final Map<String, ImageIcon> customIcons = new HashMap<>();
   
   public static ImageIcon getIcon(String name, boolean small)
   {
@@ -60,6 +62,11 @@ public class Icons
       img = loadIcon(name, small);
     
     return img;
+  }
+  
+  public static Image getImage(String name)
+  {
+    return getIcon(name, false).getImage();
   }
   
   private static ImageIcon loadIcon(String name, boolean small)

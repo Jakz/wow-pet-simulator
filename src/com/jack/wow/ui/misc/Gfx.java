@@ -39,12 +39,30 @@ public class Gfx
   private void saveColor(Color nc) { g.setColor(nc); } 
   private void restoreColor() { g.setColor(color); }
 
-  public void fillRect(float x, float y, float w, float h) { g.drawRect(x(x), y(y), (int)w, (int)h); }
+  public void fillRect(float x, float y, float w, float h) { g.fillRect(x(x), y(y), (int)w, (int)h); }
   public void fillRect(float x1, float y1, float w, float h, int r, int g, int b) { fillRect(x1,y1,w,h,new Color(r,g,b)); }
   public void fillRect(float x, float y, float w, float h, Color c) 
   { 
     saveColor(c);
-    g.fillRect(x(x), y(y), (int)w, (int)h);
+    fillRect(x, y, w, h);
+    restoreColor();
+  }
+  
+  public void rect(float x, float y, float w, float h) { g.drawRect(x(x), y(y), (int)w, (int)h); }
+  public void rect(float x1, float y1, float w, float h, int r, int g, int b) { rect(x1,y1,w,h,new Color(r,g,b)); }
+  public void rect(float x, float y, float w, float h, Color c) 
+  { 
+    saveColor(c);
+    rect(x, y, w, h);
+    restoreColor();
+  }
+  
+  public void fillOval(float x, float y, float w, float h) { g.fillOval(x(x), y(y), (int)w, (int)h); }
+  public void fillOval(float x1, float y1, float w, float h, int r, int g, int b) { fillOval(x1,y1,w,h,new Color(r,g,b)); }
+  public void fillOval(float x, float y, float w, float h, Color c) 
+  { 
+    saveColor(c);
+    fillOval(x, y, w, h);
     restoreColor();
   }
   
@@ -91,6 +109,8 @@ public class Gfx
   
   public void setFont(Font font) { g.setFont(font); }
   public void restoreFont() { g.setFont(this.font); }
+  
+  public int fontHeight() { return g.getFontMetrics().getHeight(); }
   
   public Font font() { return font; }
   public Font font(float sizeDelta) { return font.deriveFont(font.getSize()+sizeDelta); }
