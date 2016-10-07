@@ -41,7 +41,7 @@ public class PetSpec implements JsonnableContext, Abilited, Statsed
   public String icon;
   public String description;
   public String source;
-  public PetStats stats;
+  public PetStats stats = new PetStats(8,8,8);
   
   public boolean areAbilitiesPresent()
   {
@@ -114,6 +114,8 @@ public class PetSpec implements JsonnableContext, Abilited, Statsed
     
     for (int i = 0; i < pa.size(); ++i)
       abilities[i] = context.deserialize(pa.get(i), new TypeToken<List<PetOwnedAbility>>(){}.getType());
+    
+    this.stats = context.deserialize(o.get("stats"), PetStats.class);
   }
 
   @Override public JsonElement serialize(JsonSerializationContext context) throws IllegalAccessException
@@ -135,6 +137,8 @@ public class PetSpec implements JsonnableContext, Abilited, Statsed
       aabilities.add(context.serialize(slot(i)));
 
     object.add("abilities", aabilities);
+    object.add("stats", context.serialize(stats));
+    
     
     return object;
   }

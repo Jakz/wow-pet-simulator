@@ -16,6 +16,7 @@ import com.jack.wow.data.PetBreed;
 import com.jack.wow.data.PetOwnedAbility;
 import com.jack.wow.data.PetQuality;
 import com.jack.wow.data.PetSpec;
+import com.jack.wow.ui.misc.BreedComboBox;
 import com.jack.wow.ui.misc.Icons;
 import com.jack.wow.ui.misc.LevelSliderBar;
 import com.jack.wow.ui.misc.QualityComboBox;
@@ -25,6 +26,7 @@ public class PetInfoPanel extends JPanel
   private final CustomToolTip tip;
   private final LevelSliderBar level;
   private final QualityComboBox quality;
+  private final BreedComboBox breed;
   
   private Pet pet;
   
@@ -45,8 +47,12 @@ public class PetInfoPanel extends JPanel
     quality = new QualityComboBox(false);
     quality.setOpaque(false);
     
+    breed = new BreedComboBox(false);
+    breed.setOpaque(false);
+    
     level.setCallback(i -> { if (pet != null) { pet.setLevel(i); tip.repaint(); } });
     quality.setCallback(q -> { if (pet != null) { pet.setQuality(q); tip.repaint(); } });
+    breed.setCallback(q -> { if (pet != null) { pet.setBreed(q); tip.repaint(); } });
 
 
     setLayout(new BorderLayout());
@@ -56,6 +62,7 @@ public class PetInfoPanel extends JPanel
     topPanel.setOpaque(false);
     topPanel.setPreferredSize(new Dimension(width, TOP_HEIGHT));
     topPanel.add(quality);
+    topPanel.add(breed);
     topPanel.add(level);
     
     add(topPanel, BorderLayout.SOUTH);
@@ -66,7 +73,7 @@ public class PetInfoPanel extends JPanel
   
   public void update(PetSpec spec)
   {
-    this.pet = new Pet(spec, PetBreed.HH, quality.getSelectedValue(), level.getValue());
+    this.pet = new Pet(spec, breed.getSelectedValue(), quality.getSelectedValue(), level.getValue());
     
     tip.setPet(this.pet);
   }

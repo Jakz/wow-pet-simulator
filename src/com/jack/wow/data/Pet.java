@@ -32,6 +32,7 @@ public class Pet implements Abilited, Qualitied, Statsed
   
   public void setLevel(int level) { this.level = level; }
   public void setQuality(PetQuality quality) { this.quality = quality; }
+  public void setBreed(PetBreed breed) { this.breed = breed; }
 
   @Override public PetAbility getAbility(int slot, int index) { return spec.getAbility(slot, index); }
 }
