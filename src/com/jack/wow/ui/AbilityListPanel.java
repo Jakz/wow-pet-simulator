@@ -16,8 +16,8 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.JTextField;
-import javax.swing.table.TableCellRenderer;
 
+import com.jack.wow.data.PetAbility;
 import com.jack.wow.data.PetFamily;
 import com.jack.wow.data.PetSpec;
 import com.jack.wow.ui.misc.BooleanCellRenderer;
@@ -26,26 +26,24 @@ import com.jack.wow.ui.misc.SimpleTableModel;
 import com.jack.wow.ui.misc.TableModelColumn;
 import com.jack.wow.ui.misc.UIUtils;
 
-public class PetListPanel extends JPanel
+public class AbilityListPanel extends JPanel
 {
-  private Predicate<PetSpec> predicate = p -> true;
-  private List<PetSpec> opets = new ArrayList<>();
-  private final List<PetSpec> pets = new ArrayList<>();
+  private Predicate<PetAbility> predicate = p -> true;
+  private List<PetAbility> oabilities = new ArrayList<>();
+  private final List<PetAbility> abilities = new ArrayList<>();
   private final JTextField search = new JTextField();
   private final FamilyFilterButton[] familyFilters;
   
   private final JTable table;
-  private final SimpleTableModel<PetSpec> model;
+  private final SimpleTableModel<PetAbility> model;
   
-  public PetListPanel(int width, int height)
+  public AbilityListPanel(int width, int height)
   {
-    model = new SimpleTableModel<PetSpec>(pets,  
-      new TableModelColumn<PetSpec>(Integer.class, "", p -> p.id),
-      new TableModelColumn<PetSpec>(ImageIcon.class, "", p -> Icons.getIcon(p.icon, true)),
-      new TableModelColumn<PetSpec>(ImageIcon.class, "", p -> p.family.getTinyIcon()),
-      new TableModelColumn<PetSpec>(String.class, "Name", p -> p.name),
-      new TableModelColumn<PetSpec>(Boolean.class, "Can battle", p -> p.canBattle),
-      new TableModelColumn<PetSpec>(Boolean.class, "Tamable", p -> p.usable)
+    model = new SimpleTableModel<PetAbility>(abilities,  
+      new TableModelColumn<PetAbility>(Integer.class, "", p -> p.id),
+      new TableModelColumn<PetAbility>(ImageIcon.class, "", p -> Icons.getIcon(p.icon, true)),
+      new TableModelColumn<PetAbility>(ImageIcon.class, "", p -> p.family.getTinyIcon()),
+      new TableModelColumn<PetAbility>(String.class, "Name", p -> p.name)
     );
     
     table = new JTable(model);
@@ -54,8 +52,6 @@ public class PetListPanel extends JPanel
     UIUtils.resizeColumn(table.getColumnModel().getColumn(0), 50);
     UIUtils.resizeColumn(table.getColumnModel().getColumn(1), 20);
     UIUtils.resizeColumn(table.getColumnModel().getColumn(2), 20);
-    UIUtils.resizeColumn(table.getColumnModel().getColumn(4), 80);
-    UIUtils.resizeColumn(table.getColumnModel().getColumn(5), 80);
 
     final Font smallerFont = this.getFont().deriveFont(this.getFont().getSize()-2.0f);
     
@@ -72,13 +68,12 @@ public class PetListPanel extends JPanel
       if (r != -1)
       {
         r = table.convertRowIndexToModel(r);
-        UI.infoFrame.panel().update(pets.get(r));
       }
       
     });
     
     JPanel familyFiltersPanel = new JPanel(new GridLayout(1, PetFamily.count()+1));
-    ActionListener familyFilterListener = e -> populate(opets, predicate);
+    ActionListener familyFilterListener = e -> populate(oabilities, predicate);
     
     familyFilters = Arrays.stream(PetFamily.values())
                           .map(f -> new FamilyFilterButton(f, f.getTinyIcon()))
@@ -90,7 +85,7 @@ public class PetListPanel extends JPanel
     invertFamilyFilter.setFont(this.getFont().deriveFont(this.getFont().getSize()-2.0f));
     invertFamilyFilter.addActionListener(e -> {
       Arrays.stream(familyFilters).forEach(b -> b.setSelected(!b.isSelected()));
-      populate(opets, predicate);
+      populate(oabilities, predicate);
     });
     
     familyFiltersPanel.add(invertFamilyFilter);
@@ -111,15 +106,15 @@ public class PetListPanel extends JPanel
     add(familyFiltersPanel, BorderLayout.NORTH);
   }
   
-  public void populate(List<PetSpec> list, Predicate<PetSpec> filter)
+  public void populate(List<PetAbility> list, Predicate<PetAbility> filter)
   {
     predicate = filter;
-    opets = list;
+    oabilities = list;
 
     filter = filter.and(p -> Arrays.stream(familyFilters).anyMatch(b -> b.isSelected() && b.family == p.family));
     
-    pets.clear();
-    list.stream().filter(filter).forEach(pets::add);
+    abilities.clear();
+    list.stream().filter(filter).forEach(abilities::add);
     model.fireTableDataChanged();
   }
 }

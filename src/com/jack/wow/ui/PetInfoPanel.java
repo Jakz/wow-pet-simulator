@@ -13,6 +13,8 @@ import javax.swing.JPanel;
 import com.jack.wow.data.PetOwnedAbility;
 import com.jack.wow.data.PetSpec;
 import com.jack.wow.ui.misc.Icons;
+import com.jack.wow.ui.misc.LevelSliderBar;
+import com.jack.wow.ui.misc.QualityComboBox;
 
 public class PetInfoPanel extends JPanel
 {
@@ -31,10 +33,10 @@ public class PetInfoPanel extends JPanel
       abilities[i] = new JLabel();
       abilities[i].setPreferredSize(new Dimension(60,60));
       abilitiesPanel.add(abilities[i]);
-    }
-    
+    }    
     
     setLayout(new BorderLayout());
+    add(new QualityComboBox(false), BorderLayout.NORTH);
     add(petName, BorderLayout.CENTER);
     add(abilitiesPanel, BorderLayout.SOUTH);
     
