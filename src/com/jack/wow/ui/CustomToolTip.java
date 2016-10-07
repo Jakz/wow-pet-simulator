@@ -11,12 +11,14 @@ import javax.swing.JPanel;
 import javax.swing.JToolTip;
 
 import com.jack.wow.battle.BattlePet;
-import com.jack.wow.data.Abilited;
 import com.jack.wow.data.Pet;
 import com.jack.wow.data.PetAbility;
 import com.jack.wow.data.PetFamily;
 import com.jack.wow.data.PetSpec;
-import com.jack.wow.data.Qualitied;
+import com.jack.wow.data.PetStats;
+import com.jack.wow.data.interfaces.Abilited;
+import com.jack.wow.data.interfaces.Qualitied;
+import com.jack.wow.data.interfaces.Statsed;
 import com.jack.wow.ui.misc.Gfx;
 import com.jack.wow.ui.misc.Icons;
 import com.jack.wow.ui.misc.RenderLabel;
@@ -104,6 +106,17 @@ class CustomToolTip extends JToolTip
     g.image(Icons.Misc.WEAK.image(), base + 40, -1, 20, 20);
   }
   
+  public void drawStats(int x, int y, int health, int power, int speed)
+  {
+    g.setFont(g.font(0.0f, Font.BOLD));
+    g.image(Icons.Misc.HEALTH.image(), x, y);
+    g.string(Integer.toString(health), x + 20, y + 20 - g.fontHeight()/2, Color.WHITE);
+    g.image(Icons.Misc.POWER.image(), x + 70, y);
+    g.string(Integer.toString(power), x + 20 + 70, y + 20 - g.fontHeight()/2, Color.WHITE);
+    g.image(Icons.Misc.SPEED.image(), x + 70 + 60, y);
+    g.string(Integer.toString(speed), x + 70 + 60 + 20, y + 20 - g.fontHeight()/2, Color.WHITE);
+  }
+  
   public void drawAbilityGrid(Abilited pet)
   {
     g.restoreFont();
@@ -162,6 +175,13 @@ class CustomToolTip extends JToolTip
       {
         PetSpec spec = petSpec != null ? petSpec : pet.spec();
         
+        if (common instanceof Statsed)
+        {
+          PetStats stats = ((Statsed)common).stats();
+          drawStats(ICON_SIZE + 10, ICON_SIZE - 20, (int)stats.health(), (int)stats.power(), (int)stats.speed());
+
+        }
+
         Color borderColor = Color.DARK_GRAY;
         if (common instanceof Qualitied)
           borderColor = ((Qualitied)common).quality().color;

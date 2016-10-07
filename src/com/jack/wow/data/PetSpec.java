@@ -15,12 +15,14 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
 import com.google.gson.JsonSerializationContext;
 import com.google.gson.reflect.TypeToken;
+import com.jack.wow.data.interfaces.Abilited;
+import com.jack.wow.data.interfaces.Statsed;
 import com.jack.wow.files.api.ApiAbility;
 import com.jack.wow.files.api.ApiPet;
 import com.jack.wow.files.api.ApiSpecie;
 import com.jack.wow.json.JsonnableContext;
 
-public class PetSpec implements JsonnableContext, Abilited
+public class PetSpec implements JsonnableContext, Abilited, Statsed
 {  
   public String name;
   public PetFamily family;
@@ -39,6 +41,7 @@ public class PetSpec implements JsonnableContext, Abilited
   public String icon;
   public String description;
   public String source;
+  public PetStats stats;
   
   public boolean areAbilitiesPresent()
   {
@@ -86,6 +89,8 @@ public class PetSpec implements JsonnableContext, Abilited
     List<PetOwnedAbility> abilities = slot(slot);
     return index < abilities.size() ? abilities.get(index).get() : null;
   }
+  
+  @Override public PetStats stats() { return new PetStats(8,8,8); }
   
   public void unserialize(JsonElement element, JsonDeserializationContext context) throws IllegalAccessException
   {

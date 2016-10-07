@@ -1,4 +1,6 @@
-package com.jack.wow.data;
+package com.jack.wow.data.interfaces;
+
+import com.jack.wow.data.PetAbility;
 
 public interface Abilited
 {

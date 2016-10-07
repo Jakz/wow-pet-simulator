@@ -1,16 +1,19 @@
 package com.jack.wow.data;
 
+import com.jack.wow.data.interfaces.Abilited;
+import com.jack.wow.data.interfaces.Qualitied;
+import com.jack.wow.data.interfaces.Statsed;
+
 /**
  * This class represents a real pet, so it associates a PetSpec with a specific breed, quality and level.
  * 
  * @author jack
  */
-public class Pet implements Abilited, Qualitied
+public class Pet implements Abilited, Qualitied, Statsed
 {
-  private PetSpec spec;
+  private final PetSpec spec;
   private PetBreed breed;
   private PetQuality quality;
-  private PetStats stats;
   private int level;
   
   public Pet(PetSpec spec, PetBreed breed, PetQuality quality, int level)
@@ -25,7 +28,7 @@ public class Pet implements Abilited, Qualitied
   public PetBreed breed() { return breed; }
   public PetQuality quality() { return quality; }
   public int level() { return level; }
-  public PetStats stats() { return new PetStats(8,8,8); }
+  public PetStats stats() { return Formulas.adjustedStats(spec.stats(), breed, level, quality); }
   
   public void setLevel(int level) { this.level = level; }
   public void setQuality(PetQuality quality) { this.quality = quality; }
