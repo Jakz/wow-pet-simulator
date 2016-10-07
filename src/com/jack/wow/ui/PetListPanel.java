@@ -4,6 +4,7 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
+import java.awt.Font;
 import java.awt.GridLayout;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
@@ -57,7 +58,8 @@ public class PetListPanel extends JPanel
       new TableModelColumn<PetSpec>(ImageIcon.class, "", p -> Icons.getIcon(p.icon, true)),
       new TableModelColumn<PetSpec>(ImageIcon.class, "", p -> p.family.getTinyIcon()),
       new TableModelColumn<PetSpec>(String.class, "Name", p -> p.name),
-      new TableModelColumn<PetSpec>(Boolean.class, "", p -> p.canBattle)
+      new TableModelColumn<PetSpec>(Boolean.class, "Can battle", p -> p.canBattle),
+      new TableModelColumn<PetSpec>(Boolean.class, "Tamable", p -> p.usable)
     };
 
     @Override public int getColumnCount() { return columns.length; }
@@ -129,14 +131,17 @@ public class PetListPanel extends JPanel
     table = new JTable(model);
     
     table.setAutoResizeMode(JTable.AUTO_RESIZE_SUBSEQUENT_COLUMNS);
+    UIUtils.resizeColumn(table.getColumnModel().getColumn(0), 50);
     UIUtils.resizeColumn(table.getColumnModel().getColumn(1), 20);
     UIUtils.resizeColumn(table.getColumnModel().getColumn(2), 20);
     //UIUtils.resizeColumn(table.getColumnModel().getColumn(2), 200);
-    UIUtils.resizeColumn(table.getColumnModel().getColumn(4), 20);
+    UIUtils.resizeColumn(table.getColumnModel().getColumn(4), 80);
+    UIUtils.resizeColumn(table.getColumnModel().getColumn(5), 80);
 
+    final Font smallerFont = this.getFont().deriveFont(this.getFont().getSize()-2.0f);
     
     table.setRowHeight(20);
-    table.getTableHeader().setFont(this.getFont().deriveFont(this.getFont().getSize()-2.0f));
+    table.getTableHeader().setFont(smallerFont);
     //table.getColumnModel().getColumn(0).setHeaderRenderer(..);
     table.setAutoCreateRowSorter(true);
     

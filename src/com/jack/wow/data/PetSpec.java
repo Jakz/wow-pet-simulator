@@ -27,21 +27,19 @@ public class PetSpec implements JsonnableContext
   public boolean canBattle;
   public int creatureId;
   
-  public final List<?>[] pabilities = new List<?>[] { 
+  public final List<?>[] abilities = new List<?>[] { 
     new ArrayList<PetOwnedAbility>(),
     new ArrayList<PetOwnedAbility>(),
     new ArrayList<PetOwnedAbility>()
   };
-  
-  public final PetOwnedAbility[] abilities = new PetOwnedAbility[6];
-  
+    
   public String icon;
   public String description;
   public String source;
   
   public boolean areAbilitiesPresent()
   {
-    return Arrays.stream(abilities).allMatch(oa -> oa != null);
+    return Arrays.stream(abilities).anyMatch(s -> !s.isEmpty());
   }
   
   public void markUsable() { usable = true; }
@@ -72,8 +70,11 @@ public class PetSpec implements JsonnableContext
       if (ability == null)
         throw new IllegalArgumentException("ability "+a.id+" not found");
       
-      abilities[a.slot] = new PetOwnedAbility(ability, a.order, a.slot, a.requiredLevel);
+      slot(a.slot).add(new PetOwnedAbility(ability, a.order, a.slot, a.requiredLevel));
     }
+    
+    for (int i = 0; i < 3; ++i)
+      slot(i).sort((a1, a2) -> Integer.compare(a1.order(), a2.order()));
   }
 
   public void unserialize(JsonElement element, JsonDeserializationContext context) throws IllegalAccessException

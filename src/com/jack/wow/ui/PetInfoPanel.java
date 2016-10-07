@@ -4,6 +4,7 @@ import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.GridLayout;
 import java.util.Arrays;
+import java.util.List;
 
 import javax.swing.BorderFactory;
 import javax.swing.JLabel;
@@ -45,15 +46,15 @@ public class PetInfoPanel extends JPanel
     petName.setText(pet.name);
     petName.setIcon(Icons.getIcon(pet.icon, false));
     
-    if (pet.canBattle)
+    for (int j = 0; j < 2; ++j)
     {
-      for (int i = 0; i < abilities.length; ++i)
+      for (int i = 0; i < 3; ++i)
       {
-        PetOwnedAbility ability = pet.abilities[i];
-        abilities[i].setIcon(ability != null ? Icons.getIcon(ability.get().name, false) : null);
+        List<PetOwnedAbility> slot = pet.slot(i);
+        
+        if (slot.size() >= j + 1)
+          abilities[j*3 + i].setIcon(j < slot.size() ? Icons.getIcon(slot.get(j).get().icon, false) : null);
       }
     }
-    else
-      Arrays.stream(abilities).forEach(b -> b.setIcon(null));
   }
 }

@@ -52,7 +52,7 @@ public class BattlePet
     
     abilities = new AbilityStatus[3];
     for (int i = 0; i < abilities.length; ++i)
-      abilities[i] = new AbilityStatus(pet.spec().abilities[2*i + set.index(i)]);
+      abilities[i] = new AbilityStatus(pet.spec().slot(i).get(set.index(i)));
     
     passiveEffects = new ArrayList<>();
   }

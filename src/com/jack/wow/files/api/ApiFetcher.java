@@ -112,7 +112,10 @@ public class ApiFetcher
         try (Scanner scanner = new Scanner(is, "UTF-8"))
         {
           String data = scanner.useDelimiter("\\A").next();
-          return gson().fromJson(data, ApiSpecie.class);
+          ApiSpecie specie = gson().fromJson(data, ApiSpecie.class);     
+          specie.abilities = Arrays.stream(specie.abilities).filter(a -> a.slot >= 0).toArray(i -> new ApiAbility[i]);
+
+          return specie;
         }
       } 
     } 

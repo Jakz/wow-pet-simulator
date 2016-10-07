@@ -79,7 +79,7 @@ public class Main
         .collect(Collectors.toList());
       
       new Thread(() -> {
-        while (!executor.isTerminated())
+        while (executor.getCompletedTaskCount() < MAX_ABILITY_ID)
         {
           System.out.println(String.format("Fetching abilities %2.1f%%..", ((executor.getCompletedTaskCount()/(float)MAX_ABILITY_ID)*100)));
           try { Thread.sleep(1000); } catch (InterruptedException e) { e.printStackTrace(); }
@@ -104,7 +104,7 @@ public class Main
         .collect(Collectors.toList());
       
       new Thread(() -> {
-        while (!executor.isTerminated())
+        while (executor.getCompletedTaskCount() < MAX_PET_ID)
         {
           System.out.println(String.format("Fetching pets %2.1f%%..", ((executor.getCompletedTaskCount()/(float)MAX_PET_ID)*100)));
           try { Thread.sleep(1000); } catch (InterruptedException e) { e.printStackTrace(); }
@@ -249,30 +249,6 @@ public class Main
     catch (Exception e)
     {
       e.printStackTrace();
-    }
-  }
-  
-  void fetchAbilitiesFromAPI(PetSpec[] pets)
-  {
-    for (PetSpec pet : pets)
-    {
-      if (!pet.areAbilitiesPresent())
-      {
-        ApiSpecie specie = ApiFetcher.fetchSpecie(pet.id);
-        
-        pet.source = specie.source;
-        pet.description = specie.description;
-        
-        for (ApiAbility a : specie.abilities)
-        {
-          PetAbility ability = PetAbility.get(a.id);
-          
-          if (ability == null)
-            ability = PetAbility.generate(a);
-          
-          pet.abilities[a.order] = new PetOwnedAbility(ability, a.order, a.slot, a.requiredLevel);
-        }
-      }
     }
   }
 }
