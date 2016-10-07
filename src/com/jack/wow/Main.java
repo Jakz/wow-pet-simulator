@@ -79,7 +79,7 @@ public class Main
         .collect(Collectors.toList());
       
       new Thread(() -> {
-        while (executor.isTerminated())
+        while (!executor.isTerminated())
         {
           System.out.println(String.format("Fetching abilities %2.1f%%..", ((executor.getCompletedTaskCount()/(float)MAX_ABILITY_ID)*100)));
           try { Thread.sleep(1000); } catch (InterruptedException e) { e.printStackTrace(); }
@@ -104,7 +104,7 @@ public class Main
         .collect(Collectors.toList());
       
       new Thread(() -> {
-        while (executor.isTerminated())
+        while (!executor.isTerminated())
         {
           System.out.println(String.format("Fetching pets %2.1f%%..", ((executor.getCompletedTaskCount()/(float)MAX_PET_ID)*100)));
           try { Thread.sleep(1000); } catch (InterruptedException e) { e.printStackTrace(); }

@@ -1,5 +1,8 @@
 package com.jack.wow.data;
 
+import java.util.List;
+import java.lang.reflect.Array;
+import java.util.ArrayList;
 import java.util.Arrays;
 
 import com.google.gson.JsonArray;
@@ -8,6 +11,7 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
 import com.google.gson.JsonSerializationContext;
+import com.google.gson.reflect.TypeToken;
 import com.jack.wow.files.api.ApiAbility;
 import com.jack.wow.files.api.ApiPet;
 import com.jack.wow.files.api.ApiSpecie;
@@ -23,6 +27,12 @@ public class PetSpec implements JsonnableContext
   public boolean canBattle;
   public int creatureId;
   
+  public final List<?>[] pabilities = new List<?>[] { 
+    new ArrayList<PetOwnedAbility>(),
+    new ArrayList<PetOwnedAbility>(),
+    new ArrayList<PetOwnedAbility>()
+  };
+  
   public final PetOwnedAbility[] abilities = new PetOwnedAbility[6];
   
   public String icon;
@@ -37,6 +47,9 @@ public class PetSpec implements JsonnableContext
   public void markUsable() { usable = true; }
   
   public PetSpec() { }
+  
+  @SuppressWarnings("unchecked")
+  public List<PetOwnedAbility> slot(int index) { return (List<PetOwnedAbility>)abilities[index]; }
 
   public PetSpec(ApiSpecie s)
   {
@@ -59,8 +72,7 @@ public class PetSpec implements JsonnableContext
       if (ability == null)
         throw new IllegalArgumentException("ability "+a.id+" not found");
       
-      if (a.order < abilities.length) /* required for Enchanted Pen which returns 9?! abilities */
-        abilities[a.order] = new PetOwnedAbility(ability, a.order, a.slot, a.requiredLevel);
+      abilities[a.slot] = new PetOwnedAbility(ability, a.order, a.slot, a.requiredLevel);
     }
   }
 
@@ -84,8 +96,8 @@ public class PetSpec implements JsonnableContext
     
     JsonArray pa = o.get("abilities").getAsJsonArray();
     
-    for (int i = 0; i < abilities.length; ++i)
-      abilities[i] = context.deserialize(pa.get(i), PetOwnedAbility.class);
+    for (int i = 0; i < pa.size(); ++i)
+      abilities[i] = context.deserialize(pa.get(i), new TypeToken<List<PetOwnedAbility>>(){}.getType());
   }
 
   @Override public JsonElement serialize(JsonSerializationContext context) throws IllegalAccessException
@@ -101,9 +113,12 @@ public class PetSpec implements JsonnableContext
     
     object.add("description", new JsonPrimitive(description));
     object.add("source", new JsonPrimitive(source));
-
-    object.add("abilities", context.serialize(abilities));
     
+    JsonArray aabilities = new JsonArray();
+    for (int i = 0; i < abilities.length; ++i)
+      aabilities.add(context.serialize(slot(i)));
+
+    object.add("abilities", aabilities);
     
     return object;
   }

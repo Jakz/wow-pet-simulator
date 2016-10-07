@@ -9,6 +9,7 @@ import javax.swing.BorderFactory;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
+import com.jack.wow.data.PetOwnedAbility;
 import com.jack.wow.data.PetSpec;
 import com.jack.wow.ui.misc.Icons;
 
@@ -47,7 +48,10 @@ public class PetInfoPanel extends JPanel
     if (pet.canBattle)
     {
       for (int i = 0; i < abilities.length; ++i)
-        abilities[i].setIcon(Icons.getIcon(pet.abilities[i].get().icon, false));
+      {
+        PetOwnedAbility ability = pet.abilities[i];
+        abilities[i].setIcon(ability != null ? Icons.getIcon(ability.get().name, false) : null);
+      }
     }
     else
       Arrays.stream(abilities).forEach(b -> b.setIcon(null));
