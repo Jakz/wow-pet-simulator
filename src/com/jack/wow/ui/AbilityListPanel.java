@@ -43,7 +43,10 @@ public class AbilityListPanel extends JPanel
       new TableModelColumn<PetAbility>(Integer.class, "", p -> p.id),
       new TableModelColumn<PetAbility>(ImageIcon.class, "", p -> Icons.getIcon(p.icon, true)),
       new TableModelColumn<PetAbility>(ImageIcon.class, "", p -> p.family.getTinyIcon()),
-      new TableModelColumn<PetAbility>(String.class, "Name", p -> p.name)
+      new TableModelColumn<PetAbility>(String.class, "Name", p -> p.name),
+      new TableModelColumn<PetAbility>(Integer.class, "Rounds", p -> p.rounds),
+      new TableModelColumn<PetAbility>(Integer.class, "Cooldown", p -> p.cooldown),
+      new TableModelColumn<PetAbility>(Boolean.class, "Passive", p -> p.isPassive)
     );
     
     table = new JTable(model);

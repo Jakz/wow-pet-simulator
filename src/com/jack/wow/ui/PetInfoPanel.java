@@ -53,6 +53,10 @@ public class PetInfoPanel extends JPanel
     level.setCallback(i -> { if (pet != null) { pet.setLevel(i); tip.repaint(); } });
     quality.setCallback(q -> { if (pet != null) { pet.setQuality(q); tip.repaint(); } });
     breed.setCallback(q -> { if (pet != null) { pet.setBreed(q); tip.repaint(); } });
+    
+    tip.setupListener(ability -> {
+      tip.setInlineAbility(ability);
+    });
 
 
     setLayout(new BorderLayout());

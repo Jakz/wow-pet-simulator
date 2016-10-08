@@ -94,7 +94,7 @@ public class BattlePanel extends JPanel
     toolTip.setPetSpec(battle.team(0).pet(0).pet().spec());
     //toolTip.setAbility(PetAbility.forName("bombing run"));
 
-    return toolTip;
+    return null;
   }
   
   @Override public Point getToolTipLocation(MouseEvent e)

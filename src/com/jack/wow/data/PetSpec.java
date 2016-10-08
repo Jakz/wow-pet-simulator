@@ -115,6 +115,10 @@ public class PetSpec implements JsonnableContext, Abilited, Statsed
     for (int i = 0; i < pa.size(); ++i)
       abilities[i] = context.deserialize(pa.get(i), new TypeToken<List<PetOwnedAbility>>(){}.getType());
     
+    for (int i = 0; i < abilities.length; ++i)
+      slot(i).sort((a1, a2) -> Integer.compare(a1.order(), a2.order()));
+
+    
     this.stats = context.deserialize(o.get("stats"), PetStats.class);
   }
 

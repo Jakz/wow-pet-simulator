@@ -198,13 +198,9 @@ public class Main
 
       IconDownloader downloader = new IconDownloader(null, icons);
       
-      downloader.start();
+      //downloader.start();
       
       UI.init();
-      UI.petListFrame.panel().populate(Arrays.asList(PetSpec.data), p -> true);
-      UI.abilityListFrame.panel().populate(new ArrayList<>(PetAbility.data.values()), p -> true);
-      
-      UI.petListFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
       
       if (true)
         return;
