@@ -12,6 +12,7 @@ import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
 import java.util.function.Consumer;
 
+import javax.swing.JComponent;
 import javax.swing.JPanel;
 import javax.swing.JToolTip;
 
@@ -28,9 +29,9 @@ import com.jack.wow.ui.misc.Gfx;
 import com.jack.wow.ui.misc.Icons;
 import com.jack.wow.ui.misc.RenderLabel;
 
-class CustomToolTip extends JPanel
+class CustomToolTip extends JToolTip
 {
-  private final JPanel parent;
+  private final JComponent parent;
 
   PetAbility ability;
   Pet pet;
@@ -56,7 +57,7 @@ class CustomToolTip extends JPanel
   
   private final RenderLabel renderLabel;
   
-  CustomToolTip(JPanel parent)
+  CustomToolTip(JComponent parent)
   {
     this.parent = parent;
     this.setOpaque(false);
@@ -156,8 +157,8 @@ class CustomToolTip extends JPanel
   {
     Graphics2D g2d = (Graphics2D)gg;
     
-    if (!parent.isAncestorOf(this))  
-      this.parent.repaint();
+    /*if (!parent.isAncestorOf(this))  
+      this.parent.repaint();*/
 
     g = new Gfx(g2d, true);
     g.setMargin(5);
@@ -240,12 +241,14 @@ class CustomToolTip extends JPanel
     
     renderLabel.clearText();
     renderLabel.setHTMLPreamble(String.format(htmlPreamble, WIDTH));
-    renderLabel.appendLine("3 Round Cooldown");
-    renderLabel.appendLine("<span style='color: #FFD200;'>100%</span> Hit Chance");
+    
+    if (ability.cooldown > 0)
+      renderLabel.appendLine(ability.cooldown+" Round Cooldown");
+    if (ability.hitChance.isPresent())
+      renderLabel.appendLine("<span style='color: #FFD200;'>"+(int)(float)ability.hitChance.get()+"%</span> Hit Chance");
     renderLabel.appendLine("");
-    renderLabel.appendLine("<span style='color: #FFD200;'>Deals 147 Mechanical damage and calls in a bombing run.");
-    renderLabel.appendLine("");
-    renderLabel.appendLine("After 3 rounds the bombs will arrive, dealing 239 Mechanical damage to the current enemy pet.</span>");
+    renderLabel.appendLine("<span style='color: #FFD200;'>"+ability.tooltip+"</span>");
+    
     this.setPreferredSize(renderLabel.finalizeText());
   }
   

@@ -71,7 +71,7 @@ public class PetSpec implements JsonnableContext, Abilited, Statsed
     
     for (ApiAbility a : s.abilities)
     {
-      PetAbility ability = PetAbility.get(a.id);
+      PetAbility ability = PetAbility.forId(a.id);
       
       if (ability == null)
         throw new IllegalArgumentException("ability "+a.id+" not found");

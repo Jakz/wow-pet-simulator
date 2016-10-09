@@ -4,6 +4,8 @@ import java.io.BufferedWriter;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Arrays;
+import java.util.Collection;
+import java.util.List;
 import java.util.Map;
 
 import com.google.gson.Gson;
@@ -21,9 +23,9 @@ public class Database implements JsonnableContext
   
   public Database() { }
   
-  public Database(Map<Integer, PetAbility> abilities, PetSpec[] pets)
+  public Database(Collection<PetAbility> abilities, PetSpec[] pets)
   {
-    this.abilities = abilities.values().toArray(new PetAbility[abilities.size()]);
+    this.abilities = abilities.toArray(new PetAbility[abilities.size()]);
     Arrays.sort(this.abilities, (a1, a2) -> Integer.compare(a1.id, a2.id));
     this.pets = pets;
   }

@@ -30,6 +30,7 @@ import com.jack.wow.battle.AbilitySet;
 import com.jack.wow.battle.Battle;
 import com.jack.wow.battle.BattlePet;
 import com.jack.wow.battle.BattleTeam;
+import com.jack.wow.battle.abilities.Effects;
 import com.jack.wow.data.Database;
 import com.jack.wow.data.Pet;
 import com.jack.wow.data.PetAbility;
@@ -45,6 +46,7 @@ import com.jack.wow.files.api.ApiFetcher;
 import com.jack.wow.files.api.ApiMasterList;
 import com.jack.wow.files.api.ApiPet;
 import com.jack.wow.files.api.ApiSpecie;
+import com.jack.wow.files.api.DatabaseBuilder;
 import com.jack.wow.files.api.WowHeadFetcher;
 import com.jack.wow.ui.UI;
 
@@ -65,60 +67,30 @@ public class Main
     }
   }
 
-  static final int MAX_ABILITY_ID = 2000;
-  static final int MAX_PET_ID = 2000;
+
   
   public static void buildDatabase() throws IOException, InterruptedException
   {
-    {
-      final ThreadPoolExecutor executor = (ThreadPoolExecutor)Executors.newFixedThreadPool(10);
-      
-      List<Callable<ApiAbility>> tasks = 
-        IntStream.range(0, MAX_ABILITY_ID)
-        .boxed()
-        .map(i -> (Callable<ApiAbility>)( () -> ApiFetcher.fetchAbility(i) ) )
-        .collect(Collectors.toList());
-      
-      new Thread(() -> {
-        while (executor.getCompletedTaskCount() < MAX_ABILITY_ID)
-        {
-          System.out.println(String.format("Fetching abilities %2.1f%%..", ((executor.getCompletedTaskCount()/(float)MAX_ABILITY_ID)*100)));
-          try { Thread.sleep(1000); } catch (InterruptedException e) { e.printStackTrace(); }
-        }
-      }).start();
+    DatabaseBuilder builder = new DatabaseBuilder();
     
-      executor.invokeAll(tasks).stream()
-        .map(StreamException.rethrowFunction(f -> f.get()))
-        .filter(Objects::nonNull)
-        .forEach(PetAbility::generate);
+    List<PetAbility> abilities = builder.fetchAbilitiesFromAPI();
+    System.out.println("Fetched "+abilities.size()+" abilities");
+    abilities.stream().forEach(PetAbility::add);
 
-      System.out.println("Fetched "+PetAbility.data.size()+" abilities");
-    }
-    
-    {
-      final ThreadPoolExecutor executor = (ThreadPoolExecutor)Executors.newFixedThreadPool(10);
-      
-      List<Callable<ApiSpecie>> tasks = 
-        IntStream.range(0, MAX_PET_ID)
-        .boxed()
-        .map(i -> (Callable<ApiSpecie>)( () -> ApiFetcher.fetchSpecie(i) ) )
-        .collect(Collectors.toList());
-      
-      new Thread(() -> {
-        while (executor.getCompletedTaskCount() < MAX_PET_ID)
-        {
-          System.out.println(String.format("Fetching pets %2.1f%%..", ((executor.getCompletedTaskCount()/(float)MAX_PET_ID)*100)));
-          try { Thread.sleep(1000); } catch (InterruptedException e) { e.printStackTrace(); }
-        }
-      }).start();
-    
-      PetSpec.data = executor.invokeAll(tasks).stream()
-        .map(StreamException.rethrowFunction(f -> f.get()))
-        .filter(Objects::nonNull)
-        .map(p -> new PetSpec(p))
-        .toArray(i -> new PetSpec[i]);
+    List<PetSpec> pets = builder.fetchPetsFromAPI();
+    System.out.println("Fetched "+pets.size()+" pets");
+    PetSpec.data = pets.toArray(new PetSpec[pets.size()]);
 
-      System.out.println("Fetched "+PetSpec.data.length+" pets");
+    List<WowHeadFetcher.TooltipInfo> tooltips = builder.fetchTooltipsFromWowHead();
+    System.out.println("Fetched "+tooltips.size()+" tooltips");
+    
+    for (WowHeadFetcher.TooltipInfo tooltip : tooltips)
+    {
+      PetAbility ability = PetAbility.forId(tooltip.id);
+      if (tooltip.hitChance.isPresent())
+        ability.setHitChance(tooltip.hitChance.get());
+      
+      ability.setTooltip(tooltip.description);
     }
 
     /* mark all usable pets */
@@ -126,26 +98,11 @@ public class Main
     for (ApiPet pet : master.pets)
       PetSpec.forId(pet.stats.speciesId).markUsable();
 
-    Database db = new Database(PetAbility.data, PetSpec.data);
+    Database db = new Database(PetAbility.data.values(), PetSpec.data);
     db.save(Paths.get("data/database.json"));    
   }
   
-  public static void fetchTooltipsFromWowHead() throws InterruptedException
-  {
-    final ThreadPoolExecutor executor = (ThreadPoolExecutor)Executors.newFixedThreadPool(10);
 
-    List<Callable<WowHeadFetcher.TooltipInfo>> tasks = 
-        IntStream.range(0, MAX_ABILITY_ID)
-        .boxed()
-        .map(i -> (Callable<WowHeadFetcher.TooltipInfo>)( () -> WowHeadFetcher.parseAbilityTooltip(i) ) )
-        .collect(Collectors.toList());
-    
-    executor.invokeAll(tasks).stream()
-        .map(StreamException.rethrowFunction(f -> f.get()))
-        .filter(Objects::nonNull)
-        .forEach(t -> { });
-        
-  }
   
   public static boolean loadDatabase()
   {
@@ -209,15 +166,8 @@ public class Main
       if (!loadDatabase())
         buildDatabase();
       
+      Effects.init();
       PetAbility.computeUsageOfAbilities();
-      
-      for (int i = 100; i < 2000; ++i)
-      {
-        WowHeadFetcher.TooltipInfo info = WowHeadFetcher.parseAbilityTooltip(i);
-        if (info != null)
-          System.out.println(""+i+": "+info);
-      }
-
       
       System.out.printf("Loaded %s pets.", PetSpec.data.length);
       

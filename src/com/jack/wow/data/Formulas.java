@@ -36,7 +36,7 @@ public class Formulas
   /* baseDmg + power*(baseDmg*0.05f) */
   public static int standardDamage(float baseDamage, float power)
   {
-    return (int)Math.floor(baseDamage + power*baseDamage*0.05f);
+    return round(baseDamage + (power*0.05f)*baseDamage);
   }
   
   public static int damageWithRange(int minDamage, int maxDamage, float hitChance)

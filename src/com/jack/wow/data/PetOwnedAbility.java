@@ -46,7 +46,7 @@ public class PetOwnedAbility implements JsonnableContext
   {
     JsonObject object = element.getAsJsonObject();
     
-    PetAbility ability = PetAbility.get(object.get("id").getAsInt());
+    PetAbility ability = PetAbility.forId(object.get("id").getAsInt());
     
     if (ability == null)
       throw new IllegalArgumentException("ability id "+object.get("id").getAsInt()+" not found");
