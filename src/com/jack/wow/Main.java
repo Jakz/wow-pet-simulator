@@ -45,6 +45,7 @@ import com.jack.wow.files.api.ApiFetcher;
 import com.jack.wow.files.api.ApiMasterList;
 import com.jack.wow.files.api.ApiPet;
 import com.jack.wow.files.api.ApiSpecie;
+import com.jack.wow.files.api.WowHeadFetcher;
 import com.jack.wow.ui.UI;
 
 public class Main
@@ -190,6 +191,16 @@ public class Main
     {
       if (!loadDatabase())
         buildDatabase();
+      
+      PetAbility.computeUsageOfAbilities();
+      
+      for (int i = 100; i < 2000; ++i)
+      {
+        WowHeadFetcher.TooltipInfo info = WowHeadFetcher.parseAbilityTooltip(i);
+        if (info != null)
+          System.out.println(""+i+": "+info);
+      }
+
       
       System.out.printf("Loaded %s pets.", PetSpec.data.length);
       
