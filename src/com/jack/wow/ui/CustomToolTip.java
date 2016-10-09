@@ -87,7 +87,9 @@ class CustomToolTip extends JToolTip
   {
     Image img = Icons.getIcon(icon, false).getImage();
     g.fillRect(0, 0, ICON_SIZE+2, ICON_SIZE+2, color);
-    g.image(img, 1, 1, ICON_SIZE, ICON_SIZE);
+    
+    if (img != null )
+      g.image(img, 1, 1, ICON_SIZE, ICON_SIZE);
 
     Color acolor = new Color(color.getRed(), color.getGreen(), color.getBlue(), 180);
     g.rect(1, 1, ICON_SIZE-1, ICON_SIZE-1, acolor);
