@@ -64,12 +64,12 @@ public class Main
       // If Nimbus is not available, you can set the GUI to another look and feel.
     }
   }
+
+  static final int MAX_ABILITY_ID = 2000;
+  static final int MAX_PET_ID = 2000;
   
   public static void buildDatabase() throws IOException, InterruptedException
   {
-    final int MAX_ABILITY_ID = 2000;
-    final int MAX_PET_ID = 2000;
-    
     {
       final ThreadPoolExecutor executor = (ThreadPoolExecutor)Executors.newFixedThreadPool(10);
       
@@ -128,6 +128,23 @@ public class Main
 
     Database db = new Database(PetAbility.data, PetSpec.data);
     db.save(Paths.get("data/database.json"));    
+  }
+  
+  public static void fetchTooltipsFromWowHead() throws InterruptedException
+  {
+    final ThreadPoolExecutor executor = (ThreadPoolExecutor)Executors.newFixedThreadPool(10);
+
+    List<Callable<WowHeadFetcher.TooltipInfo>> tasks = 
+        IntStream.range(0, MAX_ABILITY_ID)
+        .boxed()
+        .map(i -> (Callable<WowHeadFetcher.TooltipInfo>)( () -> WowHeadFetcher.parseAbilityTooltip(i) ) )
+        .collect(Collectors.toList());
+    
+    executor.invokeAll(tasks).stream()
+        .map(StreamException.rethrowFunction(f -> f.get()))
+        .filter(Objects::nonNull)
+        .forEach(t -> { });
+        
   }
   
   public static boolean loadDatabase()
