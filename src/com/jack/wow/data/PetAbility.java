@@ -45,6 +45,7 @@ public class PetAbility implements Iterable<Effect>
   public Iterator<Effect> iterator() { return effects.iterator(); }
   public Effect effectAt(int i) { return effects.get(i); }
   public int effectCount() { return effects.size(); }
+  public <T extends Effect> Effect findEffect(Class<T> type) { return effects.stream().filter(e -> type.isAssignableFrom(e.getClass())).findFirst().orElse(null); }
   
   /* static methods to manage the abilities database (generate and retrieval) */
   public static final Map<Integer, PetAbility> data = new HashMap<>();

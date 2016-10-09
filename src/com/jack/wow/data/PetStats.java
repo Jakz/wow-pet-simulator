@@ -34,6 +34,8 @@ public class PetStats implements JsonnableContext
   }
   
   public String toString() { return String.format("[%f, %f, %f]", health, power, speed); }
+  public int[] toIntArray() { return new int[] { (int)health, (int)power, (int)speed }; }
+  public float[] toFloatArray() { return new float[] { health, power, speed }; }
   
   public PetStats derive(PetBreed breed)
   {
