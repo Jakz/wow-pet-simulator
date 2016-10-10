@@ -24,7 +24,7 @@ public class UI
       infoFrame = UIUtils.buildFrame(new PetInfoPanel(600, 400), "Pet Info");
       petListFrame = UIUtils.buildFrame(new PetListPanel(600, 800), "Pet List");
       battleFrame = UIUtils.buildFrame(new BattlePanel(), "Battle View");
-      abilityListFrame = UIUtils.buildFrame(new AbilityListPanel(400, 800), "Battle View");
+      abilityListFrame = UIUtils.buildFrame(new AbilityListPanel(400, 800), "Ability List");
     });
 
   }

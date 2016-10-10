@@ -15,6 +15,8 @@ public class BooleanCellRenderer extends DefaultTableCellRenderer
     Component c = super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
     JLabel l = (JLabel)c;
     
+    l.setHorizontalAlignment(JLabel.CENTER);
+    
     if ((boolean)value)
     {
       l.setForeground(new Color(0,180,0));

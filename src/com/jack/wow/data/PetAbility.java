@@ -57,8 +57,9 @@ public class PetAbility implements Iterable<Effect>
   }
   
   /* effect management */
-  public void addEffect(Effect... effects) { this.effects.addAll(Arrays.asList(effects)); }
+  public PetAbility addEffect(Effect... effects) { this.effects.addAll(Arrays.asList(effects)); return this; }
   public Iterator<Effect> iterator() { return effects.iterator(); }
+  public Stream<Effect> stream() { return effects.stream(); }
   public Effect effectAt(int i) { return effects.get(i); }
   public int effectCount() { return effects.size(); }
   public <T extends Effect> Effect findEffect(Class<T> type) { return effects.stream().filter(e -> type.isAssignableFrom(e.getClass())).findFirst().orElse(null); }

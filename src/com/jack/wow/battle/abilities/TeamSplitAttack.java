@@ -1,10 +1,10 @@
 package com.jack.wow.battle.abilities;
 
-public class SingleTeamAttack implements ActiveEffect
+public class TeamSplitAttack implements ActiveEffect
 {
   private EffectPower power;
   
-  public SingleTeamAttack(EffectPower power)
+  public TeamSplitAttack(EffectPower power)
   {
     this.power = power;
   }

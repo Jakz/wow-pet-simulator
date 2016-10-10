@@ -10,7 +10,10 @@ import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 import java.util.function.Predicate;
+import java.util.stream.Collectors;
+
 import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
@@ -22,6 +25,7 @@ import javax.swing.JToolTip;
 import javax.swing.ToolTipManager;
 import javax.swing.table.TableModel;
 
+import com.jack.wow.battle.abilities.PassiveEffect;
 import com.jack.wow.data.PetAbility;
 import com.jack.wow.data.PetFamily;
 import com.jack.wow.data.PetSpec;
@@ -101,8 +105,7 @@ public class AbilityListPanel extends JPanel
       new TableModelColumn<PetAbility>(String.class, "Name", p -> p.name),
       new TableModelColumn<PetAbility>(Integer.class, "Rounds", p -> p.rounds),
       new TableModelColumn<PetAbility>(Integer.class, "Cooldown", p -> p.cooldown),
-      new TableModelColumn<PetAbility>(Boolean.class, "Passive", p -> p.isPassive),
-      new TableModelColumn<PetAbility>(Boolean.class, "Hide Hints", p -> p.hideHints),
+      new TableModelColumn<PetAbility>(Boolean.class, "Passive", p -> p.effectCount() > 0 && p.stream().allMatch(e -> e instanceof PassiveEffect)),
       new TableModelColumn<PetAbility>(Integer.class, "Used", p -> { return PetAbility.usage.containsKey(p) ? PetAbility.usage.get(p).size() : 0; }),
       new TableModelColumn<PetAbility>(String.class, "Hit Chance", p -> { return p.hitChance.isPresent() ? Integer.valueOf((int)(float)p.hitChance.get())+"%" : ""; }),
       new TableModelColumn<PetAbility>(Boolean.class, "Has Mechanics", p -> p.effectCount() > 0 )
@@ -174,6 +177,9 @@ public class AbilityListPanel extends JPanel
     oabilities = list;
 
     filter = filter.and(p -> Arrays.stream(familyFilters).anyMatch(b -> b.isSelected() && b.family == p.family));
+    
+    Map<PetFamily, Long> countByFamily = list.stream().collect(Collectors.groupingBy(a -> a.family, Collectors.counting()));
+    Arrays.stream(familyFilters).forEach(b -> b.setText(Long.toString(countByFamily.get(b.family))));
     
     abilities.clear();
     list.stream().filter(filter).forEach(abilities::add);
