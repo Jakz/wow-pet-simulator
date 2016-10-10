@@ -2,8 +2,11 @@ package com.jack.wow.battle;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Iterator;
 import java.util.List;
+import java.util.stream.Stream;
 
+import com.jack.wow.battle.abilities.EffectApply;
 import com.jack.wow.battle.abilities.PassiveEffect;
 import com.jack.wow.data.Formulas;
 import com.jack.wow.data.Pet;
@@ -16,7 +19,7 @@ import com.jack.wow.data.PetStats;
  * 
  * @author jack
  */
-public class BattlePet
+public class BattlePet implements Iterable<EffectStatus>
 {
   private class AbilityStatus
   {
@@ -28,12 +31,6 @@ public class BattlePet
       this.ability = ability;
       this.cooldown = 0;
     }
-  }
-  
-  private class EffectStatus
-  {
-    PassiveEffect effect;
-    int turns;
   }
   
   private final Pet pet;
@@ -56,13 +53,31 @@ public class BattlePet
     
     passiveEffects = new ArrayList<>();
   }
-
+  
+  public void addEffect(EffectApply effect)
+  {
+    passiveEffects.add(new EffectStatus(effect.ability, effect.turns));
+  }
+  
+  public Iterator<EffectStatus> iterator() { return passiveEffects.iterator(); }
+  public List<EffectStatus> effects() { return passiveEffects; }
+  
+  public AbilityStatus abilityStatus(int i) { return abilities[i]; }
+  
+  public void hurt(int value) { hitPoints -= value; }
+  public void heal(int value) { hitPoints += value; }
+ 
   public void resetHitPoints()
   {
     PetStats astats = Formulas.adjustedStats(pet.stats(), pet.breed(), pet.level(), pet.quality());
     this.hitPoints = (int)astats.health();
     this.power = (int)astats.power();
     this.speed = (int)astats.speed();
+  }
+  
+  public void resetCooldowns()
+  {
+    for (AbilityStatus status : abilities) status.cooldown = 0;
   }
   
   public PetOwnedAbility ability(int i) { return abilities[i].ability; }

@@ -77,10 +77,12 @@ public class Effects
     forName("whirlwind").addEffect(teamSplitAttack(27));
     forName("tornado punch").addEffect(damageWithChanceOfStun(30, 0.25f));
     forName("time stop").addEffect(applyEffect(STUN_ID, Target.ENEMY_PET, 1));
+    forName("blackout kick").addEffect(applyEffect(STUN_ID, Target.ENEMY_PET, 1));
     mapPassiveEffect(426, 425, Target.SELF, 5, hitChanceModifier(0.25f), speedMultiplier(1.25f), critChanceModifier(0.25f)); // focus
     mapPassiveEffect(312, 311, Target.SELF, 1, dodgeChanceModifier(1.0f)); // dodge
     mapPassiveEffect(1047, 1046, Target.SELF, 2, dodgeChanceModifier(0.5f)); // frolick
     mapPassiveEffect(1535, 1534, Target.SELF, 5, critChanceModifier(0.25f)); // murkmorphosis
+    mapPassiveEffect(225, 224, Target.SELF, 2, damageReceivedMultiplier(0.5f)); // staggered steps
 
 
     /* flying */
@@ -121,6 +123,8 @@ public class Effects
     mapPassiveEffect(838, 837, Target.SELF, 2, speedMultiplier(2.0f)); // centrifual hooks
     mapPassiveEffect(1040, 1039, Target.TEAM, 9, hitChanceModifier(0.20f)); // nimbus
     mapPassiveEffect(614, 613, Target.SELF, 3, damageDoneMultiplier(1.25f)); // competitive spirit
+    mapPassiveEffect(216, 215, Target.SELF, 1, damageDoneMultiplier(2.0f)); // inner vision
+
 
     
     /* dragonkin */
