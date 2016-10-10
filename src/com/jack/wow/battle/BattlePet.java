@@ -19,7 +19,7 @@ import com.jack.wow.data.PetStats;
  * 
  * @author jack
  */
-public class BattlePet implements Iterable<EffectStatus>
+public class BattlePet
 {
   private class AbilityStatus
   {
@@ -40,7 +40,7 @@ public class BattlePet implements Iterable<EffectStatus>
   private int speed;
   
   private final AbilityStatus[] abilities;
-  private final List<EffectStatus> passiveEffects;
+  private final EffectList passiveEffects;
   
   public BattlePet(Pet pet, AbilitySet set)
   {
@@ -51,16 +51,15 @@ public class BattlePet implements Iterable<EffectStatus>
     for (int i = 0; i < abilities.length; ++i)
       abilities[i] = new AbilityStatus(pet.spec().slot(i).get(set.index(i)));
     
-    passiveEffects = new ArrayList<>();
+    passiveEffects = new EffectList();
   }
   
   public void addEffect(EffectApply effect)
   {
-    passiveEffects.add(new EffectStatus(effect.ability, effect.turns));
+    passiveEffects.add(effect.ability, effect.turns);
   }
   
-  public Iterator<EffectStatus> iterator() { return passiveEffects.iterator(); }
-  public List<EffectStatus> effects() { return passiveEffects; }
+  public EffectList effects() { return passiveEffects; }
   
   public AbilityStatus abilityStatus(int i) { return abilities[i]; }
   

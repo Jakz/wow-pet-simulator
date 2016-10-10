@@ -10,4 +10,6 @@ public class ChanceEffect implements ActiveEffect
     this.effect = effect;
     this.chance = chance;
   }
+  
+  @Override public String toString() { return "chance("+(int)(chance*100)+"%, "+effect+")"; }
 }

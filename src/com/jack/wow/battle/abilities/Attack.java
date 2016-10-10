@@ -13,4 +13,6 @@ public class Attack implements ActiveEffect
   
   public Target target() { return target; }
   public EffectPower power() { return power; }
+  
+  @Override public String toString() { return "damage("+target+", "+power+")"; }
 }

@@ -9,6 +9,7 @@ import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Predicate;
@@ -39,6 +40,7 @@ public class AbilityListPanel extends JPanel
 {
   private Predicate<PetAbility> predicate = p -> true;
   private List<PetAbility> oabilities = new ArrayList<>();
+  private Map<PetAbility, String> mechanics = new HashMap<>();
   private final List<PetAbility> abilities = new ArrayList<>();
   private final JTextField search = new JTextField();
   private final FamilyFilterButton[] familyFilters;
@@ -99,25 +101,29 @@ public class AbilityListPanel extends JPanel
   public AbilityListPanel(int width, int height)
   {    
     model = new SimpleTableModel<PetAbility>(abilities,  
-      new TableModelColumn<PetAbility>(Integer.class, "", p -> p.id),
-      new TableModelColumn<PetAbility>(ImageIcon.class, "", p -> Icons.getIcon(p.icon, true)),
-      new TableModelColumn<PetAbility>(ImageIcon.class, "", p -> p.family.getTinyIcon()),
-      new TableModelColumn<PetAbility>(String.class, "Name", p -> p.name),
-      new TableModelColumn<PetAbility>(Integer.class, "Rounds", p -> p.rounds),
-      new TableModelColumn<PetAbility>(Integer.class, "Cooldown", p -> p.cooldown),
-      new TableModelColumn<PetAbility>(Boolean.class, "Passive", p -> p.effectCount() > 0 && p.stream().allMatch(e -> e instanceof PassiveEffect)),
-      new TableModelColumn<PetAbility>(Integer.class, "Used", p -> { return PetAbility.usage.containsKey(p) ? PetAbility.usage.get(p).size() : 0; }),
-      new TableModelColumn<PetAbility>(String.class, "Hit Chance", p -> { return p.hitChance.isPresent() ? Integer.valueOf((int)(float)p.hitChance.get())+"%" : ""; }),
-      new TableModelColumn<PetAbility>(Boolean.class, "Has Mechanics", p -> p.effectCount() > 0 )
+      new TableModelColumn<PetAbility>(Integer.class, "", p -> p.id, 50),
+      new TableModelColumn<PetAbility>(ImageIcon.class, "", p -> Icons.getIcon(p.icon, true), 20),
+      new TableModelColumn<PetAbility>(ImageIcon.class, "", p -> p.family.getTinyIcon(), 20),
+      new TableModelColumn<PetAbility>(String.class, "Name", p -> p.name, 200),
+      //new TableModelColumn<PetAbility>(Integer.class, "Rounds", p -> p.rounds),
+      new TableModelColumn<PetAbility>(Integer.class, "C", p -> p.cooldown, 20),
+      new TableModelColumn<PetAbility>(Boolean.class, "P", p -> p.effectCount() > 0 && p.stream().allMatch(e -> e instanceof PassiveEffect), 20),
+      new TableModelColumn<PetAbility>(Integer.class, "Used", p -> { return PetAbility.usage.containsKey(p) ? PetAbility.usage.get(p).size() : 0; }, 40),
+      new TableModelColumn<PetAbility>(String.class, "Hit Chance", p -> { return p.hitChance.isPresent() ? Integer.valueOf((int)(float)p.hitChance.get())+"%" : ""; }, 50),
+      new TableModelColumn<PetAbility>(Boolean.class, "", p -> p.effectCount() > 0, 20 ),
+      new TableModelColumn<PetAbility>(String.class, "Mechanics", p -> mechanics.get(p) )
     );
     
     table = new TooltipTable(model);
     
-    table.setAutoResizeMode(JTable.AUTO_RESIZE_SUBSEQUENT_COLUMNS);
-    UIUtils.resizeColumn(table.getColumnModel().getColumn(0), 50);
-    UIUtils.resizeColumn(table.getColumnModel().getColumn(1), 20);
-    UIUtils.resizeColumn(table.getColumnModel().getColumn(2), 20);
-
+    table.setAutoResizeMode(JTable.AUTO_RESIZE_LAST_COLUMN);
+    for (int i = 0; i < model.getColumnCount(); ++i)
+    {
+      TableModelColumn<?> c = model.getColumn(i);
+      if (c.hasWidthSpecified())
+        UIUtils.resizeColumn(table.getColumnModel().getColumn(i), c.width);
+    }
+  
     final Font smallerFont = this.getFont().deriveFont(this.getFont().getSize()-2.0f);
     
     table.setRowHeight(20);
@@ -183,6 +189,12 @@ public class AbilityListPanel extends JPanel
     
     abilities.clear();
     list.stream().filter(filter).forEach(abilities::add);
+    
+    abilities.forEach(a -> {
+      mechanics.put(a, a.stream().map(aa -> aa.toString()).collect(Collectors.joining(", ")));
+    });
+    
+    
     model.fireTableDataChanged();
   }
 }

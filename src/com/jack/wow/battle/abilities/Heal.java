@@ -13,4 +13,6 @@ public class Heal implements ActiveEffect
   
   public Target target() { return target; }
   public EffectPower power() { return power; }
+  
+  @Override public String toString() { return "heal("+target+", "+power+")"; }
 }

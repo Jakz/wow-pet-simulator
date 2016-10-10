@@ -22,7 +22,7 @@ public class Battle
   public BattleTeam[] teams() { return teams; }
   public BattleTeam team(int i) { return teams[i]; }
   
-  public EffectStatus globalEffect() { return globalEffect.orElse(null); }
+  public Optional<EffectStatus> globalEffect() { return globalEffect; }
   
   /**
    * Resets the status of a battle: clear all effects from pets, teams and global effects. Reset hit points and cooldowns for all pets
@@ -41,27 +41,7 @@ public class Battle
       }
     }
   }
-  
-  public void updateCooldowns()
-  {   
-    if (globalEffect.isPresent())
-    {
-      EffectStatus effect = globalEffect.get();
-      
-      if (effect.isFinite())
-        effect.consume();
-      
-      
-      if (effect.isEnded())
-      {
-        effect.effect.stream()
-          .filter(e -> e instanceof PassiveEffect)
-          .map(Effect::asPassive)
-          .forEach(e -> e.onEndEffect(this));
-      }
-    }
-  }
-  
+
   public int elapsedTurns() { return turn; }
   public void incrementTurn() { ++turn; }
 }

@@ -8,7 +8,7 @@ import java.util.List;
 public class BattleTeam implements Iterable<BattlePet>
 {
   private final BattlePet[] pets;
-  private final List<EffectStatus> effects;
+  private final EffectList effects;
   
   public BattleTeam(BattlePet... pets)
   {
@@ -16,12 +16,12 @@ public class BattleTeam implements Iterable<BattlePet>
     
     this.pets = pets;
     
-    this.effects = new ArrayList<>();
+    this.effects = new EffectList();
   }
   
   public BattlePet pet(int i) { return pets[i]; }
   
-  public List<EffectStatus> effects() { return effects; }
+  public EffectList effects() { return effects; }
 
   @Override public Iterator<BattlePet> iterator() { return Arrays.asList(pets).iterator(); }
 }

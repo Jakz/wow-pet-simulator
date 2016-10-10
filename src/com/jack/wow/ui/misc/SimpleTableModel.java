@@ -7,7 +7,7 @@ import javax.swing.table.AbstractTableModel;
 
 import com.jack.wow.data.PetSpec;
 
-@SuppressWarnings("serial")
+@SuppressWarnings({"serial", "unchecked"})
 public class SimpleTableModel<T> extends AbstractTableModel
 {
   private final List<T> data;
@@ -20,12 +20,13 @@ public class SimpleTableModel<T> extends AbstractTableModel
     this.columns = columns;
   }
   
+  public TableModelColumn<T> getColumn(int i) { return ((TableModelColumn<T>)columns[i]); }
+  
   @Override public int getColumnCount() { return columns.length; }
   @Override public int getRowCount() { return data.size(); }
   @Override public Class<?> getColumnClass(int c) { return columns[c].clazz; }
   @Override public String getColumnName(int c) { return columns[c].name; }
 
-  @SuppressWarnings("unchecked")
   @Override public Object getValueAt(int r, int c)
   {
     T pet = data.get(r);
