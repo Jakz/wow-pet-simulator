@@ -7,5 +7,7 @@ public class SpecialEffect implements PassiveEffect
 
   
   
+  public static final SpecialEffect ALWAYS_GOES_FIRST = new SpecialEffect();
+  public static final SpecialEffect DESTROY_OBJECTS = new SpecialEffect();
   public static final SpecialEffect INTERRUPT_OPPONENT_ROUND_IF_FIRST = new SpecialEffect();
 }
