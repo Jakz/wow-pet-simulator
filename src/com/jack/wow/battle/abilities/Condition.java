@@ -7,13 +7,18 @@ import com.jack.wow.data.PetAbility;
 @FunctionalInterface
 public interface Condition extends Predicate<BattleStatus>
 {
-
+  public static Condition hasAbility(PetAbility ability, Target target) { return new HasAbility(ability, target); }
+  public static Condition hasStatus(SpecialEffect effect, Target target) { return new HasStatus(effect, target); }
+  public static Condition isFirstToAttack() { return new OrderOfAttack(true); }
+  public static Condition isLastToAttack() { return new OrderOfAttack(false); }
+  
+  
   public static class HasAbility implements Condition
   {
     public final PetAbility ability;
     public final Target target;
     
-    public HasAbility(PetAbility ability, Target target)
+    private HasAbility(PetAbility ability, Target target)
     {
       this.ability = ability;
       this.target = target;
@@ -32,7 +37,7 @@ public interface Condition extends Predicate<BattleStatus>
     public final SpecialEffect status;
     public final Target target;
     
-    public HasStatus(SpecialEffect status, Target target)
+    private HasStatus(SpecialEffect status, Target target)
     {
       this.status = status;
       this.target = target;
@@ -50,7 +55,7 @@ public interface Condition extends Predicate<BattleStatus>
   {
     public boolean isUserFirst;
     
-    public OrderOfAttack(boolean isUserFirst)
+    private OrderOfAttack(boolean isUserFirst)
     {
       this.isUserFirst = isUserFirst;
     }

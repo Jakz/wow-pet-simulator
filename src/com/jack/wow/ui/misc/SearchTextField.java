@@ -17,6 +17,7 @@ public class SearchTextField<T> extends JTextField
 {
   final private SimpleParser parser;
   final private Map<String, Function<String, Predicate<T>>> options;
+  final private Map<String, Predicate<T>> standaloneOptions;
   private Optional<Function<String, Predicate<T>>> defaultOption;
   
   final private Consumer<Predicate<T>> callback;
@@ -28,6 +29,7 @@ public class SearchTextField<T> extends JTextField
     super(width);
     
     options = new HashMap<>();
+    standaloneOptions = new HashMap<>();
     defaultOption = Optional.empty();
     
     parser = new SimpleParser();
@@ -42,6 +44,11 @@ public class SearchTextField<T> extends JTextField
   public void addRule(String preamble, Function<String, Predicate<T>> lambda)
   {
     options.put(preamble, lambda);
+  }
+  
+  public void addStandaloneRule(String preamble, Predicate<T> lambda)
+  {
+    standaloneOptions.put(preamble, lambda);
   }
   
   public void setDefaultRule(Function<String, Predicate<T>> lambda)
@@ -86,9 +93,16 @@ public class SearchTextField<T> extends JTextField
       }
       else
         token = tk;
-      
+
+      Predicate<T> standalone = standaloneOptions.get(token);
+      if (standalone != null)
+      {
+        predicate = predicate.and(negated ? standalone.negate() : standalone);
+        continue;
+      }
+           
       String[] otk = token.split(":");
-      
+         
       if (otk.length == 2)
       {
         Function<String, Predicate<T>> currentPredicateBuilder = options.getOrDefault(otk[0], s -> (p -> true));

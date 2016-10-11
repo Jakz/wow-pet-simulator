@@ -212,6 +212,7 @@ public class AbilityListPanel extends JPanel
   {
     search.setDefaultRule(s -> a -> a.name.toLowerCase().contains(s.toLowerCase()));
     search.addRule("family", s -> a -> a.family.description.toLowerCase().contains(s.toLowerCase()));
+    search.addStandaloneRule("hasMechanics", a -> a.effectCount() > 0);
   }
   
   private void searchUpdated(Predicate<PetAbility> filter)
@@ -225,12 +226,12 @@ public class AbilityListPanel extends JPanel
     oabilities = list;
 
     filter = filter.and(p -> Arrays.stream(familyFilters).anyMatch(b -> b.isSelected() && b.family == p.family));
-    
-    Map<PetFamily, Long> countByFamily = list.stream().collect(Collectors.groupingBy(a -> a.family, Collectors.counting()));
-    Arrays.stream(familyFilters).forEach(b -> b.setText(Long.toString(countByFamily.get(b.family))));
-    
+        
     abilities.clear();
     list.stream().filter(filter).forEach(abilities::add);
+    
+    Map<PetFamily, Long> countByFamily = abilities.stream().collect(Collectors.groupingBy(a -> a.family, Collectors.counting()));
+    Arrays.stream(familyFilters).forEach(b -> b.setText(Long.toString(countByFamily.getOrDefault(b.family, 0L))));
     
     abilities.forEach(a -> {
       mechanics.put(a, a.stream().map(aa -> aa.toString()).collect(Collectors.joining(", ")));

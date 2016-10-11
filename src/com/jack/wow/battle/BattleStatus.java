@@ -5,6 +5,7 @@ import java.util.Optional;
 /**
  * This class is used as the point of interaction used by all the effects to retrieve informations
  * and possibly act on the battle.
+ * @author Jack
  */
 public class BattleStatus
 {

@@ -5,6 +5,8 @@ public class SpecialEffect implements PassiveEffect
   public static final SpecialEffect STUNNED = new SpecialEffect() { @Override public String toString() { return "stunned"; } };
   public static final SpecialEffect BURNING = new SpecialEffect() { @Override public String toString() { return "burning"; } };
   public static final SpecialEffect POISONED = new SpecialEffect() { @Override public String toString() { return "poisoned"; } };
+  public static final SpecialEffect BLINDED = new SpecialEffect() { @Override public String toString() { return "blinded"; } };
+  public static final SpecialEffect CHILLED = new SpecialEffect() { @Override public String toString() { return "chilled"; } };
 
   
   

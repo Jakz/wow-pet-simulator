@@ -11,6 +11,7 @@ public enum Target
   ENEMY_TEAM("enemy-team"),
   ENEMY_TEAM_SPLIT("enemy-team-split"),
   BATTLE_FIELD("battlefield"),
+  BOTH_TEAMS("both-teams"),
   CUSTOM("custom")
   
   ;

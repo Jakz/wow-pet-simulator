@@ -13,7 +13,7 @@ public class Effects
   private static Effect backlineAttack(float power) { return new Attack(Target.ENEMY_BACK_LINE, new EffectPower(power)); }
   private static Effect teamSplitAttack(float power) { return new Attack(Target.ENEMY_TEAM_SPLIT, new EffectPower(power)); }
   
-  private static PassiveEffect periodicDamage(float power, PetFamily family, Target target) { return new PeriodicDamage(target, family,new EffectPower(power)); } 
+  private static PassiveEffect periodicDamage(float power, PetFamily family, Target target) { return new PeriodicDamage(target, family, new EffectPower(power)); } 
   private static PassiveEffect expireEffect(ActiveEffect effect) { return new ExpireEffect(effect); }
   
   private static Effect singleHeal(float power) { return new Heal(Target.SELF, new EffectPower(power)); }
@@ -25,6 +25,9 @@ public class Effects
   private static ActiveEffect applyEffect(int ability, Target target, int turns) { return new EffectApply(PetAbility.forId(ability), target, turns); }
   
   private static ActiveEffect chanceEffect(float chance, ActiveEffect effect) { return new ChanceEffect(chance, effect); }
+  private static ActiveEffect conditionalEffect(Condition condition, ActiveEffect effect) { return new ConditionalEffect(condition, effect); }
+  private static ActiveEffect conditionalEffect(Condition condition, ActiveEffect trueEffect, ActiveEffect falseEffect) { return new ConditionalEffect(condition, trueEffect, falseEffect); }
+
   
   private static PassiveEffect speedMultiplier(float v) { return ModifierEffect.buildSpeed(v); }
   private static PassiveEffect damageDoneMultiplier(float v) { return ModifierEffect.buildDamageDone(v); }
@@ -49,6 +52,7 @@ public class Effects
   private final static int SPEED_BOOST100 = 544;
   private final static int SPEED_BOOST50 = 735;
   private final static int SPEED_BOOST20_CUMULATIVE = 831;
+  private final static int SPEED_REDUCTION_25 = 154;
   
   private static Effect[] damageWithChanceOfStun(float power, float chance)
   {
@@ -72,9 +76,12 @@ public class Effects
     forName("headbutt").addEffect(damageWithChanceOfStun(30, 0.25f));
     forName("trihorn charge").addEffect(singleAttack(23), SpecialEffect.ALWAYS_GOES_FIRST);
     forName("barbed stinger").addEffect(singleAttack(19), chanceEffect(0.2f, applyEffect("poisoned", Target.ENEMY_PET, 1)));
+    forName("hiss").addEffect(singleAttack(20), applyEffect(SPEED_REDUCTION_25, Target.ENEMY_PET, 4));
     mapPassiveEffect(1054, 1053, Target.SELF, 2, critChanceModifier(1.0f)); // hawk eye
     mapPassiveEffect(1112, 1111, Target.SELF, 3, damageReceivedMultiplier(0.5f)); // though n' cuddly
     mapPassiveEffect(310, 309, Target.SELF, 5, damageReceivedModifier(-5));
+    mapPassiveEffect(1049, 1048, Target.ENEMY_PET, 1, hitChanceModifier(-1.0f), SpecialEffect.BLINDED, SpecialEffect.POISONED); // blinding poison
+    mapPassiveEffect(314, 313, Target.ENEMY_PET, 10, damageReceivedModifier(3)); // mangle
 
     
     /* humanoid */
@@ -99,9 +106,9 @@ public class Effects
     forName("whirlwind").addEffect(teamSplitAttack(27));
     forName("tornado punch").addEffect(damageWithChanceOfStun(30, 0.25f));
     forName("perfumed arrow").addEffect(damageWithChanceOfStun(20, 0.25f));
-    
     forName("time stop").addEffect(applyEffect(STUN_ID, Target.ENEMY_PET, 1));
     forName("blackout kick").addEffect(applyEffect(STUN_ID, Target.ENEMY_PET, 1));
+    forName("fury of 1,000 fists").addEffect(singleAttack(30), conditionalEffect(Condition.hasStatus(SpecialEffect.BLINDED, Target.ENEMY_ACTIVE_PET), applyEffect(STUN_ID, Target.ENEMY_PET, 1)));
     mapPassiveEffect(426, 425, Target.SELF, 5, hitChanceModifier(0.25f), speedMultiplier(1.25f), critChanceModifier(0.25f)); // focus
     mapPassiveEffect(312, 311, Target.SELF, 1, dodgeChanceModifier(1.0f)); // dodge
     mapPassiveEffect(1047, 1046, Target.SELF, 2, dodgeChanceModifier(0.5f)); // frolick
@@ -116,6 +123,7 @@ public class Effects
     mapPassiveEffect(186, 185, Target.SELF, 1, damageReceivedMultiplier(1.25f)).addEffect(singleAttack(25, 0.8f)); // reckless strike
     mapPassiveEffect(521, 520, Target.SELF, 3, critChanceModifier(0.75f)); // hawk eye
     mapPassiveEffect(515, 516, Target.ENEMY_PET, 3, damageReceivedMultiplier(1.25f)).addEffect(singleAttack(10)); // flyby
+    mapPassiveEffect(514, 677, Target.ENEMY_ACTIVE_PET, 2, periodicDamage(4.0f, PetFamily.flying, Target.SELF)).addEffect(singleAttack(18)); // wild winds
 
     
     /* elemental */
@@ -127,15 +135,17 @@ public class Effects
     forName("railgun").addEffect(singleAttack(21, 0.2f));
     forName("stone rush").addEffect(singleAttack(35), selfDamage(15));
     forName("avalanche").addEffect(teamSplitAttack(33));
-    forName("poisoned").addEffect(periodicDamage(5, PetFamily.elemental, Target.ENEMY_PET), SpecialEffect.POISONED);
+    forName("poisoned").addEffect(periodicDamage(5, PetFamily.elemental, Target.SELF), SpecialEffect.POISONED);
 
     forName("incineration security measures").addEffect(singleAttack(15), backlineAttack(10));
     mapPassiveEffect(792, 793, Target.ENEMY_PET, 2, healingReceivedMultiplier(0.5f)); // darkflame
     forId(1041).addEffect(periodicDamage(5, PetFamily.elemental, Target.ENEMY_ACTIVE_PET), SpecialEffect.BURNING); // flame jet
-    forId(1042).addEffect(singleAttack(30), chanceEffect(0.5f, applyEffect(1041, Target.ENEMY_ACTIVE_PET, 3)));
+    forId(1042).addEffect(singleAttack(30), chanceEffect(0.5f, applyEffect(1041, Target.ENEMY_TEAM, 3)));
     mapPassiveEffect(1010, 1009, Target.ENEMY_TEAM, 4, hitChanceModifier(-0.25f)); // inebriate
-    mapPassiveEffect(178, 177, Target.ENEMY_PET, 4, periodicDamage(5, PetFamily.elemental, Target.ENEMY_PET), SpecialEffect.BURNING).addEffect(singleAttack(12)); // immolate
+    mapPassiveEffect(178, 177, Target.ENEMY_PET, 4, periodicDamage(5, PetFamily.elemental, Target.SELF), SpecialEffect.BURNING).addEffect(singleAttack(12)); // immolate
+    mapPassiveEffect(206, 205, Target.BATTLE_FIELD, 9, SpecialEffect.CHILLED).addEffect(singleAttack(25)); // immolate
 
+    
     /* magic */
     forName("beam").addEffect(singleAttack(20));
     forName("moon fang").addEffect(singleAttack(22, 0.3f));
@@ -159,6 +169,7 @@ public class Effects
     mapPassiveEffect(614, 613, Target.SELF, 3, damageDoneMultiplier(1.25f)); // competitive spirit
     mapPassiveEffect(216, 215, Target.SELF, 1, damageDoneMultiplier(2.0f)); // inner vision
     mapPassiveEffect(977, 976, Target.SELF, 1, hitChanceModifier(-0.25f), critChanceModifier(1.0f)); // inner vision
+    mapPassiveEffect(194, 195, Target.SELF, 1, speedMultiplier(2.0f)).addEffect(singleAttack(15)); // metabolic boost
 
 
     
@@ -184,7 +195,7 @@ public class Effects
     forName("shock and awe").addEffect(damageWithChanceOfStun(30, 0.25f));
     forName("interrupting jolt").addEffect(singleAttack(20), SpecialEffect.INTERRUPT_OPPONENT_ROUND_IF_FIRST);
     mapPassiveEffect(392, 391, Target.SELF, 3, damageReceivedMultiplier(0.5f)); // extra plating
-    forName("lock-on").addEffect(new ConditionalEffect(new Condition.HasAbility(forName("locked on"), Target.ENEMY_ACTIVE_PET), singleAttack(45), applyEffect("locked on", Target.ENEMY_PET, -1)));
+    forName("lock-on").addEffect(conditionalEffect(Condition.hasAbility(forName("locked on"), Target.ENEMY_ACTIVE_PET), singleAttack(45), applyEffect("locked on", Target.ENEMY_PET, -1)));
     forName("locked on").addEffect(SpecialEffect.DUMMY);
 
     /* undead */
@@ -198,8 +209,8 @@ public class Effects
     forName("ghostly bite").addEffect(singleAttack(40), applyEffect(STUN_ID, Target.SELF, 1));
     forName("haunting song").addEffect(teamHeal(16));
     PetAbility.forNameAll("gargoyle strike").forEach(a -> a.addEffect(singleAttack(20)));
-    mapPassiveEffect(214, 213, Target.ENEMY_TEAM, 9, periodicDamage(3, PetFamily.undead, Target.ENEMY_ACTIVE_PET));
-    mapPassiveEffect(218, 217, Target.ENEMY_PET, 4, expireEffect(singleAttack(40, PetFamily.undead)));
+    mapPassiveEffect(214, 213, Target.ENEMY_TEAM, 9, periodicDamage(3, PetFamily.undead, Target.ENEMY_ACTIVE_PET)); // death and decay
+    mapPassiveEffect(218, 217, Target.ENEMY_PET, 4, expireEffect(singleAttack(40, PetFamily.undead))); // curse of doom
 
     
     /* water */
@@ -214,7 +225,7 @@ public class Effects
     mapPassiveEffect(1572, 1571, Target.ENEMY_ACTIVE_PET, 2, speedMultiplier(0.5f)); // vicious streak
     mapPassiveEffect(1062, 1061, Target.TEAM, 2, hitChanceModifier(0.5f), critChanceModifier(0.5f)); // rain dance
     forName("pumped up").addEffect(damageDoneMultiplier(1.1f));
-    forName("pump").addEffect(new ConditionalEffect(new Condition.HasAbility(forName("pumped up"), Target.SELF), singleAttack(45), applyEffect("pumped up", Target.SELF, -1)));
+    forName("pump").addEffect(conditionalEffect(Condition.hasAbility(forName("pumped up"), Target.SELF), singleAttack(45), applyEffect("pumped up", Target.SELF, -1)));
 
 
     
@@ -238,7 +249,7 @@ public class Effects
     forName("rawr!").addEffect(SpecialEffect.DUMMY);
 
     
-    PetAbility.forId(154).addEffect(speedMultiplier(0.75f)); // speed reduction
+    PetAbility.forId(SPEED_REDUCTION_25).addEffect(speedMultiplier(0.75f)); // speed reduction
     PetAbility.forId(928).addEffect(speedMultiplier(0.75f)); // speed reduction
     PetAbility.forNameAll("stunned").forEach(a -> a.addEffect(SpecialEffect.STUNNED) );
 
