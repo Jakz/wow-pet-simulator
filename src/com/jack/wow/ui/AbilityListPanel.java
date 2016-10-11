@@ -27,6 +27,7 @@ import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.JTextField;
 import javax.swing.JToolTip;
+import javax.swing.SwingUtilities;
 import javax.swing.ToolTipManager;
 import javax.swing.table.TableModel;
 
@@ -36,6 +37,7 @@ import com.jack.wow.data.PetFamily;
 import com.jack.wow.data.PetSpec;
 import com.jack.wow.ui.misc.BooleanCellRenderer;
 import com.jack.wow.ui.misc.Icons;
+import com.jack.wow.ui.misc.SearchTextField;
 import com.jack.wow.ui.misc.SimpleTableModel;
 import com.jack.wow.ui.misc.TableModelColumn;
 import com.jack.wow.ui.misc.UIUtils;
@@ -46,7 +48,7 @@ public class AbilityListPanel extends JPanel
   private List<PetAbility> oabilities = new ArrayList<>();
   private Map<PetAbility, String> mechanics = new HashMap<>();
   private final List<PetAbility> abilities = new ArrayList<>();
-  private final JTextField search = new JTextField(30);
+  private final SearchTextField<PetAbility> search = new SearchTextField<>(30, f -> searchUpdated(f));
   private final FamilyFilterButton[] familyFilters;
   
   private final JButton openChangelogInWH = new JButton("Changelog");
@@ -157,6 +159,8 @@ public class AbilityListPanel extends JPanel
                           .map(familyFiltersPanel::add)
                           .toArray(s -> new FamilyFilterButton[s]);
     
+    generateSearchPredicates();
+    
     JButton invertFamilyFilter = new JButton("~");
     invertFamilyFilter.setPreferredSize(new Dimension(24,24));
     invertFamilyFilter.setFont(this.getFont().deriveFont(this.getFont().getSize()-2.0f));
@@ -196,12 +200,23 @@ public class AbilityListPanel extends JPanel
     
     JPanel lowerPanel = new JPanel();
     lowerPanel.add(search);
-    lowerPanel.add(openChangelogInWH);
+    //lowerPanel.add(openChangelogInWH);
 
     setLayout(new BorderLayout());
     add(pane, BorderLayout.CENTER);
     add(lowerPanel, BorderLayout.SOUTH);
     add(familyFiltersPanel, BorderLayout.NORTH);
+  }
+  
+  private void generateSearchPredicates()
+  {
+    search.setDefaultRule(s -> a -> a.name.toLowerCase().contains(s.toLowerCase()));
+    search.addRule("family", s -> a -> a.family.description.toLowerCase().contains(s.toLowerCase()));
+  }
+  
+  private void searchUpdated(Predicate<PetAbility> filter)
+  {
+    populate(oabilities, filter);
   }
 
   public void populate(List<PetAbility> list, Predicate<PetAbility> filter)
@@ -221,7 +236,8 @@ public class AbilityListPanel extends JPanel
       mechanics.put(a, a.stream().map(aa -> aa.toString()).collect(Collectors.joining(", ")));
     });
     
-    
-    model.fireTableDataChanged();
+    SwingUtilities.invokeLater(() ->
+      model.fireTableDataChanged()
+    );
   }
 }

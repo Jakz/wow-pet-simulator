@@ -44,6 +44,22 @@ public interface Condition extends Predicate<BattleStatus>
     }
     
     @Override public String toString() { return "has-status("+status+", "+target+")"; }
+  }
+  
+  public static class OrderOfAttack implements Condition
+  {
+    public boolean isUserFirst;
+    
+    public OrderOfAttack(boolean isUserFirst)
+    {
+      this.isUserFirst = isUserFirst;
+    }
 
+    @Override public boolean test(BattleStatus status)
+    {
+      throw new RuntimeException();
+    }
+    
+    @Override public String toString() { return isUserFirst ? "is-first()" : "is-last()"; }
   }
 }

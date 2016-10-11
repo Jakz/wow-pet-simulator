@@ -1,17 +1,32 @@
 package com.jack.wow.battle.abilities;
 
+import java.util.Optional;
+
 public class ConditionalEffect implements ActiveEffect
 {
   Condition condition;
   ActiveEffect trueEffect;
-  ActiveEffect falseEffect;
+  Optional<ActiveEffect> falseEffect;
   
   public ConditionalEffect(Condition condition, ActiveEffect trueEffect, ActiveEffect falseEffect)
   {
     this.condition = condition;
     this.trueEffect = trueEffect;
-    this.falseEffect = falseEffect;
+    this.falseEffect = Optional.of(falseEffect);
   }
   
-  @Override public String toString() { return "conditional("+condition+", "+trueEffect+", "+falseEffect+")"; }
+  public ConditionalEffect(Condition condition, ActiveEffect trueEffect)
+  {
+    this.condition = condition;
+    this.trueEffect = trueEffect;
+    this.falseEffect = Optional.empty();
+  }
+  
+  @Override public String toString()
+  { 
+      if (falseEffect.isPresent())
+        return "conditional("+condition+", "+trueEffect+", "+falseEffect+")";
+      else
+        return "conditional("+condition+", "+trueEffect+")";
+  }
 }

@@ -242,5 +242,7 @@ public class Effects
     PetAbility.forId(928).addEffect(speedMultiplier(0.75f)); // speed reduction
     PetAbility.forNameAll("stunned").forEach(a -> a.addEffect(SpecialEffect.STUNNED) );
 
+    long mapped = PetAbility.data.values().stream().filter(a -> a.effectCount() > 0).count();
+    System.out.println(String.format("Ablities with mechanics %d/%d (%2.2f%%)", (int)mapped, (int)PetAbility.data.size(), (mapped/(float)PetAbility.data.size())*100));
   }
 }
