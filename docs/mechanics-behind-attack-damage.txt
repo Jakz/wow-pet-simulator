@@ -1,0 +1,65 @@
+The Formula (Changed in patch 6.0)
+(Basic Damage +/- Solid Damage Increases/Decreases) {x Damage Variation} x (1 +Attacking Pet's Damage% Buffs/Debuffs) x (1 + Defending Pet's Damage% Buffs/Debuffs) (x Type Advantage/Disadvantage) (x Critical Modifier)
+
+We'll break the formula down to steps so it's easier to follow:
+Step 1: Basic Damage +/- Solid Damage Increases/Decreases
+Step 1.1: Damage Variation (if the used ability has built-in variation)
+Step 2: Attacking Pet's Damage% Buffs/Debuffs
+Step 3: Defending Pet's Damage% Buffs/Debuffs
+Step 4: Type Advantage or Disadvantage
+Step 5: Damage Variation (Changed in patch 6.0. More info below.)
+Step 6: Critical Modifier
+Breaking down the formula
+Step 1: Basic Damage of the attack (without type advantage/disadvantage) and any and all buffs or debuffs on enemy target that increase or decrease damage taken by a solid number, for example Exposed Wounds or Shell Shield. For attacks with built-in damage variation their "Basic Damage" is the average damage of the ability.
+
+Step 1.1: If the used ability has damage variation (like Crush) and it's Basic Damage wasn't reduced to 0 in Step 1, the variation kicks in here. It differs from ability to ability, and to calculate it we need min, max and average damage of the ability. The modifier to damage will be between (min damage / average damage) and (max damage / average damage). If the ability has no variation, skip Step 1.1.
+
+Step 2: Any buffs or debuffs on the attacker that increase or decrease damage done by percentage, for example Amplify Magic or Shriek. Note that the amounts of percentages are actually percentage points during this step, meaning that having both of the previously linked abilities on at the same time would yield a total of 25% increase to damage done.
+
+Step 3: Any buffs or debuffs on the defender that increase or decrease damage done by percentage, for example Crouch or Rabid Strike. Note that the amounts of percentages are actually percentage points during this step, meaning that having both of the previously linked abilities on at the same time would yield a total of 0% increase to damage taken, they would nullify each other's damage taken -effects.
+
+Step 4: Step 4 is simple; if you have type advantage (for example doing flying damage to aquatic pet) multiply your damage up to the point by 1.5, if you have type disadvantage (for example doing undead damage to aquatic pet) multiply your damage up to the point by 0.67. If you have neither, skip Step 4.
+
+Step 5: The rng factor affects your damage here, giving randomly a multiplier between 0.9 and 1.1 EDIT: The universal damage variation to damage has been removed in patch 6.0. Now only some abilities have variation that has been built into them, and those will be resolved in Steps 1 and 1.1.
+
+Step 6: If your attack is a critical hit, multiply by 1.5, otherwise skip Step 6.
+Example
+We'll go through the formula using an example of a pre-arranged situation. Our Crow will attack Gorespine using Peck with 200 Base Damage while our Crow doesn't have any buffs or debuffs but Gorespine has a ton of them: Spiked Skin with power of 130 damage reduced, Black Claw with power of 118 damage increased, Acidic Goo, Shattered Defenses and of course the buff of being Elite. We'll first turn percentages into decimals: 25% becomes 0.25, 50% become 0.5 and 100% becomes 1. Let's port these to the formula down below and look at the first 3 steps ->
+
+(Basic Damage +/- Solid Damage Increases/Decreases) x (1 +Attacking Pet's Damage% Buffs/Debuffs) x (1 + Defending Pet's Damage% Buffs/Debuffs) ->
+
+(200 + 118 - 130) x (1 + 0) x (1 + 1 + 0.25 - 0.5) ->
+
+188 x 1 x 1.75 = 329
+
+We don't have type advantage/disadvantage so we can skip Step 4. Before a possible critical hit, the damage is sitting at 329. We can determine the critical by multiplying with 1.5.
+
+329 x 1.5 = 493.5
+
+Summary: Crow's attack with these buffs and debuffs will do 329 damage or 493 with a critical hit.
+Tricks for the future
+Elites: Having that passive buff for 50% damage reduced makes debuffs work the best against them. Giving your pets 50% damage done increase would be less effective than giving the elite 50% increased damage taken. Just applying Shattered Defenses on an elite TRIPLES the damage your pets will do against them. Combine that with a solid damage increase like Black Claw and your attacks are really starting to hurt. Since Black Claw increases the base damage it scales up or down with %-based damage increases and decreases. I'm going to list a couple of examples using the previous pets with different buffs and debuffs:
+
+Peck with 200 Base Damage
+Crow: no buffs/debuffs, Gorespine: Elite -> 100 damage
+Crow: no buffs/debuffs, Gorespine: Elite and Black Claw with power of 118 -> 159 damage
+Crow: no buffs/debuffs, Gorespine: Elite and Shattered Defenses -> 300 damage
+Crow: no buffs/debuffs, Gorespine: Elite, Black Claw with power of 118 and Shattered Defenses -> 477 damage
+
+As you can see, the more you add to the mix, the more powerful your abilities get. You might have also noticed that the percentage buffs are very powerful against elites, so you might be wondering what the solid damage increases are best for... I'm going to talk about them in a second but first few tips against elites: As you've witnessed the power of debuffs on your target against elites, there are few things that may seem obvious to others but I'll point them out just in case. Currently the most important thing to remember against elites is that the matches are 1vs3, and out of that 3, only 1 needs to survive. This gives the player a chance to give pets of his 3 man team roles. 3 roles that I usually use against elites are: dotter, debuffer and finisher. The names are pretty obvious, but you can combine these roles as well. Having 1st pet dot your enemy elite with lots of dots and the 2nd pet to debuff him/her with solid damage taken increase and/or Shattered Defenses will make the dots hurt a lot. 3rd pet should be something that is there to finish the pet with high hitters should the poor thing survive the dots and other cruelty you've done to him/her. These things in mind you should be able to devise strategies to take down future and present elites more easily. Undead pets are very good dotters and debuffers since they can act on the turn their hit points run out (even if the enemy attacked and killed your pet first) and on the turn after. Only thing that can stop your undead from doing what he/she pleases on these turns is a stun, and not too many elites have that. Infected Squirrel is extremely good at this since it has a dot and %-based damage increases.
+
+Multi-attack abilities: Multi-attack abilities are usually balanced around having few smaller hitting attacks do about the same amount of damage than a higher hitting one. These attacks are the best kind to be used with solid damage increases like Black Claw. Higher hitters benefit less since the increase is a smaller portion of the base damage. I'll give you an example:
+
+An ability that hits once for 100 damage versus ability that attacks 3 times for 25 damage each. Both of these are used against an enemy with Exposed Wounds with power of 25 damage increased. The 1st ability gets an extra 25 to it's 100, doing 125 damage. The 2nd ability gets an extra 25 to each of it's 3 attacks, having 3 attacks each doing 50 damage for a total of 150 damage. For the multi-attack ability this doubles the amount of damage per hit as for the higher hitter it only gives and extra 25%. Solid damage increases get extremely powerful during Lightning Storm. Lightning Storm will add a small extra attack to every attack made during it, meaning that 3 attacks would become 6 attacks, and all of those would be heavily benefitting from that Exposed Wounds. If that triple attack happened to be something like Swarm, you'd have that Shattered Defenses in the mix as well and the powerlevel of your pet's attack would quickly ramp over 9000. Few words of caution when using multi-attacks though. Since affecting their base damage is the most beneficial way to increase their potency, lowering their base damage is the best guard against them. If you your enemy has a damage barrier like Spiked Skin you need a powerful buff of solid damage increase to counter that or your multi-attacks do very little or no damage at all. Baseline you're better off using high hitters against those shields, but when there are no shields, you should go try this favourite combo of mine out:
+
+Lightning Storm + Black Claw + Hunting Party
+
+Here are couple of pets with both Black Claw and Hunting Party to try this out: Zandalari Anklerender and Zandalari Kneebiter
+Exceptions
+Percentage-based damage: There's one form of dealing damage that ignore any and all steps of the previously presented formula, quite possibly even critical strikes; damage based on maximum health. This includes attacks that deal damage based on your own health like Explode and attacks that are based on your target's health like Glowing Toxin. Currently these attacks seem to ignore Solid Damage Increases/Decreases, Damage% -buffs/debuffs, Type Advantages/Disadvantage and Damage Variation. The only way to increase the damage of these abilities currently is to increase the max health of pets with weather effect Sunny Day and a temporary health increase from a healing ability like Perk Up or Ancient Blessing. If these are intended mechanics for these types of attacks or simply a bug, we can't know for sure.
+
+Wild pet damage reduction: Having been paying attention (and a lot of testing) about the damage wild pets are doing to my pets, I've discovered a weird anomaly that happens with certain types of moves when calculating damage being done to YOUR pets. There seems to be a modifier that is approximately 11/14 in size and affects the base damage of abilities that deal direct damage. Damage from a reflective shield like Spiked Skin and most damage over time effects seem unaffected. Attacks that include both direct damage and a dot like Poison Fang will have their direct damage affected while the dot seems to ignore this mysterious reduction. Glowing Toxin is affected while other dots are not. This reduction all in all seems so weird that it may be an unintended bug but it is currently in the game and seems only to affect wild pets doing damage to player-controlled pets. Update!: Haven't seen this happening for a while now, may be a fixed bug or some circumstances restrict it's appearance to situations I have not encountered with wild pets in Draenor.
+
+Beasts of Fable: Beasts of Fable seems to have a weird reduction that deducts 1 damage from attacks against them. I've witnessed 119.5 damage become 119 and 81 become 80 so the rules aren't too clear but it happens. Most likely a bug.
+The end
+Testing in 6.0 was carried out against Gorespine, the new damage variation abilities could take some more testing to see if the formula holds for them, otherwise it is solid. And that ends my guide for damage in pet battles. Is a pretty solid wall of text that I cba to make pleasing to the eye, but I do hope you've managed to read it through nonetheless and gotten answers to some questions puzzling you about pet battles or few nice tricks for the future. Orewadoragon over and out!

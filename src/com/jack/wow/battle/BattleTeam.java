@@ -5,6 +5,15 @@ import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 
+/**
+ * This class encapsulates a battle team composed by 3 <code>BattlePet</code> and
+ * an <code>EffectList</code> which contains all the effects which are globally
+ * affecting the team.
+ * 
+ * @see BattlePet
+ * @see EffectList
+ * @author Jack
+ */
 public class BattleTeam implements Iterable<BattlePet>
 {
   private final BattlePet[] pets;

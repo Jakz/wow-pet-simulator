@@ -3,9 +3,9 @@ package com.jack.wow.battle;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.function.Predicate;
 import java.util.stream.Stream;
 
-import com.jack.wow.battle.abilities.Effect;
 import com.jack.wow.battle.abilities.PassiveEffect;
 import com.jack.wow.data.PetAbility;
 
@@ -21,6 +21,11 @@ public class EffectList implements Iterable<EffectStatus>
   public Stream<PassiveEffect> passiveEffects()
   {
     return effects.stream().flatMap(s -> s.passiveEffects());
+  }
+  
+  public Stream<PassiveEffect> findAll(Predicate<PassiveEffect> predicate)
+  {
+    return passiveEffects().filter(predicate);
   }
   
   

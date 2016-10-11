@@ -8,6 +8,7 @@ public interface ModifierFunction extends PassiveEffect
     DAMAGE(false, "dmg-done"),
     DAMAGE_RECEIVED(false, "dmg-recv"),
     DAMAGE_RECEIVED_RAW(true, "dmg-recv-raw"),
+    DAMAGE_DONE_RAW(true, "dmg-recv-raw"),
     HEALING_RECEIVED(false, "healing-recv"),
     SPEED(false, "speed"),
     HIT_CHANCE(true, "hit-chance"),

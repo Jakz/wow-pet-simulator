@@ -32,8 +32,24 @@ public class ModifierEffect implements ModifierFunction, PassiveEffect
   public static ModifierFunction buildSpeed(float p) { return new ModifierEffect(Target.SPEED, p); }  
   public static ModifierFunction buildDamageDone(float p) { return new ModifierEffect(Target.DAMAGE, p); }  
   public static ModifierFunction buildDamageReceived(float p) { return new ModifierEffect(Target.DAMAGE_RECEIVED, p); }  
-  public static ModifierFunction buildHealingReceived(float p) { return new ModifierEffect(Target.HEALING_RECEIVED, p); }
   
+  public static ModifierFunction buildRawDamageReceived(float p) {
+    return new ModifierEffect(Target.DAMAGE_RECEIVED_RAW, p) {
+      @Override public float apply(Target target, float value)
+      {
+        // must calculate final value with power of pet
+        throw new RuntimeException();
+      }
+      
+      @Override public String toString()
+      {
+        return "modifier("+target.description+", "+(int)parameter+")";
+      }
+    };  
+  }
+
+  public static ModifierFunction buildHealingReceived(float p) { return new ModifierEffect(Target.HEALING_RECEIVED, p); }
+ 
   public static ModifierFunction buildHealthModifier(float p) { return new ModifierEffect(Target.HEALTH, p); }
   
   public static ModifierFunction buildHitChance(float p) { return new ModifierEffect(Target.HIT_CHANCE, p); }  

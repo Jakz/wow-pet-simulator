@@ -4,7 +4,8 @@ package com.jack.wow.battle;
  * This class encloses which abilities are chosen for a specific pet. It is used to decide which 
  * abilities are used by a <code>BattlePet</code> instance.
  * 
- * @author jack
+ * @see BattlePet
+ * @author Jack
  */
 public class AbilitySet
 {

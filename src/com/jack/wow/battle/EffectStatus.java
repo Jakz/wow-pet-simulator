@@ -11,7 +11,7 @@ public class EffectStatus
   PetAbility effect;
   int turns;
   
-  EffectStatus(PetAbility effect, int turns)
+  public EffectStatus(PetAbility effect, int turns)
   {
     this.effect = effect;
     this.turns = turns;

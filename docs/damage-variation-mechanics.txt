@@ -1,0 +1,29 @@
+Hit and Critical Strike
+Senior game designer, Jonathan LeCraft, recently provided some insight on how hit and critical strike will affect certain abilities in Warlords of Draenor.
+
+"Pet battle theorycrafters: hit and crit positively influence abilities with damage ranges."
+
+Celestalon expands further on this concept in the Blizzard forums. [source]
+
+For battle pet abilities with damage variance, here is an example of how it works:
+
+Let's say your ability inflicts 200 to 440. The average would be 320.
+We calculate our roll size as (400 - 220) / 2 = 120.
+We then roll 120 three times and take the highest value. Our rolls are 14, 56, and 101, so we take 101. This is to give more noticable results and keep us away from the average.
+
+Now we determine if the roll is added to or subtracted from the average.
+
+Your base chance for a positive result is 50%.
+If your hit is above 100%, your chance for a positive result is 50% + (Hit - 100) (EDIT: Fixed this formula). So, you always get a positive result at 150% hit and higher.
+Critical strikes are ALWAYS positive.
+
+A positive result would be 320 + 101 = 421
+A critical strike would be (320 + 101) * 1.5 = 631
+Otherwise the result would be 320 - 101 = 219
+
+Please feel free to send questions and concerns to @TheCrafticus on Twitter.
+
+Misses Still Possible
+Although many abilities that currently have a 95% chance to hit will be changed to 100% in WoD, LeCraft notes that misses can still occur if pets are under the effects of an ability that reduces hit.
+
+"They can still miss if there's a reduced effect active (Call Darkness, Stench, etc.) But 100% base!"

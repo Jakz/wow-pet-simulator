@@ -17,7 +17,7 @@ import com.jack.wow.data.PetStats;
  * This class is used as an instance of a pet inside a battle, it contains all the additional data required to manage a battle,
  * for example current hit points, which abilities are chosen, which passive effects are active on it and so on.
  * 
- * @author jack
+ * @author Jack
  */
 public class BattlePet
 {

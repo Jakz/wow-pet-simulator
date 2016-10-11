@@ -6,12 +6,15 @@ import com.jack.wow.data.PetFamily;
 public class Effects
 {
   private static ActiveEffect singleAttack(float power) { return new Attack(Target.ENEMY_PET, new EffectPower(power)); }
+  private static ActiveEffect singleAttack(float power, PetFamily family) { return new Attack(Target.ENEMY_PET, family, new EffectPower(power)); }
   private static ActiveEffect singleAttack(float power, float variance) { return new Attack(Target.ENEMY_PET, new EffectPower(power, variance)); }
+  
 
   private static Effect backlineAttack(float power) { return new Attack(Target.ENEMY_BACK_LINE, new EffectPower(power)); }
   private static Effect teamSplitAttack(float power) { return new Attack(Target.ENEMY_TEAM_SPLIT, new EffectPower(power)); }
   
   private static PassiveEffect periodicDamage(float power, PetFamily family, Target target) { return new PeriodicDamage(target, family,new EffectPower(power)); } 
+  private static PassiveEffect expireEffect(ActiveEffect effect) { return new ExpireEffect(effect); }
   
   private static Effect singleHeal(float power) { return new Heal(Target.SELF, new EffectPower(power)); }
   private static Effect teamHeal(float power) { return new Heal(Target.TEAM, new EffectPower(power)); }
@@ -25,6 +28,7 @@ public class Effects
   
   private static PassiveEffect speedMultiplier(float v) { return ModifierEffect.buildSpeed(v); }
   private static PassiveEffect damageDoneMultiplier(float v) { return ModifierEffect.buildDamageDone(v); }
+  private static PassiveEffect damageReceivedModifier(float v) { return ModifierEffect.buildRawDamageReceived(v); }
   private static PassiveEffect damageReceivedMultiplier(float v) { return ModifierEffect.buildDamageReceived(v); }
   private static PassiveEffect healingReceivedMultiplier(float v) { return ModifierEffect.buildHealingReceived(v); }
   
@@ -65,11 +69,12 @@ public class Effects
     PetAbility.forNameAll("claw").forEach(a -> a.addEffect(singleAttack(21, 0.2f)));
     forName("horn gore").addEffect(singleAttack(21, 0.2f));
     forName("udder destruction").addEffect(damageWithChanceOfStun(30, 0.25f));
+    forName("headbutt").addEffect(damageWithChanceOfStun(30, 0.25f));
     forName("trihorn charge").addEffect(singleAttack(23), SpecialEffect.ALWAYS_GOES_FIRST);
     forName("barbed stinger").addEffect(singleAttack(19), chanceEffect(0.2f, applyEffect("poisoned", Target.ENEMY_PET, 1)));
     mapPassiveEffect(1054, 1053, Target.SELF, 2, critChanceModifier(1.0f)); // hawk eye
     mapPassiveEffect(1112, 1111, Target.SELF, 3, damageReceivedMultiplier(0.5f)); // though n' cuddly
-    
+    mapPassiveEffect(310, 309, Target.SELF, 5, damageReceivedModifier(-5));
 
     
     /* humanoid */
@@ -193,7 +198,10 @@ public class Effects
     forName("ghostly bite").addEffect(singleAttack(40), applyEffect(STUN_ID, Target.SELF, 1));
     forName("haunting song").addEffect(teamHeal(16));
     PetAbility.forNameAll("gargoyle strike").forEach(a -> a.addEffect(singleAttack(20)));
+    mapPassiveEffect(214, 213, Target.ENEMY_TEAM, 9, periodicDamage(3, PetFamily.undead, Target.ENEMY_ACTIVE_PET));
+    mapPassiveEffect(218, 217, Target.ENEMY_PET, 4, expireEffect(singleAttack(40, PetFamily.undead)));
 
+    
     /* water */
     forName("water jet").addEffect(singleAttack(20));
     forName("steam vent").addEffect(singleAttack(22, 0.3f));
@@ -230,7 +238,8 @@ public class Effects
     forName("rawr!").addEffect(SpecialEffect.DUMMY);
 
     
-    
+    PetAbility.forId(154).addEffect(speedMultiplier(0.75f)); // speed reduction
+    PetAbility.forId(928).addEffect(speedMultiplier(0.75f)); // speed reduction
     PetAbility.forNameAll("stunned").forEach(a -> a.addEffect(SpecialEffect.STUNNED) );
 
   }
