@@ -17,5 +17,5 @@ public class EffectApply implements ActiveEffect
   
   public boolean isFinite() { return turns > 0; }
   
-  @Override public String toString() { return "apply("+ability.id+"-"+ability.name.toLowerCase()+", "+target+", "+turns+")"; }
+  @Override public String toString() { return "apply("+ability.id+"-"+ability.name.toLowerCase()+", "+target+(turns > 0 ? (", "+turns+")") : ""); }
 }

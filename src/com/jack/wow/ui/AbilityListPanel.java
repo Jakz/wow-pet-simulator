@@ -1,12 +1,16 @@
 package com.jack.wow.ui;
 
 import java.awt.BorderLayout;
+import java.awt.Desktop;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.GridLayout;
 import java.awt.Point;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
+import java.io.IOException;
+import java.net.URISyntaxException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -42,8 +46,10 @@ public class AbilityListPanel extends JPanel
   private List<PetAbility> oabilities = new ArrayList<>();
   private Map<PetAbility, String> mechanics = new HashMap<>();
   private final List<PetAbility> abilities = new ArrayList<>();
-  private final JTextField search = new JTextField();
+  private final JTextField search = new JTextField(30);
   private final FamilyFilterButton[] familyFilters;
+  
+  private final JButton openChangelogInWH = new JButton("Changelog");
   
   private final TooltipTable table;
   private final SimpleTableModel<PetAbility> model;
@@ -170,10 +176,31 @@ public class AbilityListPanel extends JPanel
     
     pane.setPreferredSize(new Dimension(width, height));
     pane.setBorder(BorderFactory.createEmptyBorder(0, 0, 10, 0));
+    
+    openChangelogInWH.addActionListener(e -> {
+      int r = table.getSelectedRow();
+      
+      if (r > 0)
+      {
+        r = table.convertRowIndexToModel(r);
+        PetAbility a = abilities.get(r);
+        try
+        {
+          Desktop.getDesktop().browse(new URL("http://www.wowhead.com/pet-ability="+a.id+"#changelog").toURI());
+        } catch (IOException | URISyntaxException e1)
+        {
+          e1.printStackTrace();
+        }
+      }
+    });
+    
+    JPanel lowerPanel = new JPanel();
+    lowerPanel.add(search);
+    lowerPanel.add(openChangelogInWH);
 
     setLayout(new BorderLayout());
     add(pane, BorderLayout.CENTER);
-    add(search, BorderLayout.SOUTH);
+    add(lowerPanel, BorderLayout.SOUTH);
     add(familyFiltersPanel, BorderLayout.NORTH);
   }
 

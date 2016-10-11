@@ -15,6 +15,7 @@ import java.util.stream.IntStream;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
+import org.jsoup.select.Elements;
 
 import com.jack.wow.files.StreamException;
 
@@ -66,5 +67,23 @@ public class WowHeadFetcher
     }
     
     return null;
+  }
+  
+  public static void parseChangeLogForAbility(int id)
+  {
+    try
+    {
+      Document doc = Jsoup.connect("http://www.thottbot.com/pet-ability="+id+"#changelog").get();
+    
+      Elements changelog = doc.select("* > div#jkbfksdbl4");
+      
+      System.out.println("Antani");
+    }
+    catch (Exception e)
+    {
+      e.printStackTrace();
+    }
+
+
   }
 }
