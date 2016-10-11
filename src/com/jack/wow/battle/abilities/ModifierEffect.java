@@ -1,5 +1,7 @@
 package com.jack.wow.battle.abilities;
 
+import com.jack.wow.battle.BattleStatus;
+
 public class ModifierEffect implements ModifierFunction, PassiveEffect
 {
   final public float parameter;
@@ -11,7 +13,12 @@ public class ModifierEffect implements ModifierFunction, PassiveEffect
     this.target = target;
   }
   
-  @Override public float apply(Target target, float value)
+  @Override public float onCalculateStat(BattleStatus status, Target target, float value)
+  {
+    return apply(status, target, value);
+  }
+  
+  @Override public float apply(BattleStatus status, Target target, float value)
   { 
     if (this.target == target)
       return target.isAdditive ? (parameter + value) : (parameter * value);
@@ -35,7 +42,7 @@ public class ModifierEffect implements ModifierFunction, PassiveEffect
   
   public static ModifierFunction buildRawDamageReceived(float p) {
     return new ModifierEffect(Target.DAMAGE_RECEIVED_RAW, p) {
-      @Override public float apply(Target target, float value)
+      @Override public float apply(BattleStatus status, Target target, float value)
       {
         // must calculate final value with power of pet
         throw new RuntimeException();

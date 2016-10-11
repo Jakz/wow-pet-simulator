@@ -27,6 +27,7 @@ public class BattlePet
   private int power;
   private int speed;
   
+  private BattleTeam team;
   private final BattleAbilityStatus[] abilities;
   private final EffectList passiveEffects;
   
@@ -37,10 +38,13 @@ public class BattlePet
     
     abilities = new BattleAbilityStatus[3];
     for (int i = 0; i < abilities.length; ++i)
-      abilities[i] = new BattleAbilityStatus(pet.spec().slot(i).get(set.index(i)));
+      abilities[i] = new BattleAbilityStatus(this, pet.spec().slot(i).get(set.index(i)));
     
     passiveEffects = new EffectList();
   }
+  
+  public void setTeam(BattleTeam team) { this.team = team; }
+  public BattleTeam team() { return team; }
   
   public void addEffect(EffectApply effect)
   {
@@ -62,11 +66,15 @@ public class BattlePet
     this.speed = (int)astats.speed();
   }
   
-  public void resetCooldowns()
+  public void resetCooldownsAndCharges()
   {
-    for (BattleAbilityStatus status : abilities) status.cooldown = 0;
+    for (BattleAbilityStatus status : abilities)
+    {
+      status.resetCharges();
+      status.resetCooldown();
+    }
   }
   
-  public PetOwnedAbility ability(int i) { return abilities[i].ability; }
+  public PetOwnedAbility ability(int i) { return abilities[i].ability(); }
   public Pet pet() { return pet; }
 }

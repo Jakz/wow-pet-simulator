@@ -36,7 +36,7 @@ public class Battle
       for (BattlePet pet : team)
       {
         pet.resetHitPoints();
-        pet.resetCooldowns();
+        pet.resetCooldownsAndCharges();
         pet.effects().clear();
       }
     }

@@ -115,7 +115,7 @@ public class AbilityListPanel extends JPanel
       new TableModelColumn<PetAbility>(String.class, "Name", p -> p.name, 200),
       //new TableModelColumn<PetAbility>(Integer.class, "Rounds", p -> p.rounds),
       new TableModelColumn<PetAbility>(Integer.class, "C", p -> p.cooldown, 20),
-      new TableModelColumn<PetAbility>(Boolean.class, "P", p -> p.effectCount() > 0 && p.stream().allMatch(e -> e instanceof PassiveEffect), 20),
+      new TableModelColumn<PetAbility>(Boolean.class, "P", p -> p.effectCount() > 0 && p.effects().allMatch(e -> e instanceof PassiveEffect), 20),
       new TableModelColumn<PetAbility>(Integer.class, "Used", p -> { return PetAbility.usage.containsKey(p) ? PetAbility.usage.get(p).size() : 0; }, 40),
       new TableModelColumn<PetAbility>(String.class, "Hit Chance", p -> { return p.hitChance.isPresent() ? Integer.valueOf((int)(float)p.hitChance.get())+"%" : ""; }, 50),
       new TableModelColumn<PetAbility>(Boolean.class, "", p -> p.effectCount() > 0, 20 ),
@@ -234,7 +234,7 @@ public class AbilityListPanel extends JPanel
     Arrays.stream(familyFilters).forEach(b -> b.setText(Long.toString(countByFamily.getOrDefault(b.family, 0L))));
     
     abilities.forEach(a -> {
-      mechanics.put(a, a.stream().map(aa -> aa.toString()).collect(Collectors.joining(", ")));
+      mechanics.put(a, a.effects().map(aa -> aa.toString()).collect(Collectors.joining(", ")));
     });
     
     SwingUtilities.invokeLater(() ->

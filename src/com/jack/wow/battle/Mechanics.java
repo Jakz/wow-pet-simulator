@@ -3,8 +3,14 @@ package com.jack.wow.battle;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Stream;
+import static java.util.stream.Stream.concat;
+import static java.util.stream.Stream.of;
 
+import com.jack.wow.battle.abilities.ActiveHiddenEffect;
+import com.jack.wow.battle.abilities.ModifierFunction;
 import com.jack.wow.battle.abilities.PassiveEffect;
+import com.jack.wow.data.Formulas;
 
 public class Mechanics
 {
@@ -45,16 +51,16 @@ public class Mechanics
     /* add all passives from both teams */
     for (BattleTeam team : battle.teams())
     {
-      team.effects().stream()
+      /*team.effects().stream()
         .filter(EffectStatus::isEnded)
-        .forEach(s -> passives.add(new PassiveEffectInfo(s, new BattleStatus(battle, team))));
+        .forEach(s -> passives.add(new PassiveEffectInfo(s, new BattleStatus(battle, team))));*/
       
       /* add all passives from pets */
       for (BattlePet pet : team)
       {
-        pet.effects().stream()
+        /*pet.effects().stream()
           .filter(EffectStatus::isEnded)
-          .forEach(s -> passives.add(new PassiveEffectInfo(s, new BattleStatus(battle, pet))));
+          .forEach(s -> passives.add(new PassiveEffectInfo(s, new BattleStatus(battle, pet))));*/
       }
     }
     
@@ -98,5 +104,61 @@ public class Mechanics
   public void executeTurn(Battle battle)
   {
     
+  }
+  
+  /**
+   * Computes the final speed for an ability.
+   * It takes into account all the passive effects on the pet, all the passive effects on the team and the possible
+   * hidden effects of the ability itself.
+   * @param ability
+   * @return the speed of the ability in the current context
+   */
+  public float computeSpeedForAbility(BattleAbilityStatus ability)
+  {
+    BattlePet pet = ability.owner();
+    
+    Stream<PassiveEffect> petEffects = pet.effects().passiveEffects();
+    Stream<PassiveEffect> teamEffects = pet.team().effects().passiveEffects();
+    Stream<PassiveEffect> hiddenEffects = ability.ability().get().findAllEffects(ActiveHiddenEffect.class).map(e -> e.effect);
+    
+    final BattleStatus status = new BattleStatus(battle, pet, null);
+    
+    Stream<PassiveEffect> effects = concat(concat(petEffects, teamEffects), hiddenEffects);
+    
+    float speed = effects
+      .reduce(
+          pet.pet().stats().speed(), 
+          (s, effect) -> effect.onCalculateStat(status, ModifierFunction.Target.SPEED, s), 
+          Float::sum
+       );
+    
+    return speed;
+  }
+  
+  /**
+   * Determines the order of two abilities used by two pets.
+   * Algorithm computes the final speed of the pet by reducing all the passive bonuses/maluses of the pet and of the team
+   * which affect speed to compute the final value.
+   * @param ability1 first ability
+   * @param ability2 second ability
+   * @return an array which contains the two abilities in order of execution
+   */
+  public BattleAbilityStatus[] determineWhichAbilityAppliesFirst(BattleAbilityStatus ability1, BattleAbilityStatus ability2)
+  {
+    float speed1 = computeSpeedForAbility(ability1);
+    float speed2 = computeSpeedForAbility(ability2);
+    
+    if (speed1 > speed2)
+      return new BattleAbilityStatus[] { ability1, ability2 };
+    else if (speed2 > speed1)
+      return new BattleAbilityStatus[] { ability2, ability1 };
+    else
+    {
+      if (Formulas.chance(0.5f))
+        return new BattleAbilityStatus[] { ability1, ability2 };
+      else
+        return new BattleAbilityStatus[] { ability2, ability1 };
+    }
+
   }
 }

@@ -25,7 +25,7 @@ public class ConditionalEffect implements ActiveEffect
   @Override public String toString()
   { 
       if (falseEffect.isPresent())
-        return "conditional("+condition+", "+trueEffect+", "+falseEffect+")";
+        return "conditional("+condition+", "+trueEffect+", "+falseEffect.get()+")";
       else
         return "conditional("+condition+", "+trueEffect+")";
   }

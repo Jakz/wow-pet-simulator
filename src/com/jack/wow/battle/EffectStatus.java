@@ -17,7 +17,7 @@ public class EffectStatus
     this.turns = turns;
   }
   
-  public Stream<PassiveEffect> passiveEffects() { return effect.stream().filter(e -> e instanceof PassiveEffect).map(Effect::asPassive); }
+  public Stream<PassiveEffect> passiveEffects() { return effect.effects().filter(e -> e instanceof PassiveEffect).map(Effect::asPassive); }
   
   public boolean isEnded() { return turns == 0; }
   public boolean isFinite() { return turns >= 0; }

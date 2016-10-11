@@ -1,5 +1,7 @@
 package com.jack.wow.battle.abilities;
 
+import com.jack.wow.battle.BattleStatus;
+
 @FunctionalInterface
 public interface ModifierFunction extends PassiveEffect
 {
@@ -31,5 +33,5 @@ public interface ModifierFunction extends PassiveEffect
     @Override public String toString() { return description; }
   }
   
-  public float apply(Target target, float value);
+  public float apply(BattleStatus status, Target target, float value);
 }
