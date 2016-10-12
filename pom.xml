@@ -12,6 +12,7 @@
   </properties>
   
 	<build>
+		<testSourceDirectory>test/</testSourceDirectory>
 		<sourceDirectory>src</sourceDirectory>
 		<resources>
 			<resource>
