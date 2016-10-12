@@ -30,6 +30,9 @@ public class Gfx
     if (antialias)
       this.g.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
     
+    this.g.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BILINEAR);
+
+    
     this.font = g.getFont();
   }
   
@@ -106,6 +109,7 @@ public class Gfx
   public void setAbsolute(boolean absolute) { this.useMargin = !absolute; }
   public boolean isAbsolute() { return !useMargin; }
   public void setMargin(int margin) { this.margin = margin; }
+  public int margin() { return margin; }
   
   public void setFont(Font font) { g.setFont(font); }
   public void restoreFont() { g.setFont(this.font); }

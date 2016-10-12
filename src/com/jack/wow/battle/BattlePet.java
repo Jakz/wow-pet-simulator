@@ -10,6 +10,7 @@ import com.jack.wow.battle.abilities.EffectApply;
 import com.jack.wow.battle.abilities.PassiveEffect;
 import com.jack.wow.data.Formulas;
 import com.jack.wow.data.Pet;
+import com.jack.wow.data.PetFamily;
 import com.jack.wow.data.PetOwnedAbility;
 import com.jack.wow.data.PetStats;
 
@@ -77,4 +78,8 @@ public class BattlePet
   
   public PetOwnedAbility ability(int i) { return abilities[i].ability(); }
   public Pet pet() { return pet; }
+  
+  public String icon() { return pet.spec().icon; }
+  public PetFamily family() { return pet.spec().family; }
+  public String name() { return pet.spec().name; }
 }

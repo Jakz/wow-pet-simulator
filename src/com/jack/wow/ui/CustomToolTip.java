@@ -27,6 +27,7 @@ import com.jack.wow.data.interfaces.Qualitied;
 import com.jack.wow.data.interfaces.Statsed;
 import com.jack.wow.ui.misc.Gfx;
 import com.jack.wow.ui.misc.Icons;
+import com.jack.wow.ui.misc.MyGfx;
 import com.jack.wow.ui.misc.RenderLabel;
 
 class CustomToolTip extends JToolTip
@@ -69,7 +70,7 @@ class CustomToolTip extends JToolTip
   
   private int width() { return this.getSize().width; }
   
-  Gfx g;
+  MyGfx g;
   
   public void drawBackground()
   {
@@ -82,36 +83,13 @@ class CustomToolTip extends JToolTip
     g.line(g.w()-1, 0, g.w()-1, g.h()-1, 119, 119, 119);
     g.setAbsolute(false);
   }
-  
-  public void drawIcon(String icon, Color color, int ICON_SIZE)
-  {
-    Image img = Icons.getIcon(icon, false).getImage();
-    g.fillRect(0, 0, ICON_SIZE+2, ICON_SIZE+2, color);
-    
-    if (img != null )
-      g.image(img, 1, 1, ICON_SIZE, ICON_SIZE);
 
-    Color acolor = new Color(color.getRed(), color.getGreen(), color.getBlue(), 180);
-    g.rect(1, 1, ICON_SIZE-1, ICON_SIZE-1, acolor);
-
-    acolor = new Color(acolor.getRed(), acolor.getGreen(), acolor.getBlue(), 128);
-    g.rect(2, 2, ICON_SIZE-3, ICON_SIZE-3, acolor);
-    
-    g.fillOval(ICON_SIZE-15, ICON_SIZE-15, 20, 20, new Color(0,0,0,120));
-  }
-  
   public void drawTitle(String title)
   {
     g.setFont(g.font(4.0f, Font.BOLD));
     g.string(title, ICON_SIZE + 5, g.fontHeight(), Color.WHITE);
   }
-  
-  public void drawFamily(PetFamily family)
-  {
-    Image fimg = family.getTinyIcon().getImage();
-    g.image(fimg, ICON_SIZE - 15 + 2, ICON_SIZE - 15 + 2);
-  }
-  
+    
   public void drawStrongAndWeak(PetFamily strong, PetFamily weak)
   {
     float base = g.w() - 90;
@@ -162,16 +140,16 @@ class CustomToolTip extends JToolTip
     /*if (!parent.isAncestorOf(this))  
       this.parent.repaint();*/
 
-    g = new Gfx(g2d, true);
+    g = new MyGfx(g2d, true);
     g.setMargin(5);
 
     drawBackground();
     
     if (ability != null && common == null)
     {
-      drawIcon(ability.icon, Color.DARK_GRAY, ICON_SIZE);
+      g.drawIcon(ability.icon, Color.DARK_GRAY, ICON_SIZE, 0, 0);
       drawTitle(ability.name);
-      drawFamily(ability.family);
+      g.drawFamily(ability.family, ICON_SIZE - 8, ICON_SIZE - 8);
       drawStrongAndWeak(ability.family.getStrongAttacking(), ability.family.getWeakAttacking());
 
       renderLabel.paint(gg);
@@ -192,10 +170,10 @@ class CustomToolTip extends JToolTip
         if (common instanceof Qualitied)
           borderColor = ((Qualitied)common).quality().color;
 
-        drawIcon(spec.icon, borderColor, BIG_ICON_SIZE);
+        g.drawIcon(spec.icon, borderColor, BIG_ICON_SIZE, 0, 0);
 
         drawTitle(spec.name);
-        drawFamily(spec.family);
+        g.drawFamily(spec.family, ICON_SIZE - 8, ICON_SIZE - 8);
         drawStrongAndWeak(spec.family.getStrongDefending(), spec.family.getWeakDefending());
         
         drawAbilityGrid(spec);
@@ -261,7 +239,6 @@ class CustomToolTip extends JToolTip
     this.petSpec = null;
     this.common = pet;
 
-    
     if (parent.isAncestorOf(this))
       repaint();
   }

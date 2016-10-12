@@ -1,5 +1,6 @@
 package com.jack.wow.ui;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Arrays;
 
@@ -17,28 +18,23 @@ public class UI
   public static WrapperFrame<PetListPanel> petListFrame;
   public static WrapperFrame<AbilityListPanel> abilityListFrame;
   public static WrapperFrame<BattlePanel> battleFrame;
-  
-  static
+
+  public static void init() throws InterruptedException, InvocationTargetException
   {
-    SwingUtilities.invokeLater(() -> {    
+    SwingUtilities.invokeAndWait(() -> {    
       infoFrame = UIUtils.buildFrame(new PetInfoPanel(600, 400), "Pet Info");
       petListFrame = UIUtils.buildFrame(new PetListPanel(600, 800), "Pet List");
       battleFrame = UIUtils.buildFrame(new BattlePanel(), "Battle View");
       abilityListFrame = UIUtils.buildFrame(new AbilityListPanel(600, 1024), "Ability List");
-    });
-
-  }
-  
-  public static void init()
-  {
-    SwingUtilities.invokeLater(() -> {    
+      
       //petListFrame.setVisible(true);
       abilityListFrame.setVisible(true);
       
       
       
       //infoFrame.setVisible(true);
-      //battleFrame.setVisible(true);
+      battleFrame.setVisible(true);
+      battleFrame.setLocationRelativeTo(null);
       
       //petListFrame.setLocationRelativeTo(null);
       abilityListFrame.setLocationRelativeTo(null);//petListFrame.getLocationOnScreen().x + petListFrame.getSize().width, petListFrame.getLocationOnScreen().y);

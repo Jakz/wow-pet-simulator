@@ -184,11 +184,7 @@ public class Main
       //downloader.start();
       
       UI.init();
-      
-      if (true)
-        return;
-      
-      UI.battleFrame.setLocationRelativeTo(null);
+
       
       BattlePet pet1 = new BattlePet(
           new Pet(PetSpec.forName("anubisath idol"), PetBreed.HH, PetQuality.RARE, 25),

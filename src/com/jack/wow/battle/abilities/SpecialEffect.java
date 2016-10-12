@@ -9,9 +9,9 @@ public class SpecialEffect implements PassiveEffect
   public static final SpecialEffect POISONED = new SpecialEffect() { @Override public String toString() { return "poisoned"; } };
   public static final SpecialEffect BLINDED = new SpecialEffect() { @Override public String toString() { return "blinded"; } };
   public static final SpecialEffect CHILLED = new SpecialEffect() { @Override public String toString() { return "chilled"; } };
-  public static final SpecialEffect UNABLE_TO_SWAP = new SpecialEffect() { @Override public String toString() { return "unable-to-swap"; } };
+  public static final ActiveEffect UNABLE_TO_SWAP = new ActiveEffect() { @Override public String toString() { return "unable-to-swap"; } };
   
-  public static final SpecialEffect DESTROY_OBJECTS = new SpecialEffect() { @Override public String toString() { return "destroy-objects"; } };
+  public static final ActiveEffect DESTROY_OBJECTS = new ActiveEffect() { @Override public String toString() { return "destroy-objects"; } };
   public static final ActiveEffect INTERRUPT_OPPONENT_ROUND_IF_FIRST = new ActiveEffect() { @Override public String toString() { return "interrupt-opponent-if-first"; } };
   
   public static final ActiveEffect DUMMY = new ActiveEffect() { @Override public String toString() { return "dummy"; } };
