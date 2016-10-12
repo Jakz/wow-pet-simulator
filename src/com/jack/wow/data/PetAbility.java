@@ -24,6 +24,7 @@ public class PetAbility implements Iterable<Effect>
   public boolean isPassive;
   public boolean hideHints;
   public Optional<Float> hitChance;
+  public boolean isFiltered;
   
   
   public String tooltip;
@@ -48,7 +49,7 @@ public class PetAbility implements Iterable<Effect>
     this.hideHints = hideHints;
     this.icon = icon;
     this.hitChance = Optional.empty();
-    
+    this.isFiltered = FilteredData.isFiltered(this);
   }
   
   public PetAbility(ApiAbility a)
@@ -99,6 +100,11 @@ public class PetAbility implements Iterable<Effect>
       throw new IllegalArgumentException("no ability named "+name+" found.");
     
     return abilities.stream();
+  }
+  
+  public static void prune()
+  {
+    data.values().stream().forEach(a -> a.isFiltered = FilteredData.isFiltered(a));
   }
   
   public static PetAbility forName(String name)

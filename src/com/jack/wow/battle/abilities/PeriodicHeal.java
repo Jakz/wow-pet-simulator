@@ -17,6 +17,8 @@ public class PeriodicHeal implements PassiveEffect
   public Target target() { return target; }
   public EffectPower power() { return power; }
   
+  @Override public boolean isNegative() { return false; }
+
   @Override public String toString() { return "hot("+target+", "+power+")"; }
   
   @Override public void onTickEffect(BattleStatus status)

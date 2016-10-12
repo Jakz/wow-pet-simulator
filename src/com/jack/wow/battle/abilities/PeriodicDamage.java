@@ -20,6 +20,8 @@ public class PeriodicDamage implements PassiveEffect
   public EffectPower power() { return power; }
   public PetFamily family() { return family; }
   
+  @Override public boolean isNegative() { return true; }
+ 
   @Override public String toString() { return "dot("+target+", "+family.description.toLowerCase()+", "+power+")"; }
   
   @Override public void onTickEffect(BattleStatus status)

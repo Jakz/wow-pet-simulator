@@ -149,6 +149,9 @@ public class AbilityListPanel extends JPanel
         r = table.convertRowIndexToModel(r);
       }
       
+      /*List<PetSpec> pets = PetAbility.usage.get(abilities.get(r));
+      for (PetSpec pet : pets)
+        System.out.println(pet.name);*/
     });
     
     JPanel familyFiltersPanel = new JPanel(new GridLayout(1, PetFamily.count()+1));
@@ -225,7 +228,7 @@ public class AbilityListPanel extends JPanel
     predicate = filter;
     oabilities = list;
 
-    filter = filter.and(p -> Arrays.stream(familyFilters).anyMatch(b -> b.isSelected() && b.family == p.family));
+    filter = filter.and(p -> Arrays.stream(familyFilters).anyMatch(b -> b.isSelected() && b.family == p.family)).and(p -> !p.isFiltered);
         
     abilities.clear();
     list.stream().filter(filter).forEach(abilities::add);

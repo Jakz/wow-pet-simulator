@@ -32,6 +32,7 @@ public class Effects
   
   private static PassiveEffect speedMultiplier(float v) { return ModifierEffect.buildSpeed(v); }
   private static PassiveEffect damageDoneMultiplier(float v) { return ModifierEffect.buildDamageDone(v); }
+  private static PassiveEffect damageDoneMultiplier(float v, PetFamily f) { return ModifierEffect.buildDamageDone(f, v); }
   private static PassiveEffect damageReceivedModifier(float v) { return ModifierEffect.buildRawDamageReceived(v); }
   private static PassiveEffect damageReceivedMultiplier(float v) { return ModifierEffect.buildDamageReceived(v); }
   private static PassiveEffect healingReceivedMultiplier(float v) { return ModifierEffect.buildHealingReceived(v); }
@@ -54,7 +55,7 @@ public class Effects
   private final static int SPEED_BOOST50 = 735;
   private final static int SPEED_BOOST20_CUMULATIVE = 831;
   private final static int SPEED_REDUCTION_25 = 154;
-  
+
   private static Effect[] damageWithChanceOfStun(float power, float chance)
   {
     return new Effect[] {
@@ -71,6 +72,7 @@ public class Effects
     forName("strike").addEffect(singleAttack(20));
     forName("smash").addEffect(singleAttack(22, 0.3f));
     forName("paralyzing venom").addEffect(singleAttack(15), SpecialEffect.INTERRUPT_OPPONENT_ROUND_IF_FIRST);
+    forName("horn attack").addEffect(singleAttack(15), chanceEffect(0.5f, SpecialEffect.INTERRUPT_OPPONENT_ROUND_IF_FIRST));
     PetAbility.forNameAll("claw").forEach(a -> a.addEffect(singleAttack(21, 0.2f)));
     forName("horn gore").addEffect(singleAttack(21, 0.2f));
     forName("udder destruction").addEffect(damageWithChanceOfStun(30, 0.25f));
@@ -109,6 +111,7 @@ public class Effects
     forName("perfumed arrow").addEffect(damageWithChanceOfStun(20, 0.25f));
     forName("time stop").addEffect(applyEffect(STUN_ID, Target.ENEMY_PET, 1));
     forName("blackout kick").addEffect(applyEffect(STUN_ID, Target.ENEMY_PET, 1));
+    forName("clobber").addEffect(applyEffect(STUN_ID, Target.ENEMY_PET, 1));
     forName("fury of 1,000 fists").addEffect(singleAttack(30), conditionalEffect(Condition.hasStatus(SpecialEffect.BLINDED, Target.ENEMY_ACTIVE_PET), applyEffect(STUN_ID, Target.ENEMY_PET, 1)));
     mapPassiveEffect(426, 425, Target.SELF, 5, hitChanceModifier(0.25f), speedMultiplier(1.25f), critChanceModifier(0.25f)); // focus
     mapPassiveEffect(312, 311, Target.SELF, 1, dodgeChanceModifier(1.0f)); // dodge
@@ -239,6 +242,7 @@ public class Effects
     forName("skitter").addEffect(singleAttack(20));
     forName("chomp").addEffect(singleAttack(22, 0.3f));
     forName("inspiring song").addEffect(teamHeal(12));
+    forName("quick attack").addEffect(singleAttack(15), SpecialEffect.alwaysGoestFirst(50)); // multiplier is just guessed
     mapPassiveEffect(165, 164, Target.SELF, 3, damageReceivedMultiplier(0.5f)); // crouch
     mapPassiveEffect(162, 161, Target.SELF, 3, speedMultiplier(1.75f)); // adrenaline rush
     mapPassiveEffect(366, 365, Target.TEAM, 9, speedMultiplier(1.25f)); // dazzling dance
@@ -255,12 +259,15 @@ public class Effects
     forName("rawr!").addEffect(SpecialEffect.DUMMY);
 
     
+    forName("moonlight").addEffect(healingReceivedMultiplier(1.25f), damageDoneMultiplier(1.1f, PetFamily.magical));
+    
     PetAbility.forId(SPEED_REDUCTION_25).addEffect(speedMultiplier(0.75f)); // speed reduction
     PetAbility.forId(928).addEffect(speedMultiplier(0.75f)); // speed reduction
     forName("rooted").addEffect(SpecialEffect.UNABLE_TO_SWAP);
     PetAbility.forNameAll("stunned").forEach(a -> a.addEffect(SpecialEffect.STUNNED) );
 
     long mapped = PetAbility.data.values().stream().filter(a -> a.effectCount() > 0).count();
-    System.out.println(String.format("Ablities with mechanics %d/%d (%2.2f%%)", (int)mapped, (int)PetAbility.data.size(), (mapped/(float)PetAbility.data.size())*100));
+    long total = PetAbility.data.values().stream().filter(a -> !a.isFiltered).count();
+    System.out.println(String.format("Ablities with mechanics %d/%d (%2.2f%%)", (int)mapped, (int)total, (mapped/(float)total)*100));
   }
 }

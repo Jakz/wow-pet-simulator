@@ -12,7 +12,7 @@ public class SpecialEffect implements PassiveEffect
   public static final SpecialEffect UNABLE_TO_SWAP = new SpecialEffect() { @Override public String toString() { return "unable-to-swap"; } };
   
   public static final SpecialEffect DESTROY_OBJECTS = new SpecialEffect() { @Override public String toString() { return "destroy-objects"; } };
-  public static final SpecialEffect INTERRUPT_OPPONENT_ROUND_IF_FIRST = new SpecialEffect() { @Override public String toString() { return "interrupt-opponent-if-first"; } };
+  public static final ActiveEffect INTERRUPT_OPPONENT_ROUND_IF_FIRST = new ActiveEffect() { @Override public String toString() { return "interrupt-opponent-if-first"; } };
   
   public static final ActiveEffect DUMMY = new ActiveEffect() { @Override public String toString() { return "dummy"; } };
   
@@ -20,6 +20,8 @@ public class SpecialEffect implements PassiveEffect
   {
     return new ActiveHiddenEffect(new AlwaysGoesFirst(multiplier));
   }
+  
+  @Override public boolean isNegative() { throw new RuntimeException(); }
   
   private static class AlwaysGoesFirst extends SpecialEffect
   {

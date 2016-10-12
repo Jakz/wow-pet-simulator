@@ -12,6 +12,7 @@ public interface PassiveEffect extends Effect
   public static final int PRIORITY_LOWER = 7;
   public static final int PRIORITY_LOWEST = 9;
   
+  default boolean isNegative() { return false; }
   default void onEndEffect(BattleStatus battle) { }
   default void onTickEffect(BattleStatus battle) { }
   default float onCalculateStat(BattleStatus battle, ModifierFunction.Target target, float value) { return value; }

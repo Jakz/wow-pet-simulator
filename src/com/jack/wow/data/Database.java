@@ -29,7 +29,7 @@ public class Database implements JsonnableContext
     Arrays.sort(this.abilities, (a1, a2) -> Integer.compare(a1.id, a2.id));
     this.pets = pets;
   }
-  
+
   public void save(Path fileName)
   {
     Gson gson = Json.build();
@@ -59,7 +59,7 @@ public class Database implements JsonnableContext
     JsonObject o = element.getAsJsonObject();
     
     abilities = context.deserialize(o.get("abilities"), PetAbility[].class);
-    
+
     for (PetAbility ability : abilities)
       PetAbility.data.put(ability.id, ability);
 

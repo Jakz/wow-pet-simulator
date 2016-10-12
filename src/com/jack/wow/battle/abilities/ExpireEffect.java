@@ -13,5 +13,7 @@ public class ExpireEffect implements PassiveEffect
   
   @Override public void onEndEffect(BattleStatus battle) { throw new RuntimeException(); }
   
+  @Override public boolean isNegative() { throw new RuntimeException(); }
+  
   @Override public String toString() { return "on-expire("+effect+")"; }
 }

@@ -99,7 +99,7 @@ public class Main
       PetSpec.forId(pet.stats.speciesId).markUsable();
 
     Database db = new Database(PetAbility.data.values(), PetSpec.data);
-    db.save(Paths.get("data/database.json"));    
+    db.save(Paths.get("data/database.json"));  
   }
   
 
@@ -114,6 +114,8 @@ public class Main
       {
         Gson gson = Json.build();
         gson.fromJson(rdr, Database.class);
+        
+        
 
         return true;
       }
@@ -166,10 +168,13 @@ public class Main
       if (!loadDatabase())
         buildDatabase();
       
-      Effects.init();
-      PetAbility.computeUsageOfAbilities();
+      System.out.printf("Loaded %s pets.\n", PetSpec.data.length);
+      System.out.printf("Loaded %d abilities\n", PetAbility.data.size());
       
-      System.out.printf("Loaded %s pets.", PetSpec.data.length);
+      PetAbility.prune();
+      PetAbility.computeUsageOfAbilities();
+
+      Effects.init();
       
       Set<String> icons = Arrays.stream(PetSpec.data).map(p -> p.icon).collect(Collectors.toSet());
       PetAbility.data.values().stream().map(a -> a.icon).forEach(icons::add);
