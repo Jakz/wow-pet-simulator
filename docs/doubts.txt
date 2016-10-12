@@ -1,0 +1,7 @@
+kick/jolt vs interrupting jolt
+multiple hit abilities is simple roll or hit chance modifier for successive hits
+tidal wave and similar moves vs eg carpnado (all enemy pets vs split among enemy pets)
+flame jet and similar effects, can ignite floor also if damage misses?
+are dots or passive which inflict damage on expiration affected by pet power (eg. overcharge + buff)?
+are abilities which conditionally do more damage which appears as 2 hits (eg takedown) effectively 1 single hit?
+are % bonuses calculated on base value or on successive values (so order matters)?
