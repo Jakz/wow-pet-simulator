@@ -1,9 +1,7 @@
 package com.jack.wow.battle;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
-import java.util.List;
 
 /**
  * This class encapsulates a battle team composed by 3 <code>BattlePet</code> and

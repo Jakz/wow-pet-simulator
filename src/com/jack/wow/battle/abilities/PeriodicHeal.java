@@ -1,7 +1,6 @@
 package com.jack.wow.battle.abilities;
 
 import com.jack.wow.battle.BattleStatus;
-import com.jack.wow.data.PetFamily;
 
 public class PeriodicHeal implements PassiveEffect
 {

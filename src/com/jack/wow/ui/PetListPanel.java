@@ -17,8 +17,6 @@ import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.JTextField;
 import javax.swing.ListSelectionModel;
-import javax.swing.table.TableCellRenderer;
-
 import com.jack.wow.data.PetFamily;
 import com.jack.wow.data.PetSpec;
 import com.jack.wow.ui.misc.BooleanCellRenderer;

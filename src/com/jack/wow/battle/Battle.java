@@ -2,9 +2,6 @@ package com.jack.wow.battle;
 
 import java.util.Optional;
 
-import com.jack.wow.battle.abilities.Effect;
-import com.jack.wow.battle.abilities.PassiveEffect;
-
 public class Battle
 {
   private int turn;

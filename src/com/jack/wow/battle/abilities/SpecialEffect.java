@@ -23,25 +23,23 @@ public class SpecialEffect implements PassiveEffect
   
   @Override public boolean isNegative() { throw new RuntimeException(); }
   
-  private static class AlwaysGoesFirst extends SpecialEffect
-  {
-    private final int multiplier;
-    
+  private static class AlwaysGoesFirst extends ModifierEffect
+  {    
     private AlwaysGoesFirst(int multiplier)
     {
-      this.multiplier = multiplier;
+      super(Target.SPEED, multiplier);
     }
     
-    @Override public String toString() { return "always-goes-first(x"+multiplier+")"; }
+    @Override public boolean isAdditive() { return true; }
+    
+    @Override public String toString() { return "always-goes-first(x"+parameter+")"; }
 
-    @Override public float onCalculateStat(BattleStatus battle, ModifierFunction.Target target, float value)
+    @Override public ComputedStat onCalculateStat(BattleStatus battle, ModifierFunction.Target target, ComputedStat value)
     {
       if (target == ModifierFunction.Target.SPEED)
-        return battle.self.pet().level()*multiplier + value;
+        return value.add(battle.self.pet().level()*parameter);
       else
-        return value;
+        return value.copy();
     }
-    
-    @Override public int priority() { return PassiveEffect.PRIORITY_HIGHEST; }
   }
 }

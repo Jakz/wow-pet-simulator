@@ -5,9 +5,9 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Stream;
 import static java.util.stream.Stream.concat;
-import static java.util.stream.Stream.of;
-
 import com.jack.wow.battle.abilities.ActiveHiddenEffect;
+import com.jack.wow.battle.abilities.ComputedStat;
+import com.jack.wow.battle.abilities.ModifierEffect;
 import com.jack.wow.battle.abilities.ModifierFunction;
 import com.jack.wow.battle.abilities.PassiveEffect;
 import com.jack.wow.data.Formulas;
@@ -106,6 +106,18 @@ public class Mechanics
     
   }
   
+  public float computeModifiedValue(ModifierFunction.Target type, float value, float multiplier, Stream<PassiveEffect> effects, BattleStatus status)
+  {
+    /* find all effects that are able to modify values */
+    Stream<ModifierEffect> casted = effects.filter(e -> e instanceof ModifierEffect).map(e -> (ModifierEffect)e);
+    
+    /* apply reduction by passing through ComputedStat which is able to track multipliers and raw values indipendently */
+    ComputedStat result = casted.reduce(new ComputedStat(value, multiplier), (v, effect) -> effect.onCalculateStat(status, type, v), ComputedStat::combine);
+
+    return result.calculate();
+  }
+
+  
   /**
    * Computes the final speed for an ability.
    * It takes into account all the passive effects on the pet, all the passive effects on the team and the possible
@@ -124,15 +136,8 @@ public class Mechanics
     final BattleStatus status = new BattleStatus(battle, pet, null);
     
     Stream<PassiveEffect> effects = concat(concat(petEffects, teamEffects), hiddenEffects);
-    
-    float speed = effects
-      .reduce(
-          pet.pet().stats().speed(), 
-          (s, effect) -> effect.onCalculateStat(status, ModifierFunction.Target.SPEED, s), 
-          Float::sum
-       );
-    
-    return speed;
+
+    return computeModifiedValue(ModifierFunction.Target.SPEED, pet.pet().stats().speed(), 1.0f, effects, status);
   }
   
   /**
@@ -159,6 +164,5 @@ public class Mechanics
       else
         return new BattleAbilityStatus[] { ability2, ability1 };
     }
-
   }
 }

@@ -2,24 +2,18 @@ package com.jack.wow.ui;
 
 import java.awt.Color;
 import java.awt.Dimension;
-import java.awt.FontMetrics;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Image;
 import java.awt.Point;
-import java.awt.Rectangle;
 import java.awt.event.MouseEvent;
 
-import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JToolTip;
 import javax.swing.ToolTipManager;
 
 import com.jack.wow.battle.Battle;
 import com.jack.wow.battle.BattlePet;
-import com.jack.wow.data.PetAbility;
-import com.jack.wow.data.PetOwnedAbility;
-import com.jack.wow.ui.misc.Gfx;
 import com.jack.wow.ui.misc.Icons;
 import com.jack.wow.ui.misc.MouseRegionHoverListener;
 import com.jack.wow.ui.misc.MyGfx;

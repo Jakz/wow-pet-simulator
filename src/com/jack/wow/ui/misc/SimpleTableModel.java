@@ -2,10 +2,7 @@ package com.jack.wow.ui.misc;
 
 import java.util.List;
 
-import javax.swing.ImageIcon;
 import javax.swing.table.AbstractTableModel;
-
-import com.jack.wow.data.PetSpec;
 
 @SuppressWarnings({"serial", "unchecked"})
 public class SimpleTableModel<T> extends AbstractTableModel

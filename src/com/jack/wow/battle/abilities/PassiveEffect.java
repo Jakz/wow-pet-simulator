@@ -1,5 +1,7 @@
 package com.jack.wow.battle.abilities;
 
+import java.util.Comparator;
+
 import com.jack.wow.battle.BattleStatus;
 
 public interface PassiveEffect extends Effect
@@ -15,6 +17,14 @@ public interface PassiveEffect extends Effect
   default boolean isNegative() { return false; }
   default void onEndEffect(BattleStatus battle) { }
   default void onTickEffect(BattleStatus battle) { }
-  default float onCalculateStat(BattleStatus battle, ModifierFunction.Target target, float value) { return value; }
+  default ComputedStat onCalculateStat(BattleStatus battle, ModifierFunction.Target target, ComputedStat value) { return value; }
   default int priority() { return PRIORITY_DEFAULT; }
+  
+  public static class PriorityComparator implements Comparator<PassiveEffect>
+  {
+    @Override public int compare(PassiveEffect o1, PassiveEffect o2)
+    {
+      return 0;
+    }
+  }
 }

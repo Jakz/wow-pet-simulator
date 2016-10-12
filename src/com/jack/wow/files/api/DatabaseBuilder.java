@@ -8,7 +8,6 @@ import java.util.concurrent.ThreadPoolExecutor;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
-import com.jack.wow.data.Database;
 import com.jack.wow.data.PetAbility;
 import com.jack.wow.data.PetSpec;
 import com.jack.wow.files.StreamException;

@@ -1,7 +1,5 @@
 package com.jack.wow.battle;
 
-import com.jack.wow.data.PetOwnedAbility;
-
 public class PetAction
 { 
   private final BattlePet swapToPet;

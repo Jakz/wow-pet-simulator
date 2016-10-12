@@ -8,23 +8,23 @@ public class ModifierEffect implements ModifierFunction, PassiveEffect
   final public float parameter;
   final public Target target;
   
-  private ModifierEffect(Target target, float parameter)
+  public ModifierEffect(Target target, float parameter)
   {
     this.parameter = parameter;
     this.target = target;
   }
   
-  @Override public float onCalculateStat(BattleStatus status, Target target, float value)
+  @Override public ComputedStat onCalculateStat(BattleStatus status, Target target, ComputedStat value)
   {
     return apply(status, target, value);
   }
   
-  @Override public float apply(BattleStatus status, Target target, float value)
+  @Override public ComputedStat apply(BattleStatus status, Target target, ComputedStat value)
   { 
     if (this.target == target)
-      return target.isAdditive ? (parameter + value) : (parameter * value);
+      return target.isAdditive ? value.add(parameter) : value.multiply(parameter);
     else
-      return value;
+      return value.copy();
   }
   
   @Override public boolean isNegative() { return parameter < 0; }
@@ -32,11 +32,7 @@ public class ModifierEffect implements ModifierFunction, PassiveEffect
   @Override public String toString()
   {
     String partial = "modifier("+target.description+", ";
-    
-    if (target.isAdditive)
-      return partial += (int)(parameter*100) + "%)";
-    else
-      return partial += (int)((parameter-1.0f)*100) + "%)";
+    return partial += (int)(parameter*100) + "%)";
   }
   
   public static ModifierFunction buildSpeed(float p) { return new ModifierEffect(Target.SPEED, p); }  
@@ -44,7 +40,7 @@ public class ModifierEffect implements ModifierFunction, PassiveEffect
   
   public static ModifierFunction buildDamageDone(final PetFamily family, float p) { 
     return new ModifierEffect(Target.DAMAGE, p) {
-      @Override public float apply(BattleStatus status, Target target, float value)
+      @Override public ComputedStat apply(BattleStatus status, Target target, ComputedStat value)
       {
         throw new RuntimeException();
       }
@@ -67,7 +63,7 @@ public class ModifierEffect implements ModifierFunction, PassiveEffect
   
   public static ModifierFunction buildRawDamageReceived(float p) {
     return new ModifierEffect(Target.DAMAGE_RECEIVED_RAW, p) {
-      @Override public float apply(BattleStatus status, Target target, float value)
+      @Override public ComputedStat apply(BattleStatus status, Target target, ComputedStat value)
       {
         // must calculate final value with power of pet
         throw new RuntimeException();

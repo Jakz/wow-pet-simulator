@@ -13,9 +13,9 @@ public interface ModifierFunction extends PassiveEffect
     DAMAGE_DONE_RAW(true, "dmg-recv-raw"),
     HEALING_RECEIVED(false, "healing-recv"),
     SPEED(false, "speed"),
-    HIT_CHANCE(true, "hit-chance"),
-    CRIT_CHANCE(true, "crit-chance"),
-    DODGE_CHANCE(true, "dodge-chance"),
+    HIT_CHANCE(false, "hit-chance"),
+    CRIT_CHANCE(false, "crit-chance"),
+    DODGE_CHANCE(false, "dodge-chance"),
     
     HEALTH(false, "health")
     
@@ -33,5 +33,7 @@ public interface ModifierFunction extends PassiveEffect
     @Override public String toString() { return description; }
   }
   
-  public float apply(BattleStatus status, Target target, float value);
+  @Override default int priority() { return isAdditive() ? PassiveEffect.PRIORITY_HIGH : PassiveEffect.PRIORITY_DEFAULT; }
+  default boolean isAdditive() { return true; }
+  public ComputedStat apply(BattleStatus status, Target target, ComputedStat value);
 }

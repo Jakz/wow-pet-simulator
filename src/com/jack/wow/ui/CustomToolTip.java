@@ -5,15 +5,12 @@ import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
-import java.awt.Image;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
 import java.util.function.Consumer;
 
 import javax.swing.JComponent;
-import javax.swing.JPanel;
 import javax.swing.JToolTip;
 
 import com.jack.wow.battle.BattlePet;
@@ -25,7 +22,6 @@ import com.jack.wow.data.PetStats;
 import com.jack.wow.data.interfaces.Abilited;
 import com.jack.wow.data.interfaces.Qualitied;
 import com.jack.wow.data.interfaces.Statsed;
-import com.jack.wow.ui.misc.Gfx;
 import com.jack.wow.ui.misc.Icons;
 import com.jack.wow.ui.misc.MyGfx;
 import com.jack.wow.ui.misc.RenderLabel;

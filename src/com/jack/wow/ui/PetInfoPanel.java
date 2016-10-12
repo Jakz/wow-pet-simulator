@@ -3,21 +3,12 @@ package com.jack.wow.ui;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
-import java.awt.GridLayout;
-import java.util.Arrays;
-import java.util.List;
-
 import javax.swing.BorderFactory;
-import javax.swing.JLabel;
 import javax.swing.JPanel;
 
 import com.jack.wow.data.Pet;
-import com.jack.wow.data.PetBreed;
-import com.jack.wow.data.PetOwnedAbility;
-import com.jack.wow.data.PetQuality;
 import com.jack.wow.data.PetSpec;
 import com.jack.wow.ui.misc.BreedComboBox;
-import com.jack.wow.ui.misc.Icons;
 import com.jack.wow.ui.misc.LevelSliderBar;
 import com.jack.wow.ui.misc.QualityComboBox;
 

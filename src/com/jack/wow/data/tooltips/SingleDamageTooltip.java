@@ -1,7 +1,5 @@
 package com.jack.wow.data.tooltips;
 
-import java.util.regex.Pattern;
-
 import com.jack.wow.data.PetAbility;
 import com.jack.wow.data.interfaces.Statsed;
 
