@@ -5,10 +5,14 @@ import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Image;
 
+import com.jack.wow.battle.EffectStatus;
 import com.jack.wow.data.PetFamily;
 
 public class MyGfx extends Gfx
 {
+  public static final Color GRAYED_OUT_COLOR = new Color(0,0,0,200);
+  public static final Color DEAD_COLOR = new Color(100,0,0,230);
+  
   public MyGfx(Graphics g, boolean antialias)
   {
     super(g, antialias);
@@ -31,6 +35,26 @@ public class MyGfx extends Gfx
 
       acolor = new Color(acolor.getRed(), acolor.getGreen(), acolor.getBlue(), 128);
       rect(x+1, y+1, ICON_SIZE-3, ICON_SIZE-3, acolor);
+    }
+  }
+  
+  public void drawEffect(EffectStatus effect, int x, int y, int iconSize)
+  {
+    drawIcon(effect.ability().icon, null, iconSize, x, y);
+    rect(x, y, iconSize, iconSize, Color.GRAY);
+    
+    if (effect.isFinite())
+    {
+      font(-4.0f);
+      stringCentered(String.valueOf(effect.remainingTurns()), x + iconSize, y + iconSize, Color.YELLOW);
+      restoreFont();
+    }
+    
+    if (effect.hasCharges())
+    {
+      font(-4.0f);
+      stringCentered(String.valueOf(effect.remainingTurns()), x, y + iconSize, Color.RED);
+      restoreFont();
     }
   }
   
@@ -63,13 +87,19 @@ public class MyGfx extends Gfx
   public void drawHealthBar(int value, int max, int x, int y, int w, int h)
   {
     float percent = value / (float)max;
+    final int MAX = 150;
     
     fillRect(x, y, w, h, 80, 80, 80);
     rect(x, y, w, h, 160, 160, 160);
-    fillRect(x, y, w * percent, h, 0, 120, 0);
-    rect(x, y, w * percent, h, 0, 220, 0);
     
-    //this.string(String.format("%d/%d", value, max), x - this.font, y, c);
+    if (percent > 0.0f)
+    {
+      fillRect(x, y, w * percent, h, 0, 120, 0);
+      rect(x, y, w * percent, h, 0, 200, 0);
+    }
     
+    setFont(font(-3.0f));
+    stringCentered(String.format("%d/%d", value, max), x + w/2, y + h/2, new Color(255,255,255,255));
+    restoreFont();
   }
 }

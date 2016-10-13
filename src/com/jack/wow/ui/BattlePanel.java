@@ -9,6 +9,7 @@ import java.awt.Point;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.Objects;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 
@@ -17,7 +18,9 @@ import javax.swing.JToolTip;
 import javax.swing.ToolTipManager;
 
 import com.jack.wow.battle.Battle;
+import com.jack.wow.battle.BattleAbilityStatus;
 import com.jack.wow.battle.BattlePet;
+import com.jack.wow.data.PetOwnedAbility;
 import com.jack.wow.ui.misc.Icons;
 import com.jack.wow.ui.misc.MouseRegionHoverListener;
 import com.jack.wow.ui.misc.MyGfx;
@@ -81,18 +84,26 @@ public class BattlePanel extends JPanel
     MyGfx gfx = new MyGfx(gg, true);
     
     final int PET_ICON_SIZE = 64;
-    final int PET_SPACING = 16;
+    final int PET_SPACING = 70;
     final int PET_TOTAL_SPACING = PET_ICON_SIZE + PET_SPACING;
     final int BY = 30;
     final int MARGIN = 40;
     
+    final int EFFECT_ICON_SIZE = 24;
+    final int EFFECT_SPACING = 8;
+    final int EFFECT_SPACING_FROM_PET = 5;
+    
     final int ABILITY_SIZE = 28;
-    final int ABILITY_SPACING = ABILITY_SIZE + 3;
+    final int ABILITY_PAD = 5;
+    final int ABILITY_SPACING = ABILITY_SIZE + ABILITY_PAD;
     final int ABILITY_SPACING_FROM_PET = 10;
+    
+    final int HEALTH_BAR_WIDTH = ABILITY_SIZE*3 + ABILITY_PAD*3;
+    final int HEALTH_BAR_HEIGHT = 20;
     
     BiFunction<Integer, Integer, Integer> lambdaX = (team, index) -> team == 0 ? 0 : gfx.w() - gfx.margin()*2 - PET_ICON_SIZE;
     BiFunction<Integer, Integer, Integer> lambdaY = (team, index) -> BY + index*PET_TOTAL_SPACING;
-    
+ 
     TriFunction<Integer, Integer, Integer, Integer> alambdaX = (team, petIndex, abilityIndex) -> {
       if (team == 0)
         return lambdaX.apply(team, petIndex) + (PET_ICON_SIZE + ABILITY_SPACING_FROM_PET + ABILITY_SPACING*abilityIndex);
@@ -101,16 +112,26 @@ public class BattlePanel extends JPanel
     };
 
     TriFunction<Integer, Integer, Integer, Integer> alambdaY = (team, petIndex, abilityIndex) ->
-      lambdaY.apply(team, petIndex)
+      lambdaY.apply(team, petIndex) + PET_ICON_SIZE - ABILITY_SIZE;
     ;
+    
+    BiFunction<Integer, Integer, Integer> hlambday = (team, petIndex) -> lambdaY.apply(team, petIndex);
+    
+    TriFunction<Integer, Integer, Integer, Integer> elambdax = (team, pet, effect) -> {
+      if (team == 0)
+        return lambdaX.apply(team, pet) + (EFFECT_ICON_SIZE+EFFECT_SPACING)*effect;
+      else
+        return lambdaX.apply(team, pet) + PET_ICON_SIZE - EFFECT_ICON_SIZE - (EFFECT_ICON_SIZE+EFFECT_SPACING)*effect; 
+    };
+    
+    TriFunction<Integer, Integer, Integer, Integer> elambday = (team, pet, effect) -> lambdaY.apply(team, pet) + PET_ICON_SIZE + EFFECT_SPACING_FROM_PET;
+
       
     gfx.clear(36,36,36);
     gfx.setMargin(40);
 
     if (battle != null)
-    {
-      gfx.drawHealthBar(868, 1440, 200, 50, 100, 20);
-      
+    {      
       gfx.setAbsolute(true);
       gfx.fillRect(30, 30, PET_ICON_SIZE + ABILITY_SPACING*3 + ABILITY_SPACING_FROM_PET + 20, PET_TOTAL_SPACING*3 + 40, new Color(40,0,0));
       gfx.rect(30, 30, PET_ICON_SIZE + ABILITY_SPACING*3 + ABILITY_SPACING_FROM_PET + 20, PET_TOTAL_SPACING*3 + 40, new Color(180,0,0));
@@ -127,15 +148,43 @@ public class BattlePanel extends JPanel
           BattlePet pet = battle.team(t).pet(p);
           int px = lambdaX.apply(t, p), py = lambdaY.apply(t, p);
           
-          gfx.drawIcon(pet.icon(), pet.pet().quality().color, PET_ICON_SIZE, px, py);
+          /* draw pet */
+          gfx.drawIcon(pet.icon(), pet.pet().quality().color, PET_ICON_SIZE, px, py); 
           gfx.drawFamily(pet.family(), px - 10 + PET_ICON_SIZE, py - 10 + PET_ICON_SIZE);
-          listener.addZone(gfx.x(px-1), gfx.y(py-1), PET_ICON_SIZE+2, PET_ICON_SIZE+2, () -> toolTip.setPet(pet.pet()));
+          listener.addZone(gfx.x(px-1), gfx.y(py-1), PET_ICON_SIZE+2, PET_ICON_SIZE+2, () -> toolTip.setBattlePet(pet));
+          
+          if (pet.isDead())
+            gfx.fillRect(px, py, PET_ICON_SIZE, PET_ICON_SIZE, MyGfx.DEAD_COLOR);
+          else if (pet != battle.activePet(t))
+            gfx.fillRect(px, py, PET_ICON_SIZE, PET_ICON_SIZE, MyGfx.GRAYED_OUT_COLOR);
 
+          gfx.drawHealthBar(pet.hitPoints(), pet.maxHitPoints(), alambdaX.apply(t, p, 0), hlambday.apply(t, p), HEALTH_BAR_WIDTH, HEALTH_BAR_HEIGHT);
+
+          /* draw effects */
+          AtomicInteger e = new AtomicInteger(0);
+          final int tt = t, pp = p;
+          pet.effects().forEach(effect -> {
+            int ppx = elambdax.apply(tt, pp, e.get()), ppy = elambday.apply(tt, pp, e.get());
+            gfx.drawEffect(effect, ppx, ppy, EFFECT_ICON_SIZE);       
+            e.incrementAndGet();
+            listener.addZone(gfx.x(ppx), gfx.y(ppy), EFFECT_ICON_SIZE, EFFECT_ICON_SIZE, () -> toolTip.setAbility(effect.ability()));
+          });
+          
+          /* draw abilities */
           for (int a = 0; a < 3; ++a)
           {
+            BattleAbilityStatus status = pet.abilityStatus(a);
+
             final int fj = a;
             int x =  alambdaX.apply(t, p, a), y = alambdaY.apply(t, p, a);
-            gfx.drawIcon(pet.ability(a).get().icon, null, ABILITY_SIZE, x, y);
+            gfx.drawIcon(status.ability().get().icon, null, ABILITY_SIZE, x, y);
+            
+            if (!status.isReady())
+            {
+              gfx.fillRect(x, y, ABILITY_SIZE, ABILITY_SIZE, MyGfx.GRAYED_OUT_COLOR);
+              gfx.stringCentered(String.valueOf(status.cooldown()), x + ABILITY_SIZE/2, y + ABILITY_SIZE/2, 255, 255, 255);
+            }
+            
             listener.addZone(gfx.x(x), gfx.y(y), ABILITY_SIZE, ABILITY_SIZE, () -> toolTip.setAbility(pet.ability(fj).get()));
           }
         }

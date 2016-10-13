@@ -21,6 +21,7 @@ import com.jack.wow.data.PetSpec;
 import com.jack.wow.data.PetStats;
 import com.jack.wow.data.interfaces.Abilited;
 import com.jack.wow.data.interfaces.Qualitied;
+import com.jack.wow.data.interfaces.Specced;
 import com.jack.wow.data.interfaces.Statsed;
 import com.jack.wow.ui.misc.Icons;
 import com.jack.wow.ui.misc.MyGfx;
@@ -93,6 +94,8 @@ class CustomToolTip extends JToolTip
   {
     g.restoreFont();
     
+    BattlePet bpet = pet instanceof BattlePet ? ((BattlePet)pet) : null;
+    
     for (int i = 0; i < 2; ++i)
     {
       for (int j = 0; j < ABILITY_ROWS; ++j)
@@ -107,6 +110,14 @@ class CustomToolTip extends JToolTip
           g.image(Icons.getImage(ability.icon), ix, iy , ABILITY_SIZE, ABILITY_SIZE);
           g.string(ability.name, ix + ABILITY_SIZE + ABILITY_GRID_SPACING, iy + ABILITY_SIZE/2 + g.fontHeight()/2, Color.WHITE);
           g.image(ability.family.getTinyIcon().getImage(), ix + ABILITY_SIZE + ABILITY_GRID_SPACING, iy);
+          
+          if (bpet != null)
+          {
+            if (bpet.isAbilitySelected(ability))
+              g.rect(ix, iy, ABILITY_SIZE, ABILITY_SIZE, 255, 255, 255);
+            else
+              g.fillRect(ix, iy, ABILITY_SIZE, ABILITY_SIZE, MyGfx.GRAYED_OUT_COLOR);  
+          }
         }
       }
     }
@@ -135,9 +146,9 @@ class CustomToolTip extends JToolTip
     }
     else
     {      
-      if (common != null)
+      if (common != null && common instanceof Specced)
       {
-        PetSpec spec = petSpec != null ? petSpec : pet.spec();
+        PetSpec spec = ((Specced)common).spec();
         
         if (common instanceof Statsed)
         {
@@ -155,7 +166,8 @@ class CustomToolTip extends JToolTip
         g.drawFamily(spec.family, BIG_ICON_SIZE - 8, BIG_ICON_SIZE - 8);
         drawStrongAndWeak(spec.family.getStrongDefending(), spec.family.getWeakDefending());
         
-        drawAbilityGrid(spec);
+        if (common instanceof Abilited)
+          drawAbilityGrid((Abilited)common);
         
         if (ability != null)
           renderLabel.paint(gg);
@@ -220,6 +232,20 @@ class CustomToolTip extends JToolTip
 
     this.setSize(WIDTH, ABILITY_GRID_BASE + 3*(ABILITY_SIZE + ABILITY_GRID_SPACING) + 5*2);
     
+    if (parent.isAncestorOf(this))
+      repaint();
+  }
+  
+  public void setBattlePet(BattlePet pet)
+  {
+    this.ability = null;
+    this.battlePet = pet;
+    this.pet = null;
+    this.petSpec = null;
+    this.common = battlePet;
+    
+    this.setSize(WIDTH, ABILITY_GRID_BASE + 3*(ABILITY_SIZE + ABILITY_GRID_SPACING) + 5*2);
+
     if (parent.isAncestorOf(this))
       repaint();
   }

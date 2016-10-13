@@ -2,6 +2,7 @@ package com.jack.wow.data;
 
 import com.jack.wow.data.interfaces.Abilited;
 import com.jack.wow.data.interfaces.Qualitied;
+import com.jack.wow.data.interfaces.Specced;
 import com.jack.wow.data.interfaces.Statsed;
 
 /**
@@ -9,7 +10,7 @@ import com.jack.wow.data.interfaces.Statsed;
  * 
  * @author jack
  */
-public class Pet implements Abilited, Qualitied, Statsed
+public class Pet implements Abilited, Qualitied, Statsed, Specced
 {
   private final PetSpec spec;
   private PetBreed breed;

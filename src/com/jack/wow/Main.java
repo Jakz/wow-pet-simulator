@@ -18,7 +18,9 @@ import com.jack.wow.battle.AbilitySet;
 import com.jack.wow.battle.Battle;
 import com.jack.wow.battle.BattlePet;
 import com.jack.wow.battle.BattleTeam;
+import com.jack.wow.battle.abilities.EffectApply;
 import com.jack.wow.battle.abilities.Effects;
+import com.jack.wow.battle.abilities.Target;
 import com.jack.wow.data.Database;
 import com.jack.wow.data.Pet;
 import com.jack.wow.data.PetAbility;
@@ -195,6 +197,13 @@ public class Main
           new Pet(PetSpec.forName("son of sethe"), PetBreed.HH, PetQuality.RARE, 25),
           new AbilitySet(1,1,2)
       );
+      
+      pet1.abilityStatus(1).startCooldown();
+      pet2.hurt(pet2.hitPoints());
+      
+      pet3.addEffect(new EffectApply(PetAbility.forName("shattered defenses"), Target.SELF, 2));
+      pet3.addEffect(new EffectApply(PetAbility.forName("pumped up"), Target.SELF, 2));
+
       
       BattleTeam team1 = new BattleTeam(pet1, pet2, pet3);
       BattleTeam team2 = new BattleTeam(pet3, pet5, pet6);

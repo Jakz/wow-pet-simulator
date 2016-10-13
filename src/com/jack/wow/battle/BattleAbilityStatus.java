@@ -7,7 +7,7 @@ import com.jack.wow.data.PetOwnedAbility;
  * This is necessary to track cooldown of the ability and charges (used for damage increasing abilities).
  * @author Jack
  */
-class BattleAbilityStatus
+public class BattleAbilityStatus
 {
   private BattlePet owner;
   private final PetOwnedAbility ability;
@@ -25,8 +25,14 @@ class BattleAbilityStatus
   public BattlePet owner() { return owner; }
   public PetOwnedAbility ability() { return ability; }
   
+  public int cooldown() { return cooldown; }
   public void resetCooldown() { cooldown = 0; }
-  public void startCooldown() { cooldown = ability.get().cooldown; }
+  public void startCooldown()
+  { 
+    if (ability.get().cooldown == 0) 
+      throw new IllegalArgumentException(String.format("startCooldown() has been called on ability %s that doesn't have cooldown", ability.get().name));
+    cooldown = ability.get().cooldown;
+  }
   public void decreaseCooldown() { --cooldown; }
   public boolean isReady() { return cooldown == 0; }
   

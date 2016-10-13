@@ -97,7 +97,7 @@ public class Mechanics
    */
   public void updatePassiveCounters()
   {   
-    findAllPassiveEffects().stream().forEach(i -> i.effect.consume() );
+    findAllPassiveEffects().stream().forEach(i -> i.effect.consumeTurn() );
   }
   
   

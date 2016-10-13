@@ -7,17 +7,19 @@ public class Battle
   private int turn;
   
   private final BattleTeam[] teams;
+  private final BattlePet[] activePets;
   private Optional<EffectStatus> globalEffect;
-  
   
   public Battle(BattleTeam team1, BattleTeam team2)
   {
     teams = new BattleTeam[] { team1, team2 };
+    activePets = new BattlePet[] { team1.pet(0), team2.pet(0) };
     globalEffect = Optional.empty();
   }
   
   public BattleTeam[] teams() { return teams; }
   public BattleTeam team(int i) { return teams[i]; }
+  public BattlePet activePet(int i) { return activePets[i]; }
   
   public Optional<EffectStatus> globalEffect() { return globalEffect; }
   
@@ -26,7 +28,7 @@ public class Battle
    */
   public void reset()
   {
-    int turn = 0;
+    turn = 0;
     for (BattleTeam team : teams)
     {
       team.effects().clear();
@@ -37,6 +39,9 @@ public class Battle
         pet.effects().clear();
       }
     }
+    
+    activePets[0] = teams[0].pet(0);
+    activePets[1] = teams[1].pet(0);
   }
 
   public int elapsedTurns() { return turn; }

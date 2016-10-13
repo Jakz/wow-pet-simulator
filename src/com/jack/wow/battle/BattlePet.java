@@ -1,11 +1,17 @@
 package com.jack.wow.battle;
 
+import java.util.Arrays;
+
 import com.jack.wow.battle.abilities.EffectApply;
 import com.jack.wow.data.Formulas;
 import com.jack.wow.data.Pet;
+import com.jack.wow.data.PetAbility;
 import com.jack.wow.data.PetFamily;
 import com.jack.wow.data.PetOwnedAbility;
+import com.jack.wow.data.PetQuality;
+import com.jack.wow.data.PetSpec;
 import com.jack.wow.data.PetStats;
+import com.jack.wow.data.interfaces.*;
 
 /**
  * This class is used as an instance of a pet inside a battle, it contains all the additional data required to manage a battle,
@@ -13,10 +19,11 @@ import com.jack.wow.data.PetStats;
  * 
  * @author Jack
  */
-public class BattlePet
+public class BattlePet implements Statsed, Specced, Qualitied, Abilited
 {
   private final Pet pet;
   
+  private int maxHitPoints;
   private int hitPoints;
   private int power;
   private int speed;
@@ -49,13 +56,18 @@ public class BattlePet
   
   public BattleAbilityStatus abilityStatus(int i) { return abilities[i]; }
   
+  public int maxHitPoints() { return maxHitPoints; }
+  public int hitPoints() { return hitPoints; }
   public void hurt(int value) { hitPoints -= value; }
   public void heal(int value) { hitPoints += value; }
+  //TODO: probably we should use a passive hidden effect to manage special cases (eg. unborn valk'jir)
+  public boolean isDead() { return hitPoints <= 0; } 
  
   public void resetHitPoints()
   {
-    PetStats astats = Formulas.adjustedStats(pet.stats(), pet.breed(), pet.level(), pet.quality());
-    this.hitPoints = (int)astats.health();
+    PetStats astats = pet.stats();
+    this.maxHitPoints = (int)astats.health();
+    this.hitPoints = maxHitPoints;
     this.power = (int)astats.power();
     this.speed = (int)astats.speed();
   }
@@ -69,8 +81,14 @@ public class BattlePet
     }
   }
   
+  public boolean isAbilitySelected(PetAbility ability) { return Arrays.stream(abilities).anyMatch(as -> as.ability().get() == ability); }
   public PetOwnedAbility ability(int i) { return abilities[i].ability(); }
   public Pet pet() { return pet; }
+  
+  @Override public PetQuality quality() { return pet.quality(); }
+  @Override public PetStats stats() { return new PetStats(hitPoints, power, speed); }
+  @Override public PetAbility getAbility(int slot, int index) { return pet.getAbility(slot, index); }
+  @Override public PetSpec spec() { return pet.spec(); }
   
   public String icon() { return pet.spec().icon; }
   public PetFamily family() { return pet.spec().family; }

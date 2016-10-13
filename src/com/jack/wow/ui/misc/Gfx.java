@@ -2,6 +2,7 @@ package com.jack.wow.ui.misc;
 
 import java.awt.Color;
 import java.awt.Font;
+import java.awt.FontMetrics;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Image;
@@ -104,10 +105,17 @@ public class Gfx
     restoreColor();
   }
   
-  public void stringCentered(String string, int x, int y, int r, int g, int b)
+  public void stringCentered(String string, int x, int y, Color color)
   {
-    //x -= font().getLineMetrics(string, this.g);
+    FontMetrics metrics = this.g.getFontMetrics();
+    int width = metrics.stringWidth(string);
+
+    x -= width/2;
+    y += metrics.getAscent()/2;
+    
+    string(string, x, y, color);
   }
+  public void stringCentered(String string, int x, int y, int r, int g, int b) { stringCentered(string, x, y, new Color(r,g,b)); }
 
 
   public void setColor(Color c) { this.color = c; }

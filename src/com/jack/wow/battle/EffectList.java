@@ -28,7 +28,8 @@ public class EffectList implements Iterable<EffectStatus>
     return passiveEffects().filter(predicate);
   }
   
-  
+  @SuppressWarnings("unchecked")
+  public <T> T get(int i) { return (T)effects.get(i); }
   public int size() { return effects.size(); }
   public void clear() { effects.clear(); }
   public void add(PetAbility effect, int turns) { effects.add(new EffectStatus(effect, turns)); }

@@ -15,9 +15,13 @@ public interface PassiveEffect extends Effect
   public static final int PRIORITY_LOWEST = 9;
   
   default boolean isNegative() { return false; }
-  default void onEndEffect(BattleStatus battle) { }
-  default void onTickEffect(BattleStatus battle) { }
+  
+  default void onEndEffect(BattleStatus status) { }
+  default void onTickEffect(BattleStatus status) { }
+  default void onStartTurn(BattleStatus status) { }
+  default void onEndTurn(BattleStatus status) { }
   default ComputedStat onCalculateStat(BattleStatus battle, ModifierFunction.Target target, ComputedStat value) { return value; }
+  
   default int priority() { return PRIORITY_DEFAULT; }
   
   public static class PriorityComparator implements Comparator<PassiveEffect>
