@@ -45,14 +45,14 @@ public class MyGfx extends Gfx
     
     if (effect.isFinite())
     {
-      font(-4.0f);
+      font(-4.0f, Font.BOLD);
       stringCentered(String.valueOf(effect.remainingTurns()), x + iconSize, y + iconSize, Color.YELLOW);
       restoreFont();
     }
     
     if (effect.hasCharges())
     {
-      font(-4.0f);
+      font(-4.0f, Font.BOLD);
       stringCentered(String.valueOf(effect.remainingTurns()), x, y + iconSize, Color.RED);
       restoreFont();
     }
@@ -82,6 +82,7 @@ public class MyGfx extends Gfx
   {
     setFont(font(sizeDelta, Font.BOLD));
     string(title, x, y + fontHeight()/2, Color.WHITE);
+    restoreFont();
   }
   
   public void drawHealthBar(int value, int max, int x, int y, int w, int h)

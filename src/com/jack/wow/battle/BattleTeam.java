@@ -26,8 +26,7 @@ public class BattleTeam implements Iterable<BattlePet>
     this.effects = new EffectList();
   }
   
-  public BattlePet pet(int i) { return pets[i]; }
-  
+  public BattlePet pet(int i) { return pets[i]; } 
   public EffectList effects() { return effects; }
 
   @Override public Iterator<BattlePet> iterator() { return Arrays.asList(pets).iterator(); }

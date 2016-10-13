@@ -1,11 +1,17 @@
 package com.jack.wow.battle.abilities;
 
 import com.jack.wow.battle.BattleStatus;
+import com.jack.wow.data.PetFamily;
 
 public class SpecialEffect implements PassiveEffect
 {
   public static final SpecialEffect STUNNED = new SpecialEffect() { @Override public String toString() { return "stunned"; } };
-  public static final SpecialEffect BURNING = new SpecialEffect() { @Override public String toString() { return "burning"; } };
+  
+  public static final SpecialEffect BURNING = new SpecialEffect() { 
+    @Override public boolean isNegative() { return true; }
+    @Override public String toString() { return "burning"; }
+  };
+  
   public static final SpecialEffect POISONED = new SpecialEffect() { @Override public String toString() { return "poisoned"; } };
   public static final SpecialEffect BLINDED = new SpecialEffect() { @Override public String toString() { return "blinded"; } };
   public static final SpecialEffect CHILLED = new SpecialEffect() { @Override public String toString() { return "chilled"; } };
@@ -37,9 +43,25 @@ public class SpecialEffect implements PassiveEffect
     @Override public ComputedStat onCalculateStat(BattleStatus battle, ModifierFunction.Target target, ComputedStat value)
     {
       if (target == ModifierFunction.Target.SPEED)
-        return value.add(battle.self.pet().level()*parameter);
+        return value.add(battle.self().pet().level()*parameter);
       else
         return value.copy();
     }
+  }
+  
+  public static class AlterFamily implements PassiveEffect
+  {
+    private final PetFamily family;
+    public AlterFamily(PetFamily family)
+    {
+      this.family = family;
+    }
+    
+    @Override public PetFamily onGetPetFamily(BattleStatus status, PetFamily family)
+    { 
+      return this.family;
+    } 
+    
+    @Override public String toString() { return "alter-family("+family.description.toLowerCase()+")"; }
   }
 }

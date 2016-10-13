@@ -142,13 +142,15 @@ public class Effects
     forName("poisoned").addEffect(periodicDamage(5, PetFamily.elemental, Target.SELF), SpecialEffect.POISONED);
     forName("howling blast").addEffect(singleAttack(25), conditionalEffect(Condition.hasStatus(SpecialEffect.CHILLED, Target.ENEMY_ACTIVE_PET), teamAttack(5)));
     forName("incineration security measures").addEffect(singleAttack(15), backlineAttack(10));
+    forName("conflagrate").addEffect(singleAttack(30), conditionalEffect(Condition.hasStatus(SpecialEffect.BURNING, Target.ENEMY_PET), singleAttack(10)));
     mapPassiveEffect(792, 793, Target.ENEMY_PET, 2, healingReceivedMultiplier(-0.5f)); // darkflame
     forId(1041).addEffect(periodicDamage(5, PetFamily.elemental, Target.ENEMY_ACTIVE_PET), SpecialEffect.BURNING); // flame jet
     forId(1042).addEffect(singleAttack(30), chanceEffect(0.5f, applyEffect(1041, Target.ENEMY_TEAM, 3)));
     mapPassiveEffect(1010, 1009, Target.ENEMY_TEAM, 4, hitChanceModifier(-0.25f)); // inebriate
     mapPassiveEffect(178, 177, Target.ENEMY_PET, 4, periodicDamage(5, PetFamily.elemental, Target.SELF), SpecialEffect.BURNING).addEffect(singleAttack(12)); // immolate
     mapPassiveEffect(206, 205, Target.BATTLE_FIELD, 9, SpecialEffect.CHILLED).addEffect(singleAttack(25)); // immolate
-
+    forId(820).addEffect(periodicHeal(8, Target.SELF), new OnTickEffect(applyEffect(forName("elemental mark"), Target.SELF, 1))); // nature's ward
+    forId(574).addEffect(applyEffect(forId(820), Target.SELF, 1));
     
     /* magic */
     forName("beam").addEffect(singleAttack(20));
@@ -185,6 +187,7 @@ public class Effects
     forName("instability").addEffect(singleAttack(50));
     forName("jade breath").addEffect(singleAttack(20));
     forName("frost breath").addEffect(singleAttack(20));
+    forName("deep breath").addEffect(new ChargeEffect(singleAttack(50), 1));
 
     
     /* mechanical */
@@ -242,6 +245,7 @@ public class Effects
     forName("skitter").addEffect(singleAttack(20));
     forName("chomp").addEffect(singleAttack(22, 0.3f));
     forName("inspiring song").addEffect(teamHeal(12));
+    forName("nature's touch").addEffect(singleHeal(30));
     forName("quick attack").addEffect(singleAttack(15), SpecialEffect.alwaysGoestFirst(50)); // multiplier is just guessed
     mapPassiveEffect(165, 164, Target.SELF, 3, damageReceivedMultiplier(-0.5f)); // crouch
     mapPassiveEffect(162, 161, Target.SELF, 3, speedMultiplier(0.75f)); // adrenaline rush
@@ -260,6 +264,7 @@ public class Effects
 
     
     forName("moonlight").addEffect(healingReceivedMultiplier(0.25f), damageDoneMultiplier(0.1f, PetFamily.magical));
+    forName("elemental mark").addEffect(new SpecialEffect.AlterFamily(PetFamily.elemental));
     
     PetAbility.forId(SPEED_REDUCTION_25).addEffect(speedMultiplier(-0.25f)); // speed reduction
     PetAbility.forId(928).addEffect(speedMultiplier(-0.25f)); // speed reduction

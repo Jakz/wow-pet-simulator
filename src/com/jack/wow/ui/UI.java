@@ -1,5 +1,6 @@
 package com.jack.wow.ui;
 
+import java.awt.Dimension;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -35,6 +36,7 @@ public class UI
       //infoFrame.setVisible(true);
       battleFrame.setVisible(true);
       battleFrame.setLocationRelativeTo(null);
+      battleFrame.setMinimumSize(new Dimension(800,800));
       
       //petListFrame.setLocationRelativeTo(null);
       abilityListFrame.setLocationRelativeTo(null);//petListFrame.getLocationOnScreen().x + petListFrame.getSize().width, petListFrame.getLocationOnScreen().y);

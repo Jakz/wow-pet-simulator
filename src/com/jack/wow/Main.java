@@ -201,12 +201,13 @@ public class Main
       pet1.abilityStatus(1).startCooldown();
       pet2.hurt(pet2.hitPoints());
       
-      pet3.addEffect(new EffectApply(PetAbility.forName("shattered defenses"), Target.SELF, 2));
-      pet3.addEffect(new EffectApply(PetAbility.forName("pumped up"), Target.SELF, 2));
+      pet3.effects().add(new EffectApply(PetAbility.forName("shattered defenses"), Target.SELF, 2));
+      pet3.effects().add(new EffectApply(PetAbility.forName("pumped up"), Target.SELF, 2));
 
-      
       BattleTeam team1 = new BattleTeam(pet1, pet2, pet3);
       BattleTeam team2 = new BattleTeam(pet3, pet5, pet6);
+      
+      team2.effects().add(new EffectApply(PetAbility.forId(365), Target.TEAM, 9));
       
       Battle battle = new Battle(team1, team2);
       

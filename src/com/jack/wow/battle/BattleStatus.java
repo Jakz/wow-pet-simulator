@@ -7,8 +7,8 @@ package com.jack.wow.battle;
  */
 public class BattleStatus
 {
-  public final Battle battle;
-  public final BattlePet self, enemy;
+  private final Battle battle;
+  private final BattlePet self, enemy;
   
   BattleStatus(Battle battle, BattlePet self, BattlePet enemy)
   {
@@ -23,4 +23,7 @@ public class BattleStatus
     this.self = null;
     this.enemy = null;
   }
+  
+  public BattlePet self() { return self; }
+  public BattlePet enemy() { return enemy; }
 }

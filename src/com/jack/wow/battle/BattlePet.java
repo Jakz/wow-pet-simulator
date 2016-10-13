@@ -23,10 +23,13 @@ public class BattlePet implements Statsed, Specced, Qualitied, Abilited
 {
   private final Pet pet;
   
+  
   private int maxHitPoints;
   private int hitPoints;
   private int power;
   private int speed;
+  
+  private int lastDamageReceived;
   
   private BattleTeam team;
   private final BattleAbilityStatus[] abilities;
@@ -47,15 +50,11 @@ public class BattlePet implements Statsed, Specced, Qualitied, Abilited
   public void setTeam(BattleTeam team) { this.team = team; }
   public BattleTeam team() { return team; }
   
-  public void addEffect(EffectApply effect)
-  {
-    passiveEffects.add(effect.ability, effect.turns);
-  }
-  
   public EffectList effects() { return passiveEffects; }
   
   public BattleAbilityStatus abilityStatus(int i) { return abilities[i]; }
   
+  public int lastDamageReceived() { return lastDamageReceived; }
   public int maxHitPoints() { return maxHitPoints; }
   public int hitPoints() { return hitPoints; }
   public void hurt(int value) { hitPoints -= value; }
@@ -70,6 +69,7 @@ public class BattlePet implements Statsed, Specced, Qualitied, Abilited
     this.hitPoints = maxHitPoints;
     this.power = (int)astats.power();
     this.speed = (int)astats.speed();
+    this.lastDamageReceived = 0;
   }
   
   public void resetCooldownsAndCharges()

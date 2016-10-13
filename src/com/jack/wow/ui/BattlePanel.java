@@ -6,6 +6,8 @@ import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Image;
 import java.awt.Point;
+import java.awt.event.ComponentAdapter;
+import java.awt.event.ComponentEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.Objects;
@@ -20,6 +22,7 @@ import javax.swing.ToolTipManager;
 import com.jack.wow.battle.Battle;
 import com.jack.wow.battle.BattleAbilityStatus;
 import com.jack.wow.battle.BattlePet;
+import com.jack.wow.battle.BattleTeam;
 import com.jack.wow.data.PetOwnedAbility;
 import com.jack.wow.ui.misc.Icons;
 import com.jack.wow.ui.misc.MouseRegionHoverListener;
@@ -33,10 +36,12 @@ public class BattlePanel extends JPanel
   private final CustomToolTip toolTip;
   private MouseRegionHoverListener listener;
   private String toolTipEnabler = null;
+  
+  private int MINIMUM_WIDTH = 800, MINIMUM_HEIGHT = 800;
     
   BattlePanel()
   {
-    setPreferredSize(new Dimension(800, 800));
+    setPreferredSize(new Dimension(MINIMUM_WIDTH, MINIMUM_HEIGHT));
     
     listener = new MouseRegionHoverListener(b -> toolTipEnabler = b ? "" : null);
 
@@ -52,9 +57,9 @@ public class BattlePanel extends JPanel
     
     toolTip = new CustomToolTip(this);
     toolTip.setSize(400, 300);
-    
-
   }
+  
+  
   
   private Graphics2D gfx;
   
@@ -86,7 +91,7 @@ public class BattlePanel extends JPanel
     final int PET_ICON_SIZE = 64;
     final int PET_SPACING = 70;
     final int PET_TOTAL_SPACING = PET_ICON_SIZE + PET_SPACING;
-    final int BY = 30;
+    final int BY = 80;
     final int MARGIN = 40;
     
     final int EFFECT_ICON_SIZE = 24;
@@ -133,8 +138,14 @@ public class BattlePanel extends JPanel
     if (battle != null)
     {      
       gfx.setAbsolute(true);
-      gfx.fillRect(30, 30, PET_ICON_SIZE + ABILITY_SPACING*3 + ABILITY_SPACING_FROM_PET + 20, PET_TOTAL_SPACING*3 + 40, new Color(40,0,0));
-      gfx.rect(30, 30, PET_ICON_SIZE + ABILITY_SPACING*3 + ABILITY_SPACING_FROM_PET + 20, PET_TOTAL_SPACING*3 + 40, new Color(180,0,0));
+      final int BG_WIDTH = PET_ICON_SIZE + ABILITY_SPACING*3 + ABILITY_SPACING_FROM_PET + 20;
+      final int BG_HEIGHT = PET_TOTAL_SPACING*3 + 80;
+      
+      gfx.fillRect(30, 30, BG_WIDTH, BG_HEIGHT, new Color(40,0,0));
+      gfx.rect(30, 30, BG_WIDTH, BG_HEIGHT, new Color(180,0,0));
+      
+      gfx.fillRect(gfx.w() - 30 - BG_WIDTH , 30, BG_WIDTH, BG_HEIGHT, new Color(0,0,40));
+      gfx.rect(gfx.w() - 30 - BG_WIDTH, 30, BG_WIDTH, BG_HEIGHT, new Color(0,0,180));
 
       gfx.setAbsolute(false);
       
@@ -143,9 +154,22 @@ public class BattlePanel extends JPanel
       
       for (int t = 0; t < 2; ++t)
       {
+        BattleTeam team = battle.team(t);
+        
+        AtomicInteger te = new AtomicInteger(0);
+        final int tt = t;
+        team.effects().forEach(effect -> {
+          final int ppy = 30;
+          final int ppx = tt == 0 ? (EFFECT_ICON_SIZE+EFFECT_SPACING)*te.get() : (lambdaX.apply(1,0) + PET_ICON_SIZE - EFFECT_ICON_SIZE - (EFFECT_ICON_SIZE+EFFECT_SPACING)*te.get());
+          
+          gfx.drawEffect(effect, ppx, ppy, EFFECT_ICON_SIZE);       
+          listener.addZone(gfx.x(ppx), gfx.y(ppy), EFFECT_ICON_SIZE, EFFECT_ICON_SIZE, () -> toolTip.setAbility(effect.ability()));
+          te.getAndIncrement();
+        });
+        
         for (int p = 0; p < 3; ++p)
         {
-          BattlePet pet = battle.team(t).pet(p);
+          BattlePet pet = team.pet(p);
           int px = lambdaX.apply(t, p), py = lambdaY.apply(t, p);
           
           /* draw pet */
@@ -162,7 +186,7 @@ public class BattlePanel extends JPanel
 
           /* draw effects */
           AtomicInteger e = new AtomicInteger(0);
-          final int tt = t, pp = p;
+          final int pp = p;
           pet.effects().forEach(effect -> {
             int ppx = elambdax.apply(tt, pp, e.get()), ppy = elambday.apply(tt, pp, e.get());
             gfx.drawEffect(effect, ppx, ppy, EFFECT_ICON_SIZE);       

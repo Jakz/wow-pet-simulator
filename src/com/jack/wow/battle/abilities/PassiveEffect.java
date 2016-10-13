@@ -3,6 +3,7 @@ package com.jack.wow.battle.abilities;
 import java.util.Comparator;
 
 import com.jack.wow.battle.BattleStatus;
+import com.jack.wow.data.PetFamily;
 
 public interface PassiveEffect extends Effect
 {
@@ -20,6 +21,7 @@ public interface PassiveEffect extends Effect
   default void onTickEffect(BattleStatus status) { }
   default void onStartTurn(BattleStatus status) { }
   default void onEndTurn(BattleStatus status) { }
+  default PetFamily onGetPetFamily(BattleStatus status, PetFamily family) { return family; } 
   default ComputedStat onCalculateStat(BattleStatus battle, ModifierFunction.Target target, ComputedStat value) { return value; }
   
   default int priority() { return PRIORITY_DEFAULT; }
