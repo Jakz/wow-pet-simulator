@@ -36,8 +36,8 @@ public class Gfx
     this.font = g.getFont();
   }
   
-  private int x(float x) { return (int) (useMargin ? (x + margin) : x); }
-  private int y(float y) { return (int) (useMargin ? (y + margin) : y); }
+  public int x(float x) { return (int) (useMargin ? (x + margin) : x); }
+  public int y(float y) { return (int) (useMargin ? (y + margin) : y); }
   
   private void saveColor(Color nc) { g.setColor(nc); } 
   private void restoreColor() { g.setColor(color); }
@@ -102,6 +102,11 @@ public class Gfx
     saveColor(c);
     string(string,x,y);
     restoreColor();
+  }
+  
+  public void stringCentered(String string, int x, int y, int r, int g, int b)
+  {
+    //x -= font().getLineMetrics(string, this.g);
   }
 
 

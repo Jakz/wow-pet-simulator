@@ -40,6 +40,11 @@ public class MouseRegionHoverListener implements MouseMotionListener
     zones.add(zone);
   }
   
+  public void trigger(MouseEvent event)
+  {
+    this.mouseMoved(event);
+  }
+  
   public void toogle(boolean enabled) { this.enabled = enabled; }
   
   @Override public void mouseDragged(MouseEvent e) { }

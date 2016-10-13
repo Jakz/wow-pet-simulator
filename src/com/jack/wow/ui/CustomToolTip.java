@@ -79,12 +79,6 @@ class CustomToolTip extends JToolTip
     g.line(g.w()-1, 0, g.w()-1, g.h()-1, 119, 119, 119);
     g.setAbsolute(false);
   }
-
-  public void drawTitle(String title)
-  {
-    g.setFont(g.font(4.0f, Font.BOLD));
-    g.string(title, ICON_SIZE + 5, g.fontHeight(), Color.WHITE);
-  }
     
   public void drawStrongAndWeak(PetFamily strong, PetFamily weak)
   {
@@ -93,17 +87,6 @@ class CustomToolTip extends JToolTip
     g.image(Icons.Misc.STRONG.image(), base, -1, 20, 20);
     g.image(weak.getTinyIcon().getImage(), base + 58, 0);
     g.image(Icons.Misc.WEAK.image(), base + 40, -1, 20, 20);
-  }
-  
-  public void drawStats(int x, int y, int health, int power, int speed)
-  {
-    g.setFont(g.font(0.0f, Font.BOLD));
-    g.image(Icons.Misc.HEALTH.image(), x, y);
-    g.string(Integer.toString(health), x + 20, y + 20 - g.fontHeight()/2, Color.WHITE);
-    g.image(Icons.Misc.POWER.image(), x + 70, y);
-    g.string(Integer.toString(power), x + 20 + 70, y + 20 - g.fontHeight()/2, Color.WHITE);
-    g.image(Icons.Misc.SPEED.image(), x + 70 + 60, y);
-    g.string(Integer.toString(speed), x + 70 + 60 + 20, y + 20 - g.fontHeight()/2, Color.WHITE);
   }
   
   public void drawAbilityGrid(Abilited pet)
@@ -144,7 +127,7 @@ class CustomToolTip extends JToolTip
     if (ability != null && common == null)
     {
       g.drawIcon(ability.icon, Color.DARK_GRAY, ICON_SIZE, 0, 0);
-      drawTitle(ability.name);
+      g.drawTitle(ability.name, ICON_SIZE + 5, 2, 4.0f);
       g.drawFamily(ability.family, ICON_SIZE - 8, ICON_SIZE - 8);
       drawStrongAndWeak(ability.family.getStrongAttacking(), ability.family.getWeakAttacking());
 
@@ -159,7 +142,7 @@ class CustomToolTip extends JToolTip
         if (common instanceof Statsed)
         {
           PetStats stats = ((Statsed)common).stats();
-          drawStats(ICON_SIZE + 10, ICON_SIZE - 20, (int)stats.health(), (int)stats.power(), (int)stats.speed());
+          g.drawStats(BIG_ICON_SIZE + 10, BIG_ICON_SIZE - 20, (int)stats.health(), (int)stats.power(), (int)stats.speed());
         }
 
         Color borderColor = Color.DARK_GRAY;
@@ -168,8 +151,8 @@ class CustomToolTip extends JToolTip
 
         g.drawIcon(spec.icon, borderColor, BIG_ICON_SIZE, 0, 0);
 
-        drawTitle(spec.name);
-        g.drawFamily(spec.family, ICON_SIZE - 8, ICON_SIZE - 8);
+        g.drawTitle(spec.name, BIG_ICON_SIZE + 5, 2, 4.0f);
+        g.drawFamily(spec.family, BIG_ICON_SIZE - 8, BIG_ICON_SIZE - 8);
         drawStrongAndWeak(spec.family.getStrongDefending(), spec.family.getWeakDefending());
         
         drawAbilityGrid(spec);
@@ -235,6 +218,8 @@ class CustomToolTip extends JToolTip
     this.petSpec = null;
     this.common = pet;
 
+    this.setSize(WIDTH, ABILITY_GRID_BASE + 3*(ABILITY_SIZE + ABILITY_GRID_SPACING) + 5*2);
+    
     if (parent.isAncestorOf(this))
       repaint();
   }
