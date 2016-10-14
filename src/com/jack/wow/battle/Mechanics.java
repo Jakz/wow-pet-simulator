@@ -106,24 +106,28 @@ public class Mechanics
     
   }
   
-  public float computeModifiedValue(ModifierFunction.Target type, float value, float multiplier, Stream<PassiveEffect> effects, BattleStatus status)
+  public float computeModifiedValue(ModifierFunction.Target type, float value, float multiplier, Stream<EffectInfo> effects, BattleStatus status)
   {
-    /* find all effects that are able to modify values */
-    Stream<ModifierEffect> casted = effects.filter(e -> e instanceof ModifierEffect).map(e -> (ModifierEffect)e);
-    
     /* apply reduction by passing through ComputedStat which is able to track multipliers and raw values indipendently */
-    ComputedStat result = casted.reduce(new ComputedStat(value, multiplier), (v, effect) -> effect.onCalculateStat(status, type, v), ComputedStat::combine);
+    ComputedStat result = effects.reduce(
+        new ComputedStat(value, multiplier), 
+        (v, info) -> info.effect.onCalculateStat(status.forPassive(info), type, v), 
+        ComputedStat::combine
+    );
 
     return result.calculate();
   }
     
-  public Stream<PassiveEffect> findAllPassiveEffectsForPet(BattlePet pet)
+  public Stream<EffectInfo> findAllPassiveEffectsForPet(BattlePet pet)
   {
-    Stream<PassiveEffect> petEffects = pet.effects().passiveEffects();
-    Stream<PassiveEffect> teamEffects = pet.team().effects().passiveEffects();
-    Stream<PassiveEffect> globalEffect = battle.globalEffect().isPresent() ? battle.globalEffect().get().passiveEffects() : Stream.empty();
+    Stream<EffectInfo> petEffects = pet.effects().stream();
+    Stream<EffectInfo> teamEffects = pet.team().effects().stream();
+    Stream<EffectInfo> globalEffect = 
+        battle.globalEffect().isPresent() ? 
+            battle.globalEffect().get().stream() 
+            : Stream.empty();
     
-    Stream<PassiveEffect> effects = concat(concat(petEffects, teamEffects), globalEffect);
+    Stream<EffectInfo> effects = concat(concat(petEffects, teamEffects), globalEffect);
     
     return effects;
   }
@@ -138,8 +142,8 @@ public class Mechanics
   public float computeSpeedForAbility(BattleAbilityStatus ability)
   {
     final BattlePet pet = ability.owner();
-    final Stream<PassiveEffect> hiddenEffects = ability.ability().get().findAllEffects(ActiveHiddenEffect.class).map(e -> e.effect);
-    Stream<PassiveEffect> effects = findAllPassiveEffectsForPet(pet);
+    final Stream<EffectInfo> hiddenEffects = ability.ability().get().findAllEffects(ActiveHiddenEffect.class).map(e -> new EffectInfo(e.effect));
+    Stream<EffectInfo> effects = findAllPassiveEffectsForPet(pet);
     effects = concat(effects, hiddenEffects);
     
     final BattleStatus status = new BattleStatus(battle, pet, null);
@@ -156,7 +160,7 @@ public class Mechanics
   public float computeHitChanceForAbility(BattleAbilityStatus ability)
   {
     final BattlePet pet = ability.owner();
-    Stream<PassiveEffect> effects = findAllPassiveEffectsForPet(pet);
+    Stream<EffectInfo> effects = findAllPassiveEffectsForPet(pet);
     final BattleStatus status = new BattleStatus(battle, pet, null);
 
     return computeModifiedValue(ModifierFunction.Target.HIT_CHANCE, 1.0f, ability.ability().get().hitChance(), effects, status);

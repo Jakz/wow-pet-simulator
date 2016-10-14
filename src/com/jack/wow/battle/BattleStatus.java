@@ -7,23 +7,30 @@ package com.jack.wow.battle;
  */
 public class BattleStatus
 {
-  private final Battle battle;
-  private final BattlePet self, enemy;
-  
-  BattleStatus(Battle battle, BattlePet self, BattlePet enemy)
+  public final Battle battle;
+  public final BattlePet self, enemy;
+  public final EffectInfo passive;
+
+  public BattleStatus(Battle battle, BattlePet self, BattlePet enemy, EffectInfo passive)
   {
     this.battle = battle;
     this.self = self;
     this.enemy = enemy;
+    this.passive = passive;
   }
   
-  BattleStatus(Battle battle)
+  public BattleStatus(Battle battle, BattlePet self, BattlePet enemy)
   {
-    this.battle = battle;
-    this.self = null;
-    this.enemy = null;
+    this(battle, self, enemy, null);
   }
   
-  public BattlePet self() { return self; }
-  public BattlePet enemy() { return enemy; }
+  public BattleStatus(Battle battle)
+  {
+    this(battle, null, null, null);
+  }
+  
+  public BattleStatus forPassive(EffectInfo passive)
+  {
+    return new BattleStatus(battle, null, null, passive);
+  }
 }

@@ -33,6 +33,7 @@ public class EffectStatus
     this.hasCharges = true;
   }
   
+  public Stream<EffectInfo> stream() { return passiveEffects().map(effect -> new EffectInfo(this, effect)); }
   public Stream<PassiveEffect> passiveEffects() { return effect.effects().filter(e -> e instanceof PassiveEffect).map(Effect::asPassive); }
   
   public PetAbility ability() { return effect; }

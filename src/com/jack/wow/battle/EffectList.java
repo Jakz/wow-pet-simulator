@@ -19,14 +19,22 @@ public class EffectList implements Iterable<EffectStatus>
     effects = new ArrayList<>();
   }
 
-  public Stream<PassiveEffect> passiveEffects()
+  /*public Stream<PassiveEffect> passiveEffects()
   {
     return effects.stream().flatMap(s -> s.passiveEffects());
+  }*/
+  
+  public Stream<EffectInfo> stream()
+  {
+    return findAll(i -> true);
   }
   
-  public Stream<PassiveEffect> findAll(Predicate<PassiveEffect> predicate)
+  public Stream<EffectInfo> findAll(Predicate<PassiveEffect> predicate)
   {
-    return passiveEffects().filter(predicate);
+    return effects.stream()
+        .flatMap(status -> status.passiveEffects()
+            .filter(predicate)
+            .map(effect -> new EffectInfo(status,effect)));
   }
   
   @SuppressWarnings("unchecked")
@@ -40,5 +48,4 @@ public class EffectList implements Iterable<EffectStatus>
   }
 
   @Override public Iterator<EffectStatus> iterator() { return effects.iterator(); }
-  public Stream<EffectStatus> stream() { return effects.stream(); }
 }

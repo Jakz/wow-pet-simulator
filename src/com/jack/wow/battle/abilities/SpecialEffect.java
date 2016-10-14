@@ -43,7 +43,7 @@ public class SpecialEffect implements PassiveEffect
     @Override public ComputedStat onCalculateStat(BattleStatus battle, ModifierFunction.Target target, ComputedStat value)
     {
       if (target == ModifierFunction.Target.SPEED)
-        return value.add(battle.self().pet().level()*parameter);
+        return value.add(battle.self.pet().level()*parameter);
       else
         return value.copy();
     }
