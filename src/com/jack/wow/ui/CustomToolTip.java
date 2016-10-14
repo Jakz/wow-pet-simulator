@@ -215,8 +215,8 @@ class CustomToolTip extends JToolTip
     
     if (ability.cooldown > 0)
       renderLabel.appendLine(ability.cooldown+" Round Cooldown");
-    if (ability.hitChance.isPresent())
-      renderLabel.appendLine("<span style='color: #FFD200;'>"+(int)(float)ability.hitChance.get()+"%</span> Hit Chance");
+    if (ability.hitChance() != 0.0f)
+      renderLabel.appendLine("<span style='color: #FFD200;'>"+(int)(float)ability.hitChance()*100+"%</span> Hit Chance");
     renderLabel.appendLine("");
     renderLabel.appendLine("<span style='color: #FFD200;'>"+ability.tooltip+"</span>");
     

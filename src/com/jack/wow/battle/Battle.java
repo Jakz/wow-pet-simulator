@@ -2,6 +2,8 @@ package com.jack.wow.battle;
 
 import java.util.Optional;
 
+import com.jack.wow.battle.abilities.EffectApply;
+
 public class Battle
 {
   private int turn;
@@ -22,6 +24,8 @@ public class Battle
   public BattlePet activePet(int i) { return activePets[i]; }
   
   public Optional<EffectStatus> globalEffect() { return globalEffect; }
+  public void clearGlobalEffect() { globalEffect = Optional.empty(); }
+  public void setGlobalEffect(EffectApply effect) { globalEffect = Optional.of(new EffectStatus(effect)); }
   
   /**
    * Resets the status of a battle: clear all effects from pets, teams and global effects. Reset hit points and cooldowns for all pets

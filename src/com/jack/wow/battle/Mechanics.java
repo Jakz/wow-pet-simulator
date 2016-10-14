@@ -116,7 +116,17 @@ public class Mechanics
 
     return result.calculate();
   }
-
+    
+  public Stream<PassiveEffect> findAllPassiveEffectsForPet(BattlePet pet)
+  {
+    Stream<PassiveEffect> petEffects = pet.effects().passiveEffects();
+    Stream<PassiveEffect> teamEffects = pet.team().effects().passiveEffects();
+    Stream<PassiveEffect> globalEffect = battle.globalEffect().isPresent() ? battle.globalEffect().get().passiveEffects() : Stream.empty();
+    
+    Stream<PassiveEffect> effects = concat(concat(petEffects, teamEffects), globalEffect);
+    
+    return effects;
+  }
   
   /**
    * Computes the final speed for an ability.
@@ -127,17 +137,29 @@ public class Mechanics
    */
   public float computeSpeedForAbility(BattleAbilityStatus ability)
   {
-    BattlePet pet = ability.owner();
-    
-    Stream<PassiveEffect> petEffects = pet.effects().passiveEffects();
-    Stream<PassiveEffect> teamEffects = pet.team().effects().passiveEffects();
-    Stream<PassiveEffect> hiddenEffects = ability.ability().get().findAllEffects(ActiveHiddenEffect.class).map(e -> e.effect);
+    final BattlePet pet = ability.owner();
+    final Stream<PassiveEffect> hiddenEffects = ability.ability().get().findAllEffects(ActiveHiddenEffect.class).map(e -> e.effect);
+    Stream<PassiveEffect> effects = findAllPassiveEffectsForPet(pet);
+    effects = concat(effects, hiddenEffects);
     
     final BattleStatus status = new BattleStatus(battle, pet, null);
     
-    Stream<PassiveEffect> effects = concat(concat(petEffects, teamEffects), hiddenEffects);
-
     return computeModifiedValue(ModifierFunction.Target.SPEED, pet.pet().stats().speed(), 1.0f, effects, status);
+  }
+  
+  /**
+   * Compute the final hit chance of an ability.
+   * This takes into account all passive effects on pet, team and global effects
+   * @param ability
+   * @return the modifier hit chance of the ability
+   */
+  public float computeHitChanceForAbility(BattleAbilityStatus ability)
+  {
+    final BattlePet pet = ability.owner();
+    Stream<PassiveEffect> effects = findAllPassiveEffectsForPet(pet);
+    final BattleStatus status = new BattleStatus(battle, pet, null);
+
+    return computeModifiedValue(ModifierFunction.Target.HIT_CHANCE, 1.0f, ability.ability().get().hitChance(), effects, status);
   }
   
   /**

@@ -128,6 +128,7 @@ public class Effects
     mapPassiveEffect(521, 520, Target.SELF, 3, critChanceModifier(0.75f)); // hawk eye
     mapPassiveEffect(515, 516, Target.ENEMY_PET, 3, damageReceivedMultiplier(0.25f)).addEffect(singleAttack(10)); // flyby
     mapPassiveEffect(514, 677, Target.ENEMY_ACTIVE_PET, 2, periodicDamage(4.0f, PetFamily.flying, Target.SELF)).addEffect(singleAttack(18)); // wild winds
+    mapPassiveEffect(454, 453, Target.BATTLE_FIELD, 5, damageReceivedModifier(5), hitChanceModifier(-0.1f)).addEffect(singleAttack(25)); // sandstorm
 
     
     /* elemental */

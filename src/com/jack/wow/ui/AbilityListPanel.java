@@ -115,7 +115,7 @@ public class AbilityListPanel extends JPanel
       new TableModelColumn<PetAbility>(Integer.class, "C", p -> p.cooldown, 20),
       new TableModelColumn<PetAbility>(Boolean.class, "P", p -> p.effectCount() > 0 && p.effects().allMatch(e -> e instanceof PassiveEffect), 20),
       new TableModelColumn<PetAbility>(Integer.class, "Used", p -> { return PetAbility.usage.containsKey(p) ? PetAbility.usage.get(p).size() : 0; }, 40),
-      new TableModelColumn<PetAbility>(String.class, "Hit Chance", p -> { return p.hitChance.isPresent() ? Integer.valueOf((int)(float)p.hitChance.get())+"%" : ""; }, 50),
+      new TableModelColumn<PetAbility>(String.class, "Hit Chance", p -> { float hitChance = p.hitChance(); return hitChance == 0.0f ? "" : ""+(int)(hitChance*100)+"%"; }, 50),
       new TableModelColumn<PetAbility>(Boolean.class, "", p -> p.effectCount() > 0, 20 ),
       new TableModelColumn<PetAbility>(String.class, "Mechanics", p -> mechanics.get(p) )
     );

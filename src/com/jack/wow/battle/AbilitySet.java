@@ -26,4 +26,9 @@ public class AbilitySet
   
   public int index(int i) { return indices[i]; }
   public int[] indices() { return indices; }
+  
+  public static AbilitySet of(int... i)
+  {
+    return new AbilitySet(i[0], i[1], i[2]);
+  }
 }

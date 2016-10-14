@@ -14,7 +14,7 @@ public class BattleAbilityStatus
   private int cooldown;
   private int charges;
   
-  BattleAbilityStatus(BattlePet owner, PetOwnedAbility ability)
+  public BattleAbilityStatus(BattlePet owner, PetOwnedAbility ability)
   {
     this.ability = ability;
     this.cooldown = 0;

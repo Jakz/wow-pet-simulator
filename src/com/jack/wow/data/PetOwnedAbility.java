@@ -16,6 +16,11 @@ public class PetOwnedAbility implements JsonnableContext
   
   public PetOwnedAbility() { }
   
+  public PetOwnedAbility(PetAbility ability)
+  {
+    this(ability, 0, 0, 0);
+  }
+  
   public PetOwnedAbility(PetAbility ability, int order, int slot, int requiredLevel)
   {
     this.ability = ability;

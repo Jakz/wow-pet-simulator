@@ -23,7 +23,7 @@ public class PetAbility implements Iterable<Effect>
   public int rounds;
   public boolean isPassive;
   public boolean hideHints;
-  public Optional<Float> hitChance;
+  private Optional<Float> hitChance;
   public boolean isFiltered;
   
   
@@ -76,6 +76,8 @@ public class PetAbility implements Iterable<Effect>
   public void setHitChance(float chance) { this.hitChance = Optional.of(chance); }
   public void setTooltip(String tooltip) { this.tooltip = tooltip; }
   
+  public float hitChance() { return hitChance.orElse(0.0f)/100.0f; }
+  
   /* static methods to manage the abilities database (generate and retrieval) */
   public static final Map<Integer, PetAbility> data = new HashMap<>();
   public static final Map<PetAbility, List<PetSpec>> usage = new HashMap<>();
@@ -92,28 +94,32 @@ public class PetAbility implements Iterable<Effect>
     return ability;
   }
 
-  public static Stream<PetAbility> forNameAll(String name)
+  public static List<PetAbility> forNameAll(String name)
   {
     List<PetAbility> abilities = data.values().stream().filter(a -> a.name.compareToIgnoreCase(name) == 0).collect(Collectors.toList());
     
     if (abilities.isEmpty())
       throw new IllegalArgumentException("no ability named "+name+" found.");
     
-    return abilities.stream();
+    return abilities;
   }
   
   public static void prune()
   {
     data.values().stream().forEach(a -> a.isFiltered = FilteredData.isFiltered(a));
   }
+
+  public static PetAbility forNameAny(String name)
+  {
+    List<PetAbility> abilities = forNameAll(name);
+    return abilities.get(0);
+  }
   
   public static PetAbility forName(String name)
   {
-    List<PetAbility> abilities = data.values().stream().filter(a -> a.name.compareToIgnoreCase(name) == 0).collect(Collectors.toList());
+    List<PetAbility> abilities = forNameAll(name);
 
-    if (abilities.isEmpty())
-      throw new IllegalArgumentException("no ability named "+name+" found.");
-    else if (abilities.size() > 1)
+    if (abilities.size() > 1)
       throw new IllegalArgumentException("ability lookup by name "+name+" has multiple results.");
 
     return abilities.get(0);

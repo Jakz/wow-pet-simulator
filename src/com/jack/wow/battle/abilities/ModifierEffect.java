@@ -65,8 +65,11 @@ public class ModifierEffect implements ModifierFunction, PassiveEffect
     return new ModifierEffect(Target.DAMAGE_RECEIVED_RAW, p) {
       @Override public ComputedStat apply(BattleStatus status, Target target, ComputedStat value)
       {
-        // must calculate final value with power of pet
-        throw new RuntimeException();
+        // must calculate final value with starting power of pet
+        if (target == Target.DAMAGE_RECEIVED_RAW)
+          throw new RuntimeException();
+        else
+          return value;
       }
       
       @Override public boolean isNegative() { return parameter > 0; }

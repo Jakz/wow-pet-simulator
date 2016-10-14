@@ -21,6 +21,7 @@ public interface PassiveEffect extends Effect
   default void onTickEffect(BattleStatus status) { }
   default void onStartTurn(BattleStatus status) { }
   default void onEndTurn(BattleStatus status) { }
+  
   default PetFamily onGetPetFamily(BattleStatus status, PetFamily family) { return family; } 
   default ComputedStat onCalculateStat(BattleStatus battle, ModifierFunction.Target target, ComputedStat value) { return value; }
   

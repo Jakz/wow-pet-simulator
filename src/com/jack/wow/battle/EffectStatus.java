@@ -3,6 +3,7 @@ package com.jack.wow.battle;
 import java.util.stream.Stream;
 
 import com.jack.wow.battle.abilities.Effect;
+import com.jack.wow.battle.abilities.EffectApply;
 import com.jack.wow.battle.abilities.PassiveEffect;
 import com.jack.wow.data.PetAbility;
 
@@ -12,6 +13,11 @@ public class EffectStatus
   int turns;
   boolean hasCharges;
   int charges;
+  
+  public EffectStatus(EffectApply apply)
+  {
+    this(apply.ability, apply.turns);
+  }
   
   public EffectStatus(PetAbility effect, int turns)
   {

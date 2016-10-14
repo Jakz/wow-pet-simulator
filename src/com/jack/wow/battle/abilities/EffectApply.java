@@ -15,6 +15,11 @@ public class EffectApply implements ActiveEffect
     this.turns = turns;
   }
   
+  public EffectApply(PetAbility ability, Target target)
+  {
+    this(ability, target, -1);
+  }
+  
   public boolean isFinite() { return turns > 0; }
   
   @Override public String toString() { return "apply("+ability.id+"-"+ability.name.toLowerCase()+", "+target+(turns > 0 ? (", "+turns+")") : ""); }
