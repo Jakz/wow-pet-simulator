@@ -9,6 +9,7 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 
 import static com.jack.wow.tests.TestSuite.dummyAbility;
+import static com.jack.wow.tests.TestSuite.build;
 
 import com.jack.wow.battle.AbilitySet;
 import com.jack.wow.battle.Battle;
@@ -38,7 +39,6 @@ public class HitChanceTest
   
   private final static float FLT_DELTA = 0.0005f;
   
-  private static Stream<PassiveEffect> build(PassiveEffect... effects) { return Arrays.stream(effects); }
   private static void assertFloat(float expected, float value) { Assert.assertEquals(expected, value, FLT_DELTA); }
   
   @BeforeClass
