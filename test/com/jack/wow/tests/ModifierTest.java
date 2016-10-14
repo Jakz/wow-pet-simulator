@@ -8,6 +8,10 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.junit.BeforeClass;
 
+import com.jack.wow.battle.Battle;
+import com.jack.wow.battle.BattleStatus;
+import com.jack.wow.battle.BattleTeam;
+import com.jack.wow.battle.EffectInfo;
 import com.jack.wow.battle.Mechanics;
 import com.jack.wow.battle.abilities.ModifierEffect;
 import com.jack.wow.battle.abilities.ModifierFunction;
@@ -16,62 +20,67 @@ import com.jack.wow.battle.abilities.PassiveEffect;
 public class ModifierTest
 {
   static Mechanics mechanics;
+  static Battle battle;
   
   private final static float FLT_DELTA = 0.0005f;
   private final static float base = 200;
   private final static float multiplier = 1.0f;
   
-  private static Stream<PassiveEffect> build(PassiveEffect... effects) { return Arrays.stream(effects); }
+  private static Stream<EffectInfo> build(PassiveEffect... effects)
+  { 
+    return Arrays.stream(effects).map(e -> new EffectInfo(e));
+  }
   private static void assertFloat(float v, float k) { Assert.assertEquals(v, k, FLT_DELTA); }
   
   @BeforeClass
   public static void setup()
   {
     mechanics = new Mechanics();
+    battle = new Battle(new BattleTeam(null, null, null), new BattleTeam(null, null, null));
   }
   
   @Test
   public void testSinglePositiveMultiplicative()
   {
-    Stream<PassiveEffect> effects = build(ModifierEffect.buildSpeed(0.25f));
-    float result = mechanics.computeModifiedValue(ModifierFunction.Target.SPEED, 200, multiplier, effects, null);
+    Stream<EffectInfo> effects = build(ModifierEffect.buildSpeed(0.25f));
+    float result = mechanics.computeModifiedValue(ModifierFunction.Target.SPEED, 200, multiplier, effects, new BattleStatus(battle));
     assertFloat(base*1.25f, result);
   }
   
   @Test
   public void testSingleNegativeMultiplicative()
   {
-    Stream<PassiveEffect> effects = build(ModifierEffect.buildSpeed(-0.25f));
-    float result = mechanics.computeModifiedValue(ModifierFunction.Target.SPEED, 200, multiplier, effects, null);
+    Stream<EffectInfo> effects = build(ModifierEffect.buildSpeed(-0.25f));
+    float result = mechanics.computeModifiedValue(ModifierFunction.Target.SPEED, 200, multiplier, effects, new BattleStatus(battle));
     assertFloat(base*0.75f, result);
   }
   
   @Test
   public void testCancelingMultiplicativeModifiers()
   {
-    Stream<PassiveEffect> effects = build(ModifierEffect.buildSpeed(-0.25f), ModifierEffect.buildSpeed(0.25f));
-    float result = mechanics.computeModifiedValue(ModifierFunction.Target.SPEED, 200, multiplier, effects, null);
+    Stream<EffectInfo> effects = build(ModifierEffect.buildSpeed(-0.25f), ModifierEffect.buildSpeed(0.25f));
+    float result = mechanics.computeModifiedValue(ModifierFunction.Target.SPEED, 200, multiplier, effects, new BattleStatus(battle));
     assertFloat(base, result);
   }
   
   @Test
   public void testMultiplicativeCapToZero()
   {
-    Stream<PassiveEffect> effects = build(ModifierEffect.buildSpeed(-1.25f));
-    float result = mechanics.computeModifiedValue(ModifierFunction.Target.SPEED, 200, multiplier, effects, null);
+    Stream<EffectInfo> effects = build(ModifierEffect.buildSpeed(-1.25f));
+    float result = mechanics.computeModifiedValue(ModifierFunction.Target.SPEED, 200, multiplier, effects, new BattleStatus(battle));
     assertFloat(0.0f, result);
   }
   
   @Test
   public void testManyMultiplicative()
   {
-    Stream<PassiveEffect> effects = build(
+    Stream<EffectInfo> effects = build(
         ModifierEffect.buildSpeed(0.25f),
         ModifierEffect.buildSpeed(-0.5f),
         ModifierEffect.buildSpeed(0.75f),
         ModifierEffect.buildSpeed(0.5f)
     );
-    float result = mechanics.computeModifiedValue(ModifierFunction.Target.SPEED, 200, multiplier, effects, null);
+    float result = mechanics.computeModifiedValue(ModifierFunction.Target.SPEED, 200, multiplier, effects, new BattleStatus(battle));
     assertFloat(base*(1.0f+0.25f-0.5f+0.75f+0.5f), result);
   }
   
