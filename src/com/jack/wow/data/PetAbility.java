@@ -57,6 +57,14 @@ public class PetAbility implements Iterable<Effect>
     this(a.id, a.name, PetFamily.unserialize(a.petTypeId), a.cooldown, a.rounds, a.isPassive, a.hideHints, a.icon);
   }
   
+  public PetAbility(PetFamily family, int cooldown, float hitChance, Effect... effects)
+  {
+    this.family = family;
+    this.cooldown = cooldown;
+    this.hitChance = Optional.of(hitChance * 100.0f);
+    this.effects = Arrays.asList(effects);
+  }
+  
   /* effect management */
   public PetAbility addEffect(Effect... effects) { this.effects.addAll(Arrays.asList(effects)); return this; }
   public Iterator<Effect> iterator() { return effects.iterator(); }

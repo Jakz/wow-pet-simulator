@@ -8,6 +8,8 @@ import org.junit.Test;
 import org.junit.Before;
 import org.junit.BeforeClass;
 
+import static com.jack.wow.tests.TestSuite.dummyAbility;
+
 import com.jack.wow.battle.AbilitySet;
 import com.jack.wow.battle.Battle;
 import com.jack.wow.battle.BattleAbilityStatus;
