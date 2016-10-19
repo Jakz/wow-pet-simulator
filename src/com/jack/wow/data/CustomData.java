@@ -4,7 +4,7 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 
-public class FilteredData
+public class CustomData
 {
   private final static Set<String> filteredAbilities = new HashSet<String>(Arrays.asList( new String[]
   {
@@ -56,4 +56,11 @@ public class FilteredData
   
   public static boolean isFiltered(PetAbility ability) { return filteredAbilities.contains(ability.name.toLowerCase()); }
   public static boolean isFiltered(PetSpec pet) { return filteredPets.contains(pet.name.toLowerCase()); }
+  
+  public static Trainer[] generateTrainers()
+  {
+    return new Trainer[] {
+        
+    };
+  }
 }

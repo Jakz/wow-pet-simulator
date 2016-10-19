@@ -49,7 +49,7 @@ public class PetAbility implements Iterable<Effect>
     this.hideHints = hideHints;
     this.icon = icon;
     this.hitChance = Optional.empty();
-    this.isFiltered = FilteredData.isFiltered(this);
+    this.isFiltered = CustomData.isFiltered(this);
   }
   
   public PetAbility(ApiAbility a)
@@ -114,7 +114,7 @@ public class PetAbility implements Iterable<Effect>
   
   public static void prune()
   {
-    data.values().stream().forEach(a -> a.isFiltered = FilteredData.isFiltered(a));
+    data.values().stream().forEach(a -> a.isFiltered = CustomData.isFiltered(a));
   }
 
   public static PetAbility forNameAny(String name)
