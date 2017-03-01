@@ -5,7 +5,7 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
 import com.google.gson.JsonSerializationContext;
-import com.jack.wow.json.JsonnableContext;
+import com.pixbits.lib.json.JsonnableContext;
 
 public class PetOwnedAbility implements JsonnableContext
 {

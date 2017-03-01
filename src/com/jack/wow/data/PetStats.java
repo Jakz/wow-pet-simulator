@@ -7,7 +7,7 @@ import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonSerializationContext;
 import com.jack.wow.files.api.ApiStats;
-import com.jack.wow.json.JsonnableContext;
+import com.pixbits.lib.json.JsonnableContext;
 
 public class PetStats implements JsonnableContext
 {

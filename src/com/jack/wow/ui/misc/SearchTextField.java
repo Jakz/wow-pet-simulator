@@ -11,7 +11,7 @@ import java.util.function.Predicate;
 
 import javax.swing.JTextField;
 
-import com.pixbits.parser.SimpleParser;
+import com.pixbits.lib.parser.SimpleParser;
 
 public class SearchTextField<T> extends JTextField
 {

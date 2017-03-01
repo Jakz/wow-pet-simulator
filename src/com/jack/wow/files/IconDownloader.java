@@ -3,6 +3,7 @@ package com.jack.wow.files;
 import java.awt.Frame;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.nio.channels.Channels;
@@ -115,12 +116,13 @@ public class IconDownloader
     @Override
     public Boolean call()
     {
-      try
+      try (InputStream is = url.openStream())
       {
-        ReadableByteChannel rbc = Channels.newChannel(url.openStream());
-        FileChannel channel = FileChannel.open(path, StandardOpenOption.CREATE, StandardOpenOption.WRITE);
-        channel.transferFrom(rbc, 0, 1 << 24);
-        channel.close();
+        try (ReadableByteChannel rbc = Channels.newChannel(is))
+        {
+          FileChannel channel = FileChannel.open(path, StandardOpenOption.CREATE, StandardOpenOption.WRITE);
+          channel.transferFrom(rbc, 0, 1 << 24);
+        }
       }
       catch (FileNotFoundException e)
       {

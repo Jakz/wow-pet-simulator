@@ -81,6 +81,12 @@
 			</plugin>
 		</plugins>
 	</build>
+  <repositories>
+    <repository>
+      <id>jitpack.io</id>
+      <url>https://jitpack.io</url>
+    </repository>
+  </repositories>
   <dependencies>
     <dependency>
         <groupId>com.google.code.gson</groupId>
@@ -98,6 +104,11 @@
         <artifactId>junit</artifactId>
         <version>4.11</version>
         <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>com.github.Jakz</groupId>
+      <artifactId>java-pix-lib</artifactId>
+      <version>master-SNAPSHOT</version>
     </dependency>
   </dependencies>
 </project>

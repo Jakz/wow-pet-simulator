@@ -17,7 +17,7 @@ import com.jack.wow.data.interfaces.Specced;
 import com.jack.wow.data.interfaces.Statsed;
 import com.jack.wow.files.api.ApiAbility;
 import com.jack.wow.files.api.ApiSpecie;
-import com.jack.wow.json.JsonnableContext;
+import com.pixbits.lib.json.JsonnableContext;
 
 public class PetSpec implements JsonnableContext, Abilited, Statsed, Specced
 {  

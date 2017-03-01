@@ -28,7 +28,7 @@ import com.jack.wow.ui.misc.Icons;
 import com.jack.wow.ui.misc.MouseRegionHoverListener;
 import com.jack.wow.ui.misc.MyGfx;
 
-import com.pixbits.functional.TriFunction;
+import com.pixbits.lib.functional.TriFunction;
 
 public class BattlePanel extends JPanel
 {

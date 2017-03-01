@@ -6,7 +6,7 @@ import com.jack.wow.data.Database;
 import com.jack.wow.data.PetOwnedAbility;
 import com.jack.wow.data.PetSpec;
 import com.jack.wow.data.PetStats;
-import com.jack.wow.json.ImplicitContextedAdapter;
+import com.pixbits.lib.json.ImplicitContextedAdapter;
 
 public class Json
 {
