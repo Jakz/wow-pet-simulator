@@ -1,5 +1,7 @@
 .settings
 .classpath
 .project
+data/**
 doc/**
 target/**
+/target/
