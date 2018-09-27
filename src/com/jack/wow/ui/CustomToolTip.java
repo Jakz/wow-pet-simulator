@@ -253,9 +253,12 @@ class CustomToolTip extends JToolTip
   public void setPetSpec(PetSpec spec)
   {
     this.ability = null;
+    this.battlePet = null;
     this.pet = null;
     this.petSpec = spec;
-    this.common = pet;
+    this.common = spec;
+    
+    this.setSize(400, ABILITY_GRID_BASE + 3*(ABILITY_SIZE + ABILITY_GRID_SPACING) + 5*2);
     
     if (parent.isAncestorOf(this))
       repaint();

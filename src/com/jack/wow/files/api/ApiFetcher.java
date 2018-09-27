@@ -17,6 +17,7 @@ import com.jack.wow.data.Formulas;
 import com.jack.wow.data.PetBreed;
 import com.jack.wow.data.PetQuality;
 import com.jack.wow.data.PetStats;
+import com.pixbits.lib.lang.Pair;
 
 public class ApiFetcher
 {
@@ -28,12 +29,53 @@ public class ApiFetcher
   private final static String MASTER_URL = "https://eu.api.battle.net/wow/pet/";
   private final static String ABILITY_URL = "https://eu.api.battle.net/wow/pet/ability/";
   
-  private final static boolean verbose = false;
+  private final static boolean verbose = true;
 
   private static void log(String format, Object... args)
   {
     if (verbose)
       System.out.println(String.format(format, args));
+  }
+  
+  private final static int RETRIES = 10;
+  private static Pair<String, Integer> fetchData(String surl)
+  {
+    boolean skip = false;
+    int tries = 0;
+    
+    try
+    {   
+      URL url = new URL(surl);
+
+      while (!skip)
+      {
+        try (InputStream is = url.openStream())
+        {
+          try (Scanner scanner = new Scanner(is, "UTF-8"))
+          {
+            String data = scanner.useDelimiter("\\A").next();
+            return Pair.of(data, tries);
+          }
+        } 
+        catch (FileNotFoundException e)
+        {
+          if (tries < RETRIES)
+            ++tries;
+          else
+          {
+            skip = true;
+            return null;
+          }
+        }
+      }
+    }
+
+    catch (Exception e)
+    {
+      e.printStackTrace();
+    }
+    
+    return null;
   }
   
   private static String apiKey()
@@ -61,121 +103,79 @@ public class ApiFetcher
   
   public static ApiMasterList fetchMasterList()
   {
-    try
-    {
-      URL url = new URL(MASTER_URL + "?locale=" + LOCALE + "&apikey=" + apiKey());
-      
-      try (InputStream is = url.openStream())
-      {
-        try (Scanner scanner = new Scanner(is, "UTF-8"))
-        {
-          String data = scanner.useDelimiter("\\A").next();
-          
-          ApiMasterList masterList = gson().fromJson(data, ApiMasterList.class);
-          log("Fetched master list with %d pets", masterList.pets.length);
-          
-          BufferedWriter wrt = Files.newBufferedWriter(Paths.get("masterlist.json"));
-          wrt.write(data);
-          wrt.close();
-
-          return masterList;
-        }
-      } 
-    } 
-    catch (Exception e)
-    {
-      e.printStackTrace();
-    }
+    Pair<String, Integer> data = fetchData(MASTER_URL + "?locale=" + LOCALE + "&apikey=" + apiKey());
     
-    return null;
+    if (data != null)
+    {
+      ApiMasterList masterList = gson().fromJson(data.first, ApiMasterList.class);
+      log("Fetched master list with %d pets", masterList.pets.length);
+      
+      /*BufferedWriter wrt = Files.newBufferedWriter(Paths.get("masterlist.json"));
+      wrt.write(data.first);
+      wrt.close();*/
+
+      return masterList;
+    }
+    else
+    {
+      log("Error while fetching master list, file not found");
+      return null;
+    }
   }
-  
+
   public static ApiAbility fetchAbility(int id)
   {
-    try
+    Pair<String, Integer> data = fetchData(ABILITY_URL + id + "?locale=" + LOCALE + "&apikey=" + apiKey());
+    
+    if (data != null)
     {
-      URL url = new URL(ABILITY_URL + id + "?locale=" + LOCALE + "&apikey=" + apiKey());
-            
-      try (InputStream is = url.openStream())
-      {
-        try (Scanner scanner = new Scanner(is, "UTF-8"))
-        {
-          String data = scanner.useDelimiter("\\A").next();
-          
-          ApiAbility ability = gson().fromJson(data, ApiAbility.class);
-          log("Fetched ability %d: %s", id, ability.name);
-          return ability;
-        }
-      } 
-    } 
-    catch (FileNotFoundException e)
+      ApiAbility ability = gson().fromJson(data.first, ApiAbility.class);
+      log("Fetched ability %d: %s (%d)", id, ability.name, data.second);
+      return ability;
+    }
+    else
     {
       log("Skipping ability %d, file not found", id);
       return null;
     }
-    catch (Exception e)
-    {
-      e.printStackTrace();
-    }
-    
-    return null;
   }
-  
+
   public static ApiSpecie fetchSpecie(int id)
   {
-    try
+    Pair<String, Integer> data = fetchData(SPECIE_URL + id + "?locale=" + LOCALE + "&apikey=" + apiKey());
+    ApiSpecie specie = null;
+    
+    if (data != null)
     {
-      URL url = new URL(SPECIE_URL + id + "?locale=" + LOCALE + "&apikey=" + apiKey());
-      
-      try (InputStream is = url.openStream())
-      {
-        try (Scanner scanner = new Scanner(is, "UTF-8"))
-        {
-          String data = scanner.useDelimiter("\\A").next();
-          ApiSpecie specie = gson().fromJson(data, ApiSpecie.class);     
-          specie.abilities = Arrays.stream(specie.abilities).filter(a -> a.slot >= 0).toArray(i -> new ApiAbility[i]);
+      specie = gson().fromJson(data.first, ApiSpecie.class);     
+      specie.abilities = Arrays.stream(specie.abilities).filter(a -> a.slot >= 0).toArray(i -> new ApiAbility[i]);
 
-          log("Fetched specie %d: %s", id, specie.name);
-          return specie;
-        }
-      } 
-    } 
-    catch (FileNotFoundException e)
+      log("Fetched specie %d: %s (%d)", id, specie.name, data.second);
+    }
+    else
     {
       log("Skipping specie %d, file not found", id);
-      return null;
     }
-    catch (Exception e)
-    {
-      e.printStackTrace();
-    }
-    
-    return null;
+
+    return specie;
   }
   
   public static ApiStats fetchStats(int id, int level, PetBreed breed, PetQuality rarity)
   {
-    try
-    {
-      URL url = new URL(STATS_URL + id + "?level=" + level + "&breedId=" + breed.maleId + "&qualityId=" + rarity.id + "&locale=" + LOCALE + "&apikey=" + apiKey());
-      
-      try (InputStream is = url.openStream())
-      {
-        try (Scanner scanner = new Scanner(is, "UTF-8"))
-        {
-          String data = scanner.useDelimiter("\\A").next();
-          
-          log("Fetched stats %d", id);
-          return gson().fromJson(data, ApiStats.class);
-        }
-      } 
-    }
-    catch (Exception e)
-    {
-      e.printStackTrace();
-    }
+    Pair<String, Integer> data = fetchData(STATS_URL + id + "?level=" + level + "&breedId=" + breed.maleId + "&qualityId=" + rarity.id + "&locale=" + LOCALE + "&apikey=" + apiKey());
+    ApiStats stats = null;
     
-    return null;
+    if (data != null)
+    {
+      stats = gson().fromJson(data.first, ApiStats.class);     
+      log("Fetched stats %d", id);
+    }
+    else
+    {
+      log("Skipping specie %d, file not found", id);
+    }
+
+    return stats;
   }
   
   private static class StatsAverager

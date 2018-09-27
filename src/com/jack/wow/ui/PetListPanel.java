@@ -36,7 +36,8 @@ public class PetListPanel extends JPanel
   private FilterableDataSource<PetSpec> data = FilterableDataSource.empty();
   private final FamilyFilterPanel<PetSpec> familyFilter;
   
-  private final JTable table;
+  private final TooltipTable<PetSpec> table;
+  
   private final SimpleTableModel<PetSpec> model;
   
   public PetListPanel(int width, int height)
@@ -50,7 +51,8 @@ public class PetListPanel extends JPanel
       new TableModelColumn<PetSpec>(Boolean.class, "Tamable", p -> p.usable)
     );
     
-    table = new JTable(model);
+    table = new TooltipTable<>(() -> data, model);
+    table.setLambda((tooltip, spec) -> tooltip.setPetSpec(spec));
     
     table.setAutoResizeMode(JTable.AUTO_RESIZE_SUBSEQUENT_COLUMNS);
     UIUtils.resizeTableColumn(table.getColumnModel().getColumn(0), 50);

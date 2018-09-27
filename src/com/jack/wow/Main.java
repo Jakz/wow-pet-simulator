@@ -39,26 +39,10 @@ import com.jack.wow.files.api.ApiSpecie;
 import com.jack.wow.files.api.DatabaseBuilder;
 import com.jack.wow.files.api.WowHeadFetcher;
 import com.jack.wow.ui.UI;
+import com.pixbits.lib.ui.UIUtils;
 
 public class Main
 {
-  private static void setLNF()
-  {
-    try {
-      for (LookAndFeelInfo info : UIManager.getInstalledLookAndFeels()) {
-        if ("Nimbus".equals(info.getName())) {
-          UIManager.setLookAndFeel(info.getClassName());
-          break;
-        }
-      }
-    } catch (Exception e) {
-      e.printStackTrace();
-      // If Nimbus is not available, you can set the GUI to another look and feel.
-    }
-  }
-
-
-  
   public static void buildDatabase() throws IOException, InterruptedException
   {
     DatabaseBuilder builder = new DatabaseBuilder();
@@ -143,7 +127,7 @@ public class Main
   
   public static void main(String[] args)
   {
-    setLNF();
+    UIUtils.setNimbusLNF();
     
     /*PetStats[][] table = new PetStats[PetBreed.count()][25];
 
@@ -177,8 +161,6 @@ public class Main
 
     try
     {
-      ApiFetcher.fetchMasterList();
-      
       if (!loadDatabase())
         buildDatabase();
       

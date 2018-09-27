@@ -5,9 +5,7 @@ import java.awt.Desktop;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.GridLayout;
-import java.awt.Point;
 import java.awt.event.ActionListener;
-import java.awt.event.MouseEvent;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.net.URL;
@@ -25,10 +23,7 @@ import javax.swing.JButton;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
-import javax.swing.JToolTip;
 import javax.swing.SwingUtilities;
-import javax.swing.ToolTipManager;
-import javax.swing.table.TableModel;
 
 import com.jack.wow.battle.abilities.PassiveEffect;
 import com.jack.wow.data.PetAbility;
@@ -46,63 +41,14 @@ public class AbilityListPanel extends JPanel
   private Map<PetAbility, String> mechanics = new HashMap<>();
   private final SearchTextField<PetAbility> search = new SearchTextField<>(30, f -> refresh());
   
-  private FilterableDataSource<PetAbility> data = FilterableDataSource.empty();
+  FilterableDataSource<PetAbility> data = FilterableDataSource.empty();
   
   private final JButton openChangelogInWH = new JButton("Changelog");
   
-  private final TooltipTable table;
+  private final TooltipTable<PetAbility> table;
   private final FamilyFilterPanel<PetAbility> familyFilter;
   private final SimpleTableModel<PetAbility> model;
   
-  
-  public class TooltipTable extends JTable
-  {
-    private CustomToolTip tooltip;
- 
-    TooltipTable(TableModel model)
-    {
-      super(model);
-      ToolTipManager.sharedInstance().registerComponent(this);
-      ToolTipManager.sharedInstance().setEnabled(true);
-      ToolTipManager.sharedInstance().setDismissDelay(Integer.MAX_VALUE);
-      ToolTipManager.sharedInstance().setInitialDelay(0);
-    }
-    
-    @Override public Point getToolTipLocation(MouseEvent e)
-    {
-      Point p = e.getPoint();
-      p.y += 15;
-      return p;
-    }
-    
-    @Override public JToolTip createToolTip()
-    {
-      if (tooltip == null)
-        tooltip = new CustomToolTip(this);
-      //toolTip.setAbility(PetAbility.forName("bombing run"));
-
-      return tooltip;
-    }
-    
-    @Override public String getToolTipText(MouseEvent e)
-    {
-      java.awt.Point p = e.getPoint();
-      int r = rowAtPoint(p);
-      
-      if (tooltip == null)
-        createToolTip();
-      
-      if (r >= 0 && r < data.size())
-      {
-        r = convertRowIndexToModel(r);
-        tooltip.setAbility(data.get(r));
-        return "";
-      }
-      
-      return null;
-    }
-    
-  }
   
   public AbilityListPanel(int width, int height)
   {    
@@ -112,7 +58,7 @@ public class AbilityListPanel extends JPanel
       new TableModelColumn<PetAbility>(ImageIcon.class, "", p -> p.family.getTinyIcon(), 20),
       new TableModelColumn<PetAbility>(String.class, "Name", p -> p.name, 200),
       //new TableModelColumn<PetAbility>(Integer.class, "Rounds", p -> p.rounds),
-      new TableModelColumn<PetAbility>(Integer.class, "C", p -> p.cooldown, 20),
+      new TableModelColumn<PetAbility>(Integer.class, "C", p -> p.cooldown, 30),
       new TableModelColumn<PetAbility>(Boolean.class, "P", p -> p.effectCount() > 0 && p.effects().allMatch(e -> e instanceof PassiveEffect), 20),
       new TableModelColumn<PetAbility>(Integer.class, "Used", p -> { return PetAbility.usage.containsKey(p) ? PetAbility.usage.get(p).size() : 0; }, 40),
       new TableModelColumn<PetAbility>(String.class, "Hit Chance", p -> { float hitChance = p.hitChance(); return hitChance == 0.0f ? "" : ""+(int)(hitChance*100)+"%"; }, 50),
@@ -120,7 +66,9 @@ public class AbilityListPanel extends JPanel
       new TableModelColumn<PetAbility>(String.class, "Mechanics", p -> mechanics.get(p) )
     );
     
-    table = new TooltipTable(model);
+    table = new TooltipTable<>(() -> data, model);
+    table.setLambda((tooltip, ability) -> tooltip.setAbility(ability));
+
     
     table.setAutoResizeMode(JTable.AUTO_RESIZE_LAST_COLUMN);
     for (int i = 0; i < model.getColumnCount(); ++i)

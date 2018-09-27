@@ -20,7 +20,7 @@ import com.pixbits.lib.functional.StreamException;
 public class DatabaseBuilder
 {
   private final int MAX_ABILITY_ID = 2500;
-  private final int MAX_PET_ID = 2000;
+  private final int MAX_PET_ID = 2500;
   private final int THREADS = 10;
   
   public List<PetAbility> fetchAbilitiesFromAPI() throws InterruptedException
