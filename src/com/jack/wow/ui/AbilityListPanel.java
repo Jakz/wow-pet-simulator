@@ -38,20 +38,20 @@ import com.jack.wow.ui.misc.Icons;
 import com.jack.wow.ui.misc.SearchTextField;
 import com.jack.wow.ui.misc.SimpleTableModel;
 import com.jack.wow.ui.misc.TableModelColumn;
-import com.jack.wow.ui.misc.UIUtils;
+import com.pixbits.lib.ui.UIUtils;
+import com.pixbits.lib.ui.table.FilterableDataSource;
 
 public class AbilityListPanel extends JPanel
 {
-  private Predicate<PetAbility> predicate = p -> true;
-  private List<PetAbility> oabilities = new ArrayList<>();
   private Map<PetAbility, String> mechanics = new HashMap<>();
-  private final List<PetAbility> abilities = new ArrayList<>();
-  private final SearchTextField<PetAbility> search = new SearchTextField<>(30, f -> searchUpdated(f));
-  private final FamilyFilterButton[] familyFilters;
+  private final SearchTextField<PetAbility> search = new SearchTextField<>(30, f -> refresh());
+  
+  private FilterableDataSource<PetAbility> data = FilterableDataSource.empty();
   
   private final JButton openChangelogInWH = new JButton("Changelog");
   
   private final TooltipTable table;
+  private final FamilyFilterPanel<PetAbility> familyFilter;
   private final SimpleTableModel<PetAbility> model;
   
   
@@ -92,10 +92,10 @@ public class AbilityListPanel extends JPanel
       if (tooltip == null)
         createToolTip();
       
-      if (r >= 0 && r < abilities.size())
+      if (r >= 0 && r < data.size())
       {
         r = convertRowIndexToModel(r);
-        tooltip.setAbility(abilities.get(r));
+        tooltip.setAbility(data.get(r));
         return "";
       }
       
@@ -106,7 +106,7 @@ public class AbilityListPanel extends JPanel
   
   public AbilityListPanel(int width, int height)
   {    
-    model = new SimpleTableModel<PetAbility>(abilities,  
+    model = new SimpleTableModel<PetAbility>(() -> data,  
       new TableModelColumn<PetAbility>(Integer.class, "", p -> p.id, 50),
       new TableModelColumn<PetAbility>(ImageIcon.class, "", p -> Icons.getIcon(p.icon, true), 20),
       new TableModelColumn<PetAbility>(ImageIcon.class, "", p -> p.family.getTinyIcon(), 20),
@@ -127,7 +127,7 @@ public class AbilityListPanel extends JPanel
     {
       TableModelColumn<?> c = model.getColumn(i);
       if (c.hasWidthSpecified())
-        UIUtils.resizeColumn(table.getColumnModel().getColumn(i), c.width);
+        UIUtils.resizeTableColumn(table.getColumnModel().getColumn(i), c.width);
     }
   
     final Font smallerFont = this.getFont().deriveFont(this.getFont().getSize()-2.0f);
@@ -152,31 +152,8 @@ public class AbilityListPanel extends JPanel
         System.out.println(pet.name);*/
     });
     
-    JPanel familyFiltersPanel = new JPanel(new GridLayout(1, PetFamily.count()+1));
-    ActionListener familyFilterListener = e -> populate(oabilities, predicate);
-    
-    familyFilters = Arrays.stream(PetFamily.values())
-                          .map(f -> new FamilyFilterButton(f, f.getTinyIcon()))
-                          .map(familyFiltersPanel::add)
-                          .toArray(s -> new FamilyFilterButton[s]);
-    
     generateSearchPredicates();
-    
-    JButton invertFamilyFilter = new JButton("~");
-    invertFamilyFilter.setPreferredSize(new Dimension(24,24));
-    invertFamilyFilter.setFont(this.getFont().deriveFont(this.getFont().getSize()-2.0f));
-    invertFamilyFilter.addActionListener(e -> {
-      Arrays.stream(familyFilters).forEach(b -> b.setSelected(!b.isSelected()));
-      populate(oabilities, predicate);
-    });
-    
-    familyFiltersPanel.add(invertFamilyFilter);
-   
-    
-    Arrays.stream(familyFilters).forEach(f -> {
-      f.addActionListener(familyFilterListener);
-    });
-    
+
     JScrollPane pane = new JScrollPane(table);
     
     pane.setPreferredSize(new Dimension(width, height));
@@ -188,7 +165,7 @@ public class AbilityListPanel extends JPanel
       if (r > 0)
       {
         r = table.convertRowIndexToModel(r);
-        PetAbility a = abilities.get(r);
+        PetAbility a = data.get(r);
         try
         {
           Desktop.getDesktop().browse(new URL("http://www.wowhead.com/pet-ability="+a.id+"#changelog").toURI());
@@ -199,6 +176,9 @@ public class AbilityListPanel extends JPanel
       }
     });
     
+    familyFilter = new FamilyFilterPanel<>();
+    familyFilter.setOnFilterChanged(() -> refresh());
+    
     JPanel lowerPanel = new JPanel();
     lowerPanel.add(search);
     //lowerPanel.add(openChangelogInWH);
@@ -206,7 +186,7 @@ public class AbilityListPanel extends JPanel
     setLayout(new BorderLayout());
     add(pane, BorderLayout.CENTER);
     add(lowerPanel, BorderLayout.SOUTH);
-    add(familyFiltersPanel, BorderLayout.NORTH);
+    add(familyFilter, BorderLayout.NORTH);
   }
   
   private void generateSearchPredicates()
@@ -215,26 +195,24 @@ public class AbilityListPanel extends JPanel
     search.addRule("family", s -> a -> a.family.description.toLowerCase().contains(s.toLowerCase()));
     search.addStandaloneRule("hasMechanics", a -> a.effectCount() > 0);
   }
-  
-  private void searchUpdated(Predicate<PetAbility> filter)
+
+  public void setData(List<PetAbility> abilities)
   {
-    populate(oabilities, filter);
+    data = FilterableDataSource.of(abilities);
+    refresh();
   }
 
-  public void populate(List<PetAbility> list, Predicate<PetAbility> filter)
+  public void refresh()
   {
-    predicate = filter;
-    oabilities = list;
+    Predicate<PetAbility> filter = search.predicate();
 
-    filter = filter.and(p -> Arrays.stream(familyFilters).anyMatch(b -> b.isSelected() && b.family == p.family)).and(p -> !p.isFiltered);
+    filter = filter.and(familyFilter.predicate()).and(p -> !p.isFiltered);
         
-    abilities.clear();
-    list.stream().filter(filter).forEach(abilities::add);
-    
-    Map<PetFamily, Long> countByFamily = abilities.stream().collect(Collectors.groupingBy(a -> a.family, Collectors.counting()));
-    Arrays.stream(familyFilters).forEach(b -> b.setText(Long.toString(countByFamily.getOrDefault(b.family, 0L))));
-    
-    abilities.forEach(a -> {
+    data.filter(filter);
+        
+    familyFilter.updateCounts(data.stream());
+
+    data.forEach(a -> {
       mechanics.put(a, a.effects().map(aa -> aa.toString()).collect(Collectors.joining(", ")));
     });
     

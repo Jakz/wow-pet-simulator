@@ -26,22 +26,22 @@ import com.jack.wow.ui.misc.Icons;
 import com.jack.wow.ui.misc.SearchTextField;
 import com.jack.wow.ui.misc.SimpleTableModel;
 import com.jack.wow.ui.misc.TableModelColumn;
-import com.jack.wow.ui.misc.UIUtils;
+import com.pixbits.lib.ui.UIUtils;
+import com.pixbits.lib.ui.table.DataSource;
+import com.pixbits.lib.ui.table.FilterableDataSource;
 
 public class PetListPanel extends JPanel
 {
-  private Predicate<PetSpec> predicate = p -> true;
-  private List<PetSpec> opets = new ArrayList<>();
-  private final List<PetSpec> pets = new ArrayList<>();
-  private final JTextField search = new JTextField(30); //new SearchTextField<>(30, f -> searchUpdated(f));
-  private final FamilyFilterButton[] familyFilters;
+  private final SearchTextField<PetSpec> search = new SearchTextField<>(30, f -> refresh());
+  private FilterableDataSource<PetSpec> data = FilterableDataSource.empty();
+  private final FamilyFilterPanel<PetSpec> familyFilter;
   
   private final JTable table;
   private final SimpleTableModel<PetSpec> model;
   
   public PetListPanel(int width, int height)
   {
-    model = new SimpleTableModel<PetSpec>(pets,  
+    model = new SimpleTableModel<PetSpec>(() -> data,  
       new TableModelColumn<PetSpec>(Integer.class, "", p -> p.id),
       new TableModelColumn<PetSpec>(ImageIcon.class, "", p -> Icons.getIcon(p.icon, true)),
       new TableModelColumn<PetSpec>(ImageIcon.class, "", p -> p.family.getTinyIcon()),
@@ -53,11 +53,11 @@ public class PetListPanel extends JPanel
     table = new JTable(model);
     
     table.setAutoResizeMode(JTable.AUTO_RESIZE_SUBSEQUENT_COLUMNS);
-    UIUtils.resizeColumn(table.getColumnModel().getColumn(0), 50);
-    UIUtils.resizeColumn(table.getColumnModel().getColumn(1), 20);
-    UIUtils.resizeColumn(table.getColumnModel().getColumn(2), 20);
-    UIUtils.resizeColumn(table.getColumnModel().getColumn(4), 80);
-    UIUtils.resizeColumn(table.getColumnModel().getColumn(5), 80);
+    UIUtils.resizeTableColumn(table.getColumnModel().getColumn(0), 50);
+    UIUtils.resizeTableColumn(table.getColumnModel().getColumn(1), 20);
+    UIUtils.resizeTableColumn(table.getColumnModel().getColumn(2), 20);
+    UIUtils.resizeTableColumn(table.getColumnModel().getColumn(4), 80);
+    UIUtils.resizeTableColumn(table.getColumnModel().getColumn(5), 80);
 
     final Font smallerFont = this.getFont().deriveFont(this.getFont().getSize()-2.0f);
     
@@ -75,59 +75,46 @@ public class PetListPanel extends JPanel
       if (r != -1)
       {
         r = table.convertRowIndexToModel(r);
-        UI.infoFrame.panel().update(pets.get(r));
+        UI.infoFrame.panel().update(data.get(r));
       }
       
     });
-    
-    JPanel familyFiltersPanel = new JPanel(new GridLayout(1, PetFamily.count()+1));
-    ActionListener familyFilterListener = e -> populate(opets, predicate);
-    
-    familyFilters = Arrays.stream(PetFamily.values())
-                          .map(f -> new FamilyFilterButton(f, f.getTinyIcon()))
-                          .map(familyFiltersPanel::add)
-                          .toArray(s -> new FamilyFilterButton[s]);
-    
-    JButton invertFamilyFilter = new JButton("~");
-    invertFamilyFilter.setPreferredSize(new Dimension(24,24));
-    invertFamilyFilter.setFont(this.getFont().deriveFont(this.getFont().getSize()-2.0f));
-    invertFamilyFilter.addActionListener(e -> {
-      Arrays.stream(familyFilters).forEach(b -> b.setSelected(!b.isSelected()));
-      populate(opets, predicate);
-    });
-    
-    familyFiltersPanel.add(invertFamilyFilter);
    
-    
-    Arrays.stream(familyFilters).forEach(f -> {
-      f.addActionListener(familyFilterListener);
-    });
     
     JScrollPane pane = new JScrollPane(table);
     
     pane.setPreferredSize(new Dimension(width, height));
     pane.setBorder(BorderFactory.createEmptyBorder(0, 0, 10, 0));
+    
+    generateSearchPredicates();
+    familyFilter = new FamilyFilterPanel<>();
+    familyFilter.setOnFilterChanged(() -> refresh());
 
     setLayout(new BorderLayout());
     add(pane, BorderLayout.CENTER);
     add(search, BorderLayout.SOUTH);
-    add(familyFiltersPanel, BorderLayout.NORTH);
+    add(familyFilter, BorderLayout.NORTH);
   }
   
-  /*private void searchUpdated(Predicate<PetAbility> filter)
+  private void generateSearchPredicates()
   {
-    populate(oabilities, filter);
-  }*/
+    search.setDefaultRule(s -> a -> a.name.toLowerCase().contains(s.toLowerCase()));
+    search.addRule("family", s -> a -> a.family.description.toLowerCase().contains(s.toLowerCase()));
+  }
   
-  public void populate(List<PetSpec> list, Predicate<PetSpec> filter)
+  public void setData(List<PetSpec> data)
   {
-    predicate = filter;
-    opets = list;
-
-    filter = filter.and(p -> Arrays.stream(familyFilters).anyMatch(b -> b.isSelected() && b.family == p.family));
+    this.data = FilterableDataSource.of(data);
+  }
+  
+  public void refresh()
+  {
+    Predicate<PetSpec> filter = search.predicate();
+    filter = filter.and(familyFilter.predicate());
     
-    pets.clear();
-    list.stream().filter(filter).forEach(pets::add);
+    data.filter(filter);
+    familyFilter.updateCounts(data.stream());
+    
     model.fireTableDataChanged();
   }
 }

@@ -20,6 +20,7 @@ public class SearchTextField<T> extends JTextField
   final private Map<String, Predicate<T>> standaloneOptions;
   private Optional<Function<String, Predicate<T>>> defaultOption;
   
+  private Predicate<T> predicate;
   final private Consumer<Predicate<T>> callback;
   
   private String text;
@@ -36,9 +37,16 @@ public class SearchTextField<T> extends JTextField
     parser.addWhiteSpace(' ');
     parser.addQuote('\"');
     
+    predicate = t -> true;
+    
     this.addCaretListener(e -> fieldUpdated());
     
     this.callback = callback;
+  }
+  
+  public Predicate<T> predicate()
+  {
+    return predicate;
   }
   
   public void addRule(String preamble, Function<String, Predicate<T>> lambda)
@@ -58,7 +66,7 @@ public class SearchTextField<T> extends JTextField
   
   private void fieldUpdated()
   {    
-    Predicate<T> predicate = p -> true;
+    predicate = p -> true;
 
     String ntext = this.getText();
     if (ntext.equals(text))

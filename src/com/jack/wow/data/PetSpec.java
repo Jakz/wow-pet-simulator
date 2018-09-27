@@ -13,6 +13,7 @@ import com.google.gson.JsonPrimitive;
 import com.google.gson.JsonSerializationContext;
 import com.google.gson.reflect.TypeToken;
 import com.jack.wow.data.interfaces.Abilited;
+import com.jack.wow.data.interfaces.Familied;
 import com.jack.wow.data.interfaces.Iconed;
 import com.jack.wow.data.interfaces.Specced;
 import com.jack.wow.data.interfaces.Statsed;
@@ -20,7 +21,7 @@ import com.jack.wow.files.api.ApiAbility;
 import com.jack.wow.files.api.ApiSpecie;
 import com.pixbits.lib.json.JsonnableContext;
 
-public class PetSpec implements JsonnableContext, Abilited, Statsed, Specced, Iconed
+public class PetSpec implements JsonnableContext, Abilited, Statsed, Specced, Iconed, Familied
 {  
   public String name;
   public PetFamily family;
@@ -90,6 +91,7 @@ public class PetSpec implements JsonnableContext, Abilited, Statsed, Specced, Ic
   
   @Override public PetStats stats() { return new PetStats(8,8,8); }
   @Override public PetSpec spec() { return this; }
+  @Override public PetFamily family() { return family; }
   @Override public String iconName() { return icon; }
   
   public void unserialize(JsonElement element, JsonDeserializationContext context) throws IllegalAccessException

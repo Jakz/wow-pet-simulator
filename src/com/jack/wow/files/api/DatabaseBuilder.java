@@ -15,7 +15,7 @@ import java.util.stream.IntStream;
 import com.jack.wow.data.PetAbility;
 import com.jack.wow.data.PetSpec;
 import com.jack.wow.data.interfaces.Iconed;
-import com.jack.wow.files.StreamException;
+import com.pixbits.lib.functional.StreamException;
 
 public class DatabaseBuilder
 {

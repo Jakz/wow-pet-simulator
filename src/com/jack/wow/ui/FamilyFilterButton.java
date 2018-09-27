@@ -16,6 +16,7 @@ class FamilyFilterButton extends JToggleButton
     super(icon);
     this.family = family;
     this.setFont(this.getFont().deriveFont(this.getFont().getSize()-2.0f));
+    setBorder(null);
     setPreferredSize(new Dimension(24,24));
     setSelected(true);
   }

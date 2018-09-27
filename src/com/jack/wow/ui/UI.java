@@ -10,8 +10,8 @@ import javax.swing.SwingUtilities;
 
 import com.jack.wow.data.PetAbility;
 import com.jack.wow.data.PetSpec;
-import com.jack.wow.ui.misc.UIUtils;
-import com.jack.wow.ui.misc.WrapperFrame;
+import com.pixbits.lib.ui.UIUtils;
+import com.pixbits.lib.ui.WrapperFrame;
 
 public class UI
 {
@@ -41,8 +41,8 @@ public class UI
       //petListFrame.setLocationRelativeTo(null);
       abilityListFrame.setLocationRelativeTo(null);//petListFrame.getLocationOnScreen().x + petListFrame.getSize().width, petListFrame.getLocationOnScreen().y);
       
-      petListFrame.panel().populate(Arrays.asList(PetSpec.data), p -> true);
-      abilityListFrame.panel().populate(new ArrayList<>(PetAbility.data.values()), p -> true);
+      petListFrame.panel().setData(Arrays.asList(PetSpec.data));
+      abilityListFrame.panel().setData(new ArrayList<>(PetAbility.data.values()));
     
       abilityListFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
     });

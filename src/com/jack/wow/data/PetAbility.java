@@ -11,10 +11,11 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import com.jack.wow.battle.abilities.Effect;
+import com.jack.wow.data.interfaces.Familied;
 import com.jack.wow.data.interfaces.Iconed;
 import com.jack.wow.files.api.ApiAbility;
 
-public class PetAbility implements Iterable<Effect>, Iconed
+public class PetAbility implements Iterable<Effect>, Iconed, Familied
 {  
   public int id;
   public String name;
@@ -67,6 +68,7 @@ public class PetAbility implements Iterable<Effect>, Iconed
   }
   
   @Override public String iconName() { return icon; }
+  @Override public PetFamily family() { return family; }
   
   /* effect management */
   public PetAbility addEffect(Effect... effects) { this.effects.addAll(Arrays.asList(effects)); return this; }
