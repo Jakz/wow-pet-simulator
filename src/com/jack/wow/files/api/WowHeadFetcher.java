@@ -1,5 +1,15 @@
 package com.jack.wow.files.api;
 
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.nio.channels.Channels;
+import java.nio.channels.FileChannel;
+import java.nio.channels.ReadableByteChannel;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.StandardOpenOption;
 import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -7,6 +17,8 @@ import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
+
+import com.jack.wow.data.interfaces.Iconed;
 
 public class WowHeadFetcher
 {
@@ -72,7 +84,44 @@ public class WowHeadFetcher
     {
       e.printStackTrace();
     }
+  }
+  
+  
+  public static void downloadIcon(String iconName, boolean small)
+  {
+    final String prefix = (small ? "small" : "large") +"/";
+    final Path path = Iconed.pathForIcon(iconName, small);
 
+    try
+    {
+      final URL url = new URL("https://wow.zamimg.com/images/wow/icons/"+ prefix + iconName + ".jpg");
+      
+      ReadableByteChannel rbc = Channels.newChannel(url.openStream());
+      FileChannel channel = FileChannel.open(path, StandardOpenOption.CREATE, StandardOpenOption.WRITE);
+      channel.transferFrom(rbc, 0, 1 << 24);
+      channel.close();
+    }
+    catch (FileNotFoundException e)
+    {
+      //e.printStackTrace();
+      return;
+    }
+    catch (java.nio.channels.ClosedByInterruptException e)
+    {   
+      try
+      {
+        if (Files.exists(path))
+          Files.delete(path);
+      }
+      catch (IOException ee)
+      {
+        ee.printStackTrace();
+      }
+    }
+    catch (Exception e)
+    {
+      e.printStackTrace();
+    }
 
   }
 }

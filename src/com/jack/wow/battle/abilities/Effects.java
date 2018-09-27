@@ -179,10 +179,8 @@ public class Effects
     mapPassiveEffect(194, 195, Target.SELF, 1, speedMultiplier(1.0f)).addEffect(singleAttack(15)); // metabolic boost
     mapPassiveEffect(197, 841, Target.SELF, 5, critChanceModifier(0.5f)); // adrenal glands
 
-
-    
     /* dragonkin */
-    forName("breath").addEffect(singleAttack(21, 0.2f));
+    PetAbility.forNameAll("breath").forEach(a -> a.addEffect(singleAttack(21, 0.2f)));
     forName("shadowflame").addEffect(singleAttack(22, 0.3f));
     forName("cataclysm").addEffect(singleAttack(45));
     forName("instability").addEffect(singleAttack(50));
@@ -192,7 +190,7 @@ public class Effects
 
     
     /* mechanical */
-    forName("zap").addEffect(singleAttack(20));
+    forId(116).addEffect(singleAttack(20)); // zap
     forName("missile").addEffect(singleAttack(21, 0.2f));
     forName("tesla cannon").addEffect(singleAttack(22, 0.3f));
     forName("metal fist").addEffect(singleAttack(20));
@@ -259,7 +257,7 @@ public class Effects
     
     /* special */
     forName("who's the best elekk in the whole world?").addEffect(SpecialEffect.DUMMY);
-    forName("nap time").addEffect(SpecialEffect.DUMMY);
+    forId(1345).addEffect(SpecialEffect.DUMMY); // nap time elekk
     forName("plushie rush").addEffect(SpecialEffect.DUMMY);
     forName("rawr!").addEffect(SpecialEffect.DUMMY);
 
@@ -267,8 +265,8 @@ public class Effects
     forName("moonlight").addEffect(healingReceivedMultiplier(0.25f), damageDoneMultiplier(0.1f, PetFamily.magical));
     forName("elemental mark").addEffect(new SpecialEffect.AlterFamily(PetFamily.elemental));
     
-    PetAbility.forId(SPEED_REDUCTION_25).addEffect(speedMultiplier(-0.25f)); // speed reduction
-    PetAbility.forId(928).addEffect(speedMultiplier(-0.25f)); // speed reduction
+    forId(SPEED_REDUCTION_25).addEffect(speedMultiplier(-0.25f)); // speed reduction
+    forId(928).addEffect(speedMultiplier(-0.25f)); // speed reduction
     forName("rooted").addEffect(SpecialEffect.UNABLE_TO_SWAP);
     PetAbility.forNameAll("stunned").forEach(a -> a.addEffect(SpecialEffect.STUNNED) );
 

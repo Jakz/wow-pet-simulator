@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -22,16 +23,19 @@ import com.jack.wow.battle.abilities.EffectApply;
 import com.jack.wow.battle.abilities.Effects;
 import com.jack.wow.battle.abilities.Target;
 import com.jack.wow.data.Database;
+import com.jack.wow.data.InvalidIdException;
 import com.jack.wow.data.Pet;
 import com.jack.wow.data.PetAbility;
 import com.jack.wow.data.PetBreed;
 import com.jack.wow.data.PetQuality;
 import com.jack.wow.data.PetSpec;
+import com.jack.wow.data.interfaces.Iconed;
 import com.jack.wow.files.IconDownloader;
 import com.jack.wow.files.Json;
 import com.jack.wow.files.api.ApiFetcher;
 import com.jack.wow.files.api.ApiMasterList;
 import com.jack.wow.files.api.ApiPet;
+import com.jack.wow.files.api.ApiSpecie;
 import com.jack.wow.files.api.DatabaseBuilder;
 import com.jack.wow.files.api.WowHeadFetcher;
 import com.jack.wow.ui.UI;
@@ -72,17 +76,33 @@ public class Main
     
     for (WowHeadFetcher.TooltipInfo tooltip : tooltips)
     {
-      PetAbility ability = PetAbility.forId(tooltip.id);
-      if (tooltip.hitChance.isPresent())
-        ability.setHitChance(tooltip.hitChance.get());
+      try
+      {
+        PetAbility ability = PetAbility.forId(tooltip.id);
+        if (tooltip.hitChance.isPresent())
+          ability.setHitChance(tooltip.hitChance.get());
       
-      ability.setTooltip(tooltip.description);
+        ability.setTooltip(tooltip.description);
+      }
+      catch (InvalidIdException e)
+      {
+        // ignore
+      }
     }
 
     /* mark all usable pets */
     ApiMasterList master = ApiFetcher.fetchMasterList();
     for (ApiPet pet : master.pets)
-      PetSpec.forId(pet.stats.speciesId).markUsable();
+    {
+      try
+      {
+        PetSpec.forId(pet.stats.speciesId).markUsable();
+      }
+      catch (IllegalArgumentException e)
+      {
+        //
+      }
+    }
 
     Database db = new Database(PetAbility.data.values(), PetSpec.data);
     db.save(Paths.get("data/database.json"));  
@@ -100,7 +120,13 @@ public class Main
       {
         Gson gson = Json.build();
         gson.fromJson(rdr, Database.class);
+       
+        /*DatabaseBuilder builder = new DatabaseBuilder();
         
+        List<Iconed> iconed = new ArrayList<>(Arrays.asList(PetSpec.data));
+        iconed.addAll(PetAbility.data.values());
+        
+        builder.fetchIconsFromWowHead(iconed);*/
         
 
         return true;
@@ -151,6 +177,8 @@ public class Main
 
     try
     {
+      ApiFetcher.fetchMasterList();
+      
       if (!loadDatabase())
         buildDatabase();
       

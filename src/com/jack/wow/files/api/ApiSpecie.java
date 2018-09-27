@@ -14,4 +14,6 @@ public class ApiSpecie
   public String source;
   
   public ApiAbility[] abilities;
+  
+  public String toString() { return String.format("(%s, id: %d, pid: %d, cid: %d)", name, speciesId, petTypeId, creatureId); }
 }

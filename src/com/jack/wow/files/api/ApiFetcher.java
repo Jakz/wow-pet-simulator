@@ -1,5 +1,6 @@
 package com.jack.wow.files.api;
 
+import java.io.BufferedWriter;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.net.URL;
@@ -26,7 +27,14 @@ public class ApiFetcher
   private final static String STATS_URL = "https://eu.api.battle.net/wow/pet/stats/";
   private final static String MASTER_URL = "https://eu.api.battle.net/wow/pet/";
   private final static String ABILITY_URL = "https://eu.api.battle.net/wow/pet/ability/";
+  
+  private final static boolean verbose = false;
 
+  private static void log(String format, Object... args)
+  {
+    if (verbose)
+      System.out.println(String.format(format, args));
+  }
   
   private static String apiKey()
   {
@@ -62,7 +70,15 @@ public class ApiFetcher
         try (Scanner scanner = new Scanner(is, "UTF-8"))
         {
           String data = scanner.useDelimiter("\\A").next();
-          return gson().fromJson(data, ApiMasterList.class);
+          
+          ApiMasterList masterList = gson().fromJson(data, ApiMasterList.class);
+          log("Fetched master list with %d pets", masterList.pets.length);
+          
+          BufferedWriter wrt = Files.newBufferedWriter(Paths.get("masterlist.json"));
+          wrt.write(data);
+          wrt.close();
+
+          return masterList;
         }
       } 
     } 
@@ -85,12 +101,16 @@ public class ApiFetcher
         try (Scanner scanner = new Scanner(is, "UTF-8"))
         {
           String data = scanner.useDelimiter("\\A").next();
-          return gson().fromJson(data, ApiAbility.class);
+          
+          ApiAbility ability = gson().fromJson(data, ApiAbility.class);
+          log("Fetched ability %d: %s", id, ability.name);
+          return ability;
         }
       } 
     } 
     catch (FileNotFoundException e)
     {
+      log("Skipping ability %d, file not found", id);
       return null;
     }
     catch (Exception e)
@@ -115,12 +135,14 @@ public class ApiFetcher
           ApiSpecie specie = gson().fromJson(data, ApiSpecie.class);     
           specie.abilities = Arrays.stream(specie.abilities).filter(a -> a.slot >= 0).toArray(i -> new ApiAbility[i]);
 
+          log("Fetched specie %d: %s", id, specie.name);
           return specie;
         }
       } 
     } 
     catch (FileNotFoundException e)
     {
+      log("Skipping specie %d, file not found", id);
       return null;
     }
     catch (Exception e)
@@ -142,6 +164,8 @@ public class ApiFetcher
         try (Scanner scanner = new Scanner(is, "UTF-8"))
         {
           String data = scanner.useDelimiter("\\A").next();
+          
+          log("Fetched stats %d", id);
           return gson().fromJson(data, ApiStats.class);
         }
       } 

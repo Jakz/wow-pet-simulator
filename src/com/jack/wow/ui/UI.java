@@ -28,7 +28,7 @@ public class UI
       battleFrame = UIUtils.buildFrame(new BattlePanel(), "Battle View");
       abilityListFrame = UIUtils.buildFrame(new AbilityListPanel(600, 1024), "Ability List");
       
-      //petListFrame.setVisible(true);
+      petListFrame.setVisible(true);
       abilityListFrame.setVisible(true);
       
       

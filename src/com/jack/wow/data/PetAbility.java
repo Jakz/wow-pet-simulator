@@ -11,9 +11,10 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import com.jack.wow.battle.abilities.Effect;
+import com.jack.wow.data.interfaces.Iconed;
 import com.jack.wow.files.api.ApiAbility;
 
-public class PetAbility implements Iterable<Effect>
+public class PetAbility implements Iterable<Effect>, Iconed
 {  
   public int id;
   public String name;
@@ -65,6 +66,8 @@ public class PetAbility implements Iterable<Effect>
     this.effects = Arrays.asList(effects);
   }
   
+  @Override public String iconName() { return icon; }
+  
   /* effect management */
   public PetAbility addEffect(Effect... effects) { this.effects.addAll(Arrays.asList(effects)); return this; }
   public Iterator<Effect> iterator() { return effects.iterator(); }
@@ -97,7 +100,7 @@ public class PetAbility implements Iterable<Effect>
     PetAbility ability = data.get(id);
     
     if (ability == null)
-      throw new IllegalArgumentException("no ability with id "+id+" found.");
+      throw new InvalidIdException("no ability with id "+id+" found.");
     
     return ability;
   }

@@ -17,10 +17,13 @@ import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.JTextField;
 import javax.swing.ListSelectionModel;
+
+import com.jack.wow.data.PetAbility;
 import com.jack.wow.data.PetFamily;
 import com.jack.wow.data.PetSpec;
 import com.jack.wow.ui.misc.BooleanCellRenderer;
 import com.jack.wow.ui.misc.Icons;
+import com.jack.wow.ui.misc.SearchTextField;
 import com.jack.wow.ui.misc.SimpleTableModel;
 import com.jack.wow.ui.misc.TableModelColumn;
 import com.jack.wow.ui.misc.UIUtils;
@@ -30,7 +33,7 @@ public class PetListPanel extends JPanel
   private Predicate<PetSpec> predicate = p -> true;
   private List<PetSpec> opets = new ArrayList<>();
   private final List<PetSpec> pets = new ArrayList<>();
-  private final JTextField search = new JTextField();
+  private final JTextField search = new JTextField(30); //new SearchTextField<>(30, f -> searchUpdated(f));
   private final FamilyFilterButton[] familyFilters;
   
   private final JTable table;
@@ -110,6 +113,11 @@ public class PetListPanel extends JPanel
     add(search, BorderLayout.SOUTH);
     add(familyFiltersPanel, BorderLayout.NORTH);
   }
+  
+  /*private void searchUpdated(Predicate<PetAbility> filter)
+  {
+    populate(oabilities, filter);
+  }*/
   
   public void populate(List<PetSpec> list, Predicate<PetSpec> filter)
   {

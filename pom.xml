@@ -8,7 +8,7 @@
   
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    <jdk.version>1.8</jdk.version>
+    <jdk.version>10</jdk.version>
   </properties>
   
 	<build>
@@ -105,10 +105,10 @@
         <version>4.11</version>
         <scope>test</scope>
     </dependency>
-    <dependency>
-      <groupId>com.github.Jakz</groupId>
-      <artifactId>java-pix-lib</artifactId>
-      <version>master-SNAPSHOT</version>
-    </dependency>
+	<dependency>
+		<groupId>com.pixbits</groupId>
+		<artifactId>lib</artifactId>
+		<version>0.1</version>
+	</dependency>
   </dependencies>
 </project>
