@@ -22,6 +22,11 @@ public class ConditionalEffect implements ActiveEffect
     this.falseEffect = Optional.empty();
   }
   
+  public static ConditionalEffect whenAttackingLast(ActiveEffect trueEffect, ActiveEffect falseEffect)
+  {
+    return new ConditionalEffect(Condition.isLastToAttack(), trueEffect, falseEffect);
+  }
+  
   @Override public String toString()
   { 
       if (falseEffect.isPresent())

@@ -23,7 +23,6 @@ public class BattlePet implements Statsed, Specced, Qualitied, Abilited
 {
   private final Pet pet;
   
-  
   private int maxHitPoints;
   private int hitPoints;
   private int power;

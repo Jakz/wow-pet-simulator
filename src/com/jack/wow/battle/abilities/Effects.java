@@ -178,6 +178,7 @@ public class Effects
     mapPassiveEffect(977, 976, Target.SELF, 1, hitChanceModifier(-0.25f), critChanceModifier(1.0f)); // inner vision
     mapPassiveEffect(194, 195, Target.SELF, 1, speedMultiplier(1.0f)).addEffect(singleAttack(15)); // metabolic boost
     mapPassiveEffect(197, 841, Target.SELF, 5, critChanceModifier(0.5f)); // adrenal glands
+    //mapPassiveEffect(273, 274, Target.SELF, 1, charg) //wish
 
     /* dragonkin */
     PetAbility.forNameAll("breath").forEach(a -> a.addEffect(singleAttack(21, 0.2f)));
@@ -187,6 +188,7 @@ public class Effects
     forName("jade breath").addEffect(singleAttack(20));
     forName("frost breath").addEffect(singleAttack(20));
     forName("deep breath").addEffect(new ChargeEffect(singleAttack(50), 1));
+    forName("tail sweep").addEffect(ConditionalEffect.whenAttackingLast(singleAttack(25), singleAttack(18)));
 
     
     /* mechanical */

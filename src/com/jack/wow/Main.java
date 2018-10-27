@@ -211,6 +211,8 @@ public class Main
       pet1.abilityStatus(1).startCooldown();
       pet2.hurt(pet2.hitPoints());
       
+      pet1.hurt(pet1.hitPoints()/2);
+      
       pet3.effects().add(new EffectApply(PetAbility.forName("shattered defenses"), Target.SELF, 2));
       pet3.effects().add(new EffectApply(PetAbility.forName("pumped up"), Target.SELF, 2));
 
